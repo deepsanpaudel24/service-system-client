@@ -6,7 +6,7 @@ export const SET_EMPLOYEE_PASSWORD_SERVER_FAIL =   'SET_EMPLOYEE_PASSWORD_SERVER
 export const SET_EMPLOYEE_PASSWORD_SUCCESS = 'SET_EMPLOYEE_PASSWORD_SUCCESS'
 
 
-export const setEmployeePasswordDispatcher = (data, token) => async dispatch => {
+export const SetEmployeePasswordDispatcher = (data, token) => async dispatch => {
     try {
         dispatch({
             type: "SET_EMPLOYEE_PASSWORD_LOADING"

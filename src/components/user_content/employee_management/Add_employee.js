@@ -1,19 +1,37 @@
 import React , {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {PulseLoader} from "react-spinners";
 import _ from "lodash";
 import validator from "validator";
-import { AddEmployeeDispatcher } from "../../actions/employee_management/AddEmployeeAction";
+import { AddEmployeeDispatcher, AddEmployeeResponseReset } from "../../actions/employee_management/AddEmployeeAction";
 
 const AddEmployee = (props) => {
-    const[email, setEmail] = useState("")
-    const[emailError, setEmailError] = useState("")
+    const [email, setEmail] = useState("")
+    const [emailError, setEmailError] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.addEmployeeResponse)
 
     const handleEmailChange = e => {
+        dispatch(AddEmployeeResponseReset())
         setEmail(e.target.value)
         if(validator.isEmail(email)){
             setEmailError("")
+        }
+    }
+
+    const dataValidatorNext = () => {
+        if(email == ""){
+            setEmailError("Please enter email address.")
+        }
+        else if(!validator.isEmail(email)){
+            setEmailError("The email address is not valid.")
+        }
+        else {
+            var data = {
+                "email": email
+            }
+            var addNext = "true"
+            dispatch(AddEmployeeDispatcher(data, addNext))
         }
     }
 
@@ -45,46 +63,57 @@ const AddEmployee = (props) => {
 
     const confirmEmployeeRegister = () => {
         if(!_.isEmpty(response.data)){
-           return(
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4" role="alert">
-                <p class="font-bold">Employee added successfully</p>
-            </div>
-           )
+            if(response.addNext == "true"){
+                return (
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4" role="alert">
+                        <p class="font-bold">Invitation email sent successfully</p>
+                    </div>
+                )
+            }
+            return(
+                props.history.push("/user/employees")
+            )
         }
     }
 
     const showData = () => {
         if(response.loading){
             return (
-                <button 
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                    type="button" 
-                    disabled
-                >
-                    Loading ...
-                </button>
+                <div class="">
+                    <PulseLoader
+                        size={10}
+                        color={"#6DADE3"}
+                        loading={true}
+                    />
+                </div>
             )
         }
         return (
-            <button 
-                class="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                type="button" 
-                style={{backgroundColor: "#3490ff"}}
-                onClick={() => dataValidator()}
-            >
-                Add
-            </button>
+            <div>
+                <button 
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-2 px-4 mx-2 rounded focus:outline-none focus:shadow-outline" 
+                    type="button" 
+                    onClick={() => dataValidatorNext()}
+                >
+                    Invite and continue
+                </button>
+                <button 
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-2 rounded focus:outline-none focus:shadow-outline" 
+                    type="button" 
+                    onClick={() => dataValidator()}
+                >
+                    Invite 
+                </button>
+            </div>
         )
 
     }
     
     return (
         <div class="flex mb-4">
-            <div class="w-1/4"></div>
-            <div class="w-2/5">
+            <div class="w-3/5 ml-5">
                 <form>
-                    <p class="text-3xl my-3" style={{textAlign: "center"}}>Add Employee</p>
-                    <div class="border-t border-gray-200"></div>
+                    <p class="text-3xl my-3">Invite Employees</p>
                     {showServerError()}
                     {confirmEmployeeRegister()}
                     <div class="mt-6 mb-3" >
@@ -113,7 +142,7 @@ const AddEmployee = (props) => {
                                 </div>
                         }
                     </div>
-                    <div class="flex justify-between" style={{ justifyContent: "center"}}>
+                    <div class="flex justify-start my-5" >
                         {showData()}
                     </div>
                 </form>

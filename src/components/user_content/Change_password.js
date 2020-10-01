@@ -101,14 +101,12 @@ const ChangePassword =  () => {
     return (
         <div>
             {changePasswordLogout()}
-            <div class="flex mb-4">
-                <div class="w-1/4"></div>
-                <div class="w-2/5">
+            <div class="flex mb-4 mx-6">
+                <div class="w-3/5">
                     <form>
                         <div>
                             {showServerError()}
-                            <p class="text-3xl my-3" style={{textAlign: "center"}}>Change Password</p>
-                            <div class="border-t border-gray-200"></div>
+                            <p class="text-3xl my-3">Change Password</p>
                             <div class="mt-6 mb-3" >
                                 <label class="block text-gray-700 text-sm mb-2" for="password">
                                     Current Password
@@ -210,7 +208,7 @@ const ChangePassword =  () => {
                                         </div>
                                 }
                             </div>
-                            <div class="flex justify-between" style={{ justifyContent: "center"}}>
+                            <div class="flex justify-between" >
                                 {showData()}
                             </div>
                         </div>

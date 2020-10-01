@@ -1,30 +1,24 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import _ from "lodash";
-import { RegisterUser } from "../actions/AccountAction";
-import NavAccount from "./Nav";
-import validator from "validator";
+import NavAccount from "../account/Nav";
 import PasswordStrengthBar from "react-password-strength-bar";
-import {PulseLoader} from "react-spinners";
+import { SetEmployeePasswordDispatcher }  from "../actions/employee_management/SetEmployeePasswordAction";
 
-const Register = (props) => {
-    //create state
-    const[email, setEmail] = useState("")
+const EmployeePasswordSetup = (props) => {
     const[password, setPassword] = useState("")
     const[confirmPassword, setConfirmPassword] = useState("")
     const[confirmPasswordValid, setConfirmPasswordValid] = useState(false)
-    const[emailError, setEmailError] = useState("")
+    const [token, setToken] = useState("")
     const[passwordError, setPasswordError] = useState("")
-    const[mailSent, setmailSent] = useState(false)
     const dispatch = useDispatch()
-    const response = useSelector(state => state.resgiterResponse)
+    const response = useSelector(state => state.setEmployeePasswordResponse)
 
-    const handleEmailChange = e => {
-        setEmail(e.target.value)
-        if(validator.isEmail(email)){
-            setEmailError("")
-        }
-    }
+    useEffect(() => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        setToken(urlvalues[4])
+    }, [])
 
     const handlePasswordChange = e => {
         setPassword(e.target.value)
@@ -38,21 +32,10 @@ const Register = (props) => {
         setConfirmPasswordValid("")
     }
 
-    var data = {
-        "email": email,
-        "password": password
-    }
-
     const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
 
     const dataValidator = () => {
-        if(email == ""){
-            setEmailError("Please enter your email.")
-        }
-        else if(!validator.isEmail(email)){
-            setEmailError("The email address is not valid.")
-        }
-        else if (!strongRegex.test(password)) {
+        if (!strongRegex.test(password)) {
             setPasswordError("Password must meet all the criteria.")
         }
         else if(confirmPassword == ""){
@@ -62,7 +45,10 @@ const Register = (props) => {
             setConfirmPasswordValid("Does not match with the password above. please try again.")
         }
         else {
-            dispatch(RegisterUser(data))
+            var data = {
+                "password": password
+            }
+            dispatch(SetEmployeePasswordDispatcher(data, token))
         }
     }
 
@@ -80,20 +66,20 @@ const Register = (props) => {
     const showMessage = () => {
         if(!_.isEmpty(response.data)) {
              return props.history.push("/user/login")
-            
+                
         }
     }
 
     const showData = () => {
         if(response.loading){
             return (
-                <div class="m-auto">
-                    <PulseLoader
-                        size={10}
-                        color={"#6DADE3"}
-                        loading={true}
-                    />
-                </div>
+                <button 
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                    type="button" 
+                    disabled
+                >
+                    Loading ...
+                </button>
             )
         }
         return (
@@ -102,7 +88,7 @@ const Register = (props) => {
                 type="button" 
                 onClick={() => dataValidator()}
             >
-                Sign up
+                Submit
             </button>
         )
 
@@ -117,35 +103,7 @@ const Register = (props) => {
                     <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
                         {showServerError()}
                         {showMessage()}
-                        <p class="text-3xl my-3" style={{textAlign: "center"}}>Sign Up</p>
-                        <div class="mb-6">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                                Email
-                            </label>
-                            {
-                                emailError == "" ?
-                                    <div>
-                                        <input 
-                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                            id="email" 
-                                            type="text" 
-                                            placeholder="email" 
-                                            onChange={e => handleEmailChange(e)}
-                                        />
-                                    </div>
-                                    :
-                                    <div>
-                                        <input 
-                                            class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                            id="email" 
-                                            type="text" 
-                                            placeholder="email" 
-                                            onChange={e => handleEmailChange(e)}
-                                        />
-                                        <p class="text-red-500 text-xs italic">{emailError}</p>
-                                    </div>
-                            }
-                        </div>
+                        <p class="text-3xl my-3" style={{textAlign: "center"}}>Setup Password</p>
                         <div class="mb-6">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
                                 Password
@@ -232,4 +190,4 @@ const Register = (props) => {
     )
 }
 
-export default Register
+export default EmployeePasswordSetup

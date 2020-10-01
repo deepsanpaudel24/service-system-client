@@ -165,13 +165,13 @@ const Login = (props) => {
         }
         if(response.loading){
             return (
-                <button 
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                    type="button" 
-                    disabled
-                >
-                    Loading ...
-                </button>
+                <div class="m-auto">
+                    <PulseLoader
+                        size={10}
+                        color={"#6DADE3"}
+                        loading={true}
+                    />
+                </div>
             )
         }
         return (
@@ -194,7 +194,7 @@ const Login = (props) => {
                     <div>
                         <NavAccount />
                     </div>
-                    <div class="container mx-auto w-full max-w-sm py-4 ">
+                    <div class="container mx-auto w-full max-w-sm py-4 mt-3">
                         <form>
                             <div class="bg-white align-bottom shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
                                 {
@@ -293,7 +293,6 @@ const Login = (props) => {
                     </div>
                 </div>
                 :
-
                     <div class="flex h-screen">
                         <div class="m-auto">
                         <PulseLoader

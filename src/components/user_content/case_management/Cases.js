@@ -35,33 +35,63 @@ const ViewCasesClient = (props) => {
 
     return (
         <div>
-            <div class="container mx-auto px-4 sm:px-8">
-                <div class="flex">
+            <div class="px-4 sm:px-8">
+                <div class="flex min-w-full">
                     <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Cases</p></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5">
+                    <div class="w-3/5"></div>
+                    <div class="w-1/5 flex justify-end">
                         <button class="focus:outline-none" onClick={() => handleAdd()}>
-                            <div class="rounded-full h-16 w-16 flex items-center justify-center bg-white text-blue-500 shadow-md text-4xl hover:shadow-lg">+</div>
+                            <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Add case</div>
                         </button>
                     </div>
                 </div>
                 <div class="py-8">
                     {
                         tableLoading ? 
-                            <div class="flex h-screen">
-                                <div class="m-auto">
-                                    <PulseLoader
-                                        size={10}
-                                        color={"#6DADE3"}
-                                        loading={true}
-                                    />
+                            <div class="animate-pulse flex space-x-4">
+                                <div class="flex-1 space-y-4 py-1">
+                                    <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 overflow-x-auto">
+                                        <div class="min-w-full shadow rounded-lg overflow-hidden">
+                                            <table class="min-w-full leading-normal">
+                                                <thead>
+                                                    <tr>
+                                                        <th
+                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Title
+                                                        </th>
+                                                        <th
+                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Type
+                                                        </th>
+                                                        <th
+                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Fee
+                                                        </th>
+                                                        <th
+                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Status
+                                                        </th>
+                                                        <th
+                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Action
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="h-4 bg-gray-400 rounded w-3/4"></div>
+                                    <div class="space-y-2">
+                                        <div class="h-4 bg-gray-400 rounded"></div>
+                                        <div class="h-4 bg-gray-400 rounded w-5/6"></div>
+                                    </div>
                                 </div>
                             </div>
                         :
                         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 overflow-x-auto">
-                            <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                            <div class="min-w-full shadow rounded-lg overflow-hidden">
                                 <table class="min-w-full leading-normal">
                                     <thead>
                                         <tr>

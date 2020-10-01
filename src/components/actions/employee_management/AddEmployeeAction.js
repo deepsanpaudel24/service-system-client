@@ -4,9 +4,10 @@ export const ADD_EMPLOYEE_LOADING = 'ADD_EMPLOYEE_LOADING'
 export const ADD_EMPLOYEE_FAIL =   'ADD_EMPLOYEE_FAIL'
 export const ADD_EMPLOYEE_SERVER_FAIL =   'ADD_EMPLOYEE_SERVER_FAIL'
 export const ADD_EMPLOYEE_SUCCESS = 'ADD_EMPLOYEE_SUCCESS'
+export const ADD_EMPLOYEE_RESPONSE_RESET = 'ADD_EMPLOYEE_RESPONSE_RESET'
 
 
-export const AddEmployeeDispatcher = (data) => async dispatch => {
+export const AddEmployeeDispatcher = (data, addNext) => async dispatch => {
     try {
         dispatch({
             type: "ADD_EMPLOYEE_LOADING"
@@ -24,6 +25,7 @@ export const AddEmployeeDispatcher = (data) => async dispatch => {
             dispatch({
                 type: "ADD_EMPLOYEE_SUCCESS",
                 payload: res.data,
+                addNext: addNext
             })
 
         })
@@ -39,4 +41,10 @@ export const AddEmployeeDispatcher = (data) => async dispatch => {
             type: "ADD_EMPLOYEE_FAIL"
         })
     }
+}
+
+export const AddEmployeeResponseReset = () => async dispatch => {
+    dispatch({
+        type: "ADD_EMPLOYEE_RESPONSE_RESET"
+    })
 }
