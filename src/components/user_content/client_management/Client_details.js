@@ -6,7 +6,7 @@ import { AddEmployeeResponseReset } from "../../actions/employee_management/AddE
 import { Link } from "react-router-dom";
 import EmpAvatar from "../../../images/emp_avatar.jpg";
 
-const EmployeeDetails = (props) => {
+const ClientDetails = (props) => {
     const [employeeDetails, setEmployeeDetails] = useState([])
     const [empDetailsLoading, setEmpDetailsLoading] = useState(true)
     const dispatch = useDispatch()
@@ -57,7 +57,7 @@ const EmployeeDetails = (props) => {
                         </div>
                         <div class="w-1/5 flex justify-end">
                             <button class="focus:outline-none" onClick={() => handleAdd()}>
-                                <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Manage Roles</div>
+                                <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Client Details</div>
                             </button>
                         </div>
                     </div>
@@ -80,9 +80,7 @@ const EmployeeDetails = (props) => {
                             </div>
                         </div>
                         <div class="w-1/5 flex justify-end">
-                            <button class="focus:outline-none" onClick={() => handleAdd()}>
-                                <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Manage Roles</div>
-                            </button>
+                            {/* any code in place of manage role buttons in employee details page */}
                         </div>
                     </div>
                 }
@@ -234,4 +232,4 @@ const EmployeeDetails = (props) => {
     )
 }
 
-export default EmployeeDetails
+export default ClientDetails

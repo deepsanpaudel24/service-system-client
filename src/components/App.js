@@ -36,21 +36,33 @@ function App() {
             <Route path={"/user/forgot-password"} component={ForgotPassword} />
             <Route path={'/user/reset-password/:token'} component={ResetPassword} />
             <Route path={"/user/setup/user-type"} component={SetupUserType} />
+
             <Route path={"/sadmin/home"} component={SAHomePage} />
             <Route path={"/sadmin/change-password"} component={SAHomePage} />
             <Route path={"/sadmin/employees"} component={SAHomePage} />
             <Route path={"/sadmin/add-employee"} component={SAHomePage} />
+            <Route path={"/sadmin/employee/:id"} component={SAHomePage} />
+            <Route path={"/sadmin/employee/roles/:id"} component={SAHomePage} />
             <Route path={"/sadmin/cases"} component={SAHomePage} />
             <Route path={"/sadmin/case/:id"} component={SAHomePage} />
+            <Route path={"/sadmin/peoples"} component={SAHomePage} />
+
             <Route path={"/user/setup/profile/basic"} component={ProfileSetupBasic} />
             <Route path={"/user/setup/profile/details"} component={ProfileSetupDetailed} />
+
             <Route path={"/user/home"} component={HomePage} />
             <Route path={"/user/change-password"} component={HomePage} />
+
             <Route path={"/user/employee/password-setup/:token"} component={EmployeePasswordSetup} />
             <Route path={"/user/employees"} component={HomePage} />
             <Route path={"/user/add-employee"} component={HomePage} />
             <Route path={"/user/employee/:id"} component={HomePage} />
             <Route path={"/user/employee/roles/:id"} component={HomePage} />
+
+            <Route path={"/user/services"} component={HomePage} />
+            <Route path={"/user/add-service"} component={HomePage} />
+            <Route path={"/user/edit-service/:id"} component={HomePage} />
+
             <Route path={"/user/cases"} component={HomePage} />
             <Route path={"/user/case/active"} component={HomePage} />
             <Route path={"/user/create-case-request"} component={HomePage} />
@@ -59,6 +71,11 @@ function App() {
             <Route path={"/user/case/reply/:id"} component={HomePage} />
             <Route path={"/user/case/proposals/:id"} component={HomePage} />
             <Route path={"/user/proposal/:id"} component={HomePage} />
+
+            <Route path={"/user/clients"} component={HomePage} />
+            <Route path={"/user/client/add"} component={HomePage} />
+            <Route path={"/user/client/:id"} component={HomePage} />
+
             <Redirect to={"/"} />
           </Switch>
         </div>

@@ -47,6 +47,7 @@ const SAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
             </MenuItem>
             <MenuItem icon={<FaGem />}><Link to="/sadmin/cases">Cases</Link></MenuItem>
             <MenuItem icon={<FaUsers />}><Link to="/sadmin/employees">Employees</Link></MenuItem>
+            <MenuItem icon={<FaUsers />}><Link to="/sadmin/peoples">Peoples</Link></MenuItem>
           </Menu>
         </SidebarContent>
 

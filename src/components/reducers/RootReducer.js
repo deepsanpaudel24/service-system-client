@@ -16,6 +16,11 @@ import NewCaseRequestReducer from './NewCaseRequestReducer'
 import ForwardCaseRequestReducer from './ForwardCaseRequestReducer';
 import ReplyCaseRequestReducer from './Reply_case_requestReducer';
 import ProposalAcceptReducer from './Proposal_AcceptReducer';
+import EmployeeRemoveReducer from './RemoveEmployeeReducer';
+import ServiceRegisterReducer from './AddServiceReducer';
+import ServiceRemoveReducer from './RemoveServiceReducer';
+import ServiceEditReducer from './EditServiceReducer';
+import ClientRegisterReducer from './Add_clientReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -35,7 +40,12 @@ const rootReducer =  combineReducers({
     NewCaseRequestResponse: NewCaseRequestReducer,
     ForwardCaseRequestResponse: ForwardCaseRequestReducer,
     ReplyCaseRequestResponse: ReplyCaseRequestReducer,
-    ProposalAcceptResponse: ProposalAcceptReducer
+    ProposalAcceptResponse: ProposalAcceptReducer,
+    EmployeeRemoveResponse: EmployeeRemoveReducer,
+    ServiceRegisterReponse: ServiceRegisterReducer,
+    ServiceRemoveResponse: ServiceRemoveReducer,
+    ServiceEditResponse: ServiceEditReducer,
+    ClientRegisterResponse: ClientRegisterReducer
 })
 
 export default rootReducer

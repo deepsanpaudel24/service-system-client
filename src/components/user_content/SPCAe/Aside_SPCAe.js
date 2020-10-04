@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useLayoutEffect} from 'react';
 import {
   ProSidebar,
   Menu,
@@ -8,9 +8,33 @@ import {
   SidebarFooter,
   SidebarContent,
 } from 'react-pro-sidebar';
-import { FaTachometerAlt, FaGem, FaList, FaGithub, FaRegLaughWink, FaHeart } from 'react-icons/fa';
+import { FaTachometerAlt, FaGem, FaUsers, FaGithub, FaRegLaughWink, FaHeart } from 'react-icons/fa';
+import axios from "axios";
+import { Link } from "react-router-dom";
 
-const SPCAeAside = ({ collapsed, toggled, handleToggleSidebar }) => {
+const SPCAeAside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
+  const [SM, setSM] = useState(false)  
+  const [CM, setCM] = useState(false)
+
+  useLayoutEffect(() => {
+      const config = {
+          method: 'get',
+          url: '/api/v1/user/validity',
+      }
+      axios(config)
+      .then((res) => {
+          setSM(res.data['serviceManagement'])
+          setCM(res.data['clientManagement'])
+      })
+      .catch((error) => {
+          props.history.push("/user/login")
+      })
+  }, [])
+
+  useEffect(() => {
+      
+  }, [SM])
+
   return (
     <div className="flex h-screen">
       <ProSidebar
@@ -35,51 +59,48 @@ const SPCAeAside = ({ collapsed, toggled, handleToggleSidebar }) => {
             Sidebar Title
           </div>
         </SidebarHeader>
-
-        <SidebarContent>
-          <Menu iconShape="circle">
-            <MenuItem
-              icon={<FaTachometerAlt />}
-              suffix={<span className="badge red">New</span>}
-            >
-              Dashboard
-            </MenuItem>
-            <MenuItem icon={<FaGem />}> Components</MenuItem>
-          </Menu>
-          <Menu iconShape="circle">
-            <SubMenu
-              suffix={<span className="badge yellow">3</span>}
-              title={"With Submenu"}
-              icon={<FaRegLaughWink />}
-            >
-              <MenuItem>Submenu 1</MenuItem>
-              <MenuItem>Submenu 2</MenuItem>
-              <MenuItem>Submenu 3</MenuItem>
-            </SubMenu>
-            <SubMenu
-              prefix={<span className="badge gray">3</span>}
-              title={"With Prefix"}
-              icon={<FaHeart />}
-            >
-              <MenuItem>Submenu 1</MenuItem>
-              <MenuItem>Submenu 2</MenuItem>
-              <MenuItem>Submenu 3</MenuItem>
-            </SubMenu>
-            <SubMenu title={"Multi level"} icon={<FaList />}>
-              <MenuItem>Submenu 1 </MenuItem>
-              <MenuItem>Submenu 2 </MenuItem>
-              <SubMenu title={`$Submenu 3`}>
-                <MenuItem>Submenu 3.1 </MenuItem>
-                <MenuItem>Submenu 3.2 </MenuItem>
-                <SubMenu title={`$Submenu 3.3`}>
-                  <MenuItem>Submenu 3.3.1 </MenuItem>
-                  <MenuItem>Submenu 3.3.2 </MenuItem>
-                  <MenuItem>Submenu 3.3.3 </MenuItem>
-                </SubMenu>
-              </SubMenu>
-            </SubMenu>
-          </Menu>
-        </SidebarContent>
+        {
+          SM ? 
+            CM ?
+            <SidebarContent>
+              <Menu iconShape="circle">
+                <MenuItem
+                  icon={<FaTachometerAlt />}
+                  suffix={<span className="badge red">New</span>}
+                >
+                  Dashboard
+                </MenuItem>
+                <MenuItem icon={<FaGem />}> Cases</MenuItem>
+                <MenuItem icon={<FaUsers />}><Link to="/user/clients">Client Management</Link></MenuItem>
+                <MenuItem icon={<FaGem />}><Link to="/user/services"> Service Management </Link></MenuItem>
+              </Menu>
+            </SidebarContent>
+            :
+            <SidebarContent>
+              <Menu iconShape="circle">
+                <MenuItem
+                  icon={<FaTachometerAlt />}
+                  suffix={<span className="badge red">New</span>}
+                >
+                  Dashboard
+                </MenuItem>
+                <MenuItem icon={<FaGem />}> Cases</MenuItem>
+                <MenuItem icon={<FaGem />}><Link to="/user/services"> Service Management </Link></MenuItem>
+              </Menu>
+            </SidebarContent>
+          :
+          <SidebarContent>
+            <Menu iconShape="circle">
+              <MenuItem
+                icon={<FaTachometerAlt />}
+                suffix={<span className="badge red">New</span>}
+              >
+                Dashboard
+              </MenuItem>
+              <MenuItem icon={<FaGem />}> Cases</MenuItem>
+            </Menu>
+          </SidebarContent>
+        }
 
         <SidebarFooter style={{ textAlign: 'center' }}>
           <div

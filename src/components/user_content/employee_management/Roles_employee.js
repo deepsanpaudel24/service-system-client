@@ -1,23 +1,149 @@
-import React , {useState} from "react";
+import React , {useState, useEffect, useLayoutEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import _ from "lodash";
+import axios from "axios";
+import EmpAvatar from "../../../images/emp_avatar.jpg";
 
 const EmployeeRoles = (props) => {
+    const [employeeDetails, setEmployeeDetails] = useState([])
+    const [empDetailsLoading, setEmpDetailsLoading] = useState(true)
+    const [SMloading, setSMloading] = useState(false)
+    const [SM, setSM] = useState(false)
+    const [CMloading, setCMloading] = useState(false)
+    const [CM, setCM] = useState(false)
+    const dispatch = useDispatch()
+    const response = useSelector(state => state.addEmployeeResponse)
+
+    useLayoutEffect(() => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        const config = {
+            method: 'get',
+            url: '/api/v1/employee/' + urlvalues[4],
+          }
+          axios(config)
+          .then((res) => {
+              setEmployeeDetails(res.data)
+              setEmpDetailsLoading(false)
+          })
+          .catch((error) => {
+              console.log(error.response)
+          })
+      }, [])
+  
+    useEffect(() => {
+        setSM(employeeDetails.serviceManagement)
+        setCM(employeeDetails.clientManagement)
+    }, [employeeDetails])
+
+    const handleServiceManagementChange = e => {
+        if(e.target.checked){
+            // show the skeleton loading for Service Mangement Module div
+            setSMloading(true)
+            // dispatch the action to activate the SM module to the employee
+            var string = document.location.pathname
+            var urlvalues = string.toString().split('/')
+            const config = {
+                method: 'put',
+                url: '/api/v1/employee/' + urlvalues[4],
+                data: {
+                    'serviceManagement': true,
+                    'clientManagement': CM
+                }
+            }
+            axios(config)
+            .then((res) => {
+                setSMloading(false)
+                setSM(true)
+            })
+            .catch((error) => {
+                setSMloading(false)
+            })
+            //after the module is activated, stop the loading.
+        }
+        else if (!e.target.checked){
+            setSMloading(true)
+            // dispatch the action to activate the SM module to the employee
+            var string = document.location.pathname
+            var urlvalues = string.toString().split('/')
+            const config = {
+                method: 'put',
+                url: '/api/v1/employee/' + urlvalues[4],
+                data: {
+                    'serviceManagement': false,
+                    'clientManagement': CM
+                }
+            }
+            axios(config)
+            .then((res) => {
+                setSMloading(false)
+                setSM(false)
+            })
+            .catch((error) => {
+                setSMloading(false)
+            })
+
+            //after the module is activated, stop the loading.
+        }
+    }
+
+    const handleClientManagementChange = e => {
+        if(e.target.checked){
+            // show the skeleton loading for Service Mangement Module div
+            setCMloading(true)
+            // dispatch the action to activate the SM module to the employee
+            var string = document.location.pathname
+            var urlvalues = string.toString().split('/')
+            const config = {
+                method: 'put',
+                url: '/api/v1/employee/' + urlvalues[4],
+                data: {
+                    'clientManagement': true,
+                    'serviceManagement': SM
+                }
+            }
+            axios(config)
+            .then((res) => {
+                setCMloading(false)
+                setCM(true)
+            })
+            .catch((error) => {
+                setCMloading(false)
+            })
+        }
+        else if (!e.target.checked){
+            setCMloading(true)
+            // dispatch the action to activate the SM module to the employee
+            var string = document.location.pathname
+            var urlvalues = string.toString().split('/')
+            const config = {
+                method: 'put',
+                url: '/api/v1/employee/' + urlvalues[4],
+                data: {
+                    'clientManagement': false,
+                    'serviceManagement': SM
+                }
+            }
+            axios(config)
+            .then((res) => {
+                setCMloading(false)
+                setCM(false)
+            })
+            .catch((error) => {
+                setCMloading(false)
+            })
+        }
+    }
+
     return (
         <div>
             <div class="px-4 sm:px-8">
-                <div class="flex">
+            {
+                empDetailsLoading ? 
+                <div class="animate-pulse flex space-x-4">
                     <div class="w-4/5">
                         <div class="flex"> 
-                            <img style={{height: '7em'}} class="rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80" alt="" />
-                            <div class="ml-5 y-5" style={{marginTop: "1.5em", marginLeft: "2em"}}>
-                                <h1 class="text-2xl font-bold">Roshan Katel</h1>
-                                <h1 class="text-1xl my-1">paradise98425@gmail.com</h1>
-                                <p class="flex mt-8 text-base text-gray-600">
-                                    TOTAL CASES <p class="ml-3 mr-10 text-base text-black">3</p>
-                                    USER SINCE<p class="ml-3 mr-10 text-base text-black">2020-09-14</p>
-                                    STATUS<p class="ml-3 text-base text-green-600">ACTIVE</p>
-                                </p>
-                            </div>
+                            <img style={{height: '7em'}} class="rounded-full" src={EmpAvatar} alt="" />
                         </div>
                     </div>
                     <div class="w-1/5 flex justify-end">
@@ -26,44 +152,102 @@ const EmployeeRoles = (props) => {
                         </button>
                     </div>
                 </div>
+                :
+                <div class="flex">
+                    <div class="w-4/5">
+                        <div class="flex"> 
+                            <img style={{height: '7em'}} class="rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80" alt="" />
+                            <div class="ml-5 y-5" style={{marginTop: "1.5em", marginLeft: "2em"}}>
+                                <h1 class="text-2xl font-bold">
+                                    {_.isEmpty(employeeDetails.name)? "-": employeeDetails.name}
+                                </h1>
+                                <h1 class="text-1xl my-1">{_.isEmpty(employeeDetails.email)? "-": employeeDetails.email}</h1>
+                                <p class="flex mt-8 text-base text-gray-600">
+                                    TOTAL CASES <p class="ml-3 mr-10 text-base text-black">3</p>
+                                    USER SINCE<p class="ml-3 mr-10 text-base text-black">{_.isEmpty(employeeDetails.createdDate)? "-": employeeDetails.createdDate}</p>
+                                    STATUS {employeeDetails.is_verified ? <p class="ml-3 text-base text-green-600">VERIFIED</p> : <p class="ml-3 text-base text-red-600">UNVERIFIED</p>} 
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
                 <div class="my-8">
                     <h1 class="text-2xl text-gray-800">Roles and Permissions</h1>
                         <p class="text-sm text-gray-600 flex items-center">
                             <svg class="fill-current text-gray-500 w-3 h-3 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" />
+                                <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" />
                             </svg>
                             Admin only
                         </p>
-                    <div class="flex my-3">
-                        <div class="w-3/5">
-                            <div class="flex"> 
-                                <div>
-                                    <input class="my-3" type="checkbox" checked/>
-                                </div>
-                                <div style={{marginLeft: "2em"}}>
-                                    <div class="mb-8">
-                                        <div class="flex text-gray-800 font-bold text-xl mb-2">
-                                            Service Management
-                                        </div>
-                                        <hr class="border-gray-400" />
-                                        <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
-                                    </div>
+                    {
+                        employeeDetails.user_type == "SPCAe" ? 
+                            <div class="flex my-3">
+                                <div class="w-3/5">
+                                    {
+                                        SMloading ? 
+                                            <div class="animate-pulse flex space-x-4 mb-8">
+                                                <div class="flex-1 space-y-4 py-1">
+                                                    <div class="h-4 bg-gray-400 rounded w-3/4"></div>
+                                                    <hr class="border-gray-400" />
+                                                    <div class="space-y-2">
+                                                        <div class="h-4 bg-gray-400 rounded"></div>
+                                                        <div class="h-4 bg-gray-400 rounded w-5/6"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        :
+                                            <div class="flex"> 
+                                                <div>
+                                                    <input class="my-3" type="checkbox" value="SM" onChange={e => handleServiceManagementChange(e)} checked={SM}/>
+                                                </div>
+                                                <div style={{marginLeft: "2em"}}>
+                                                    <div class="mb-8">
+                                                        <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                            Service Management
+                                                        </div>
+                                                        <hr class="border-gray-400" />
+                                                        <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                    }
+                                    {
+                                        CMloading ? 
+                                            <div class="animate-pulse flex space-x-4 mb-8">
+                                                <div class="flex-1 space-y-4 py-1">
+                                                    <div class="h-4 bg-gray-400 rounded w-3/4"></div>
+                                                    <hr class="border-gray-400" />
+                                                    <div class="space-y-2">
+                                                        <div class="h-4 bg-gray-400 rounded"></div>
+                                                        <div class="h-4 bg-gray-400 rounded w-5/6"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        :
+                                            <div class="flex"> 
+                                                <div>
+                                                    <input class="my-3" type="checkbox" value="SM" onChange={e => handleClientManagementChange(e)} checked={CM}/>
+                                                </div>
+                                                <div style={{marginLeft: "2em"}}>
+                                                    <div class="mb-8">
+                                                        <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                            Client Management
+                                                        </div>
+                                                        <hr class="border-gray-400" />
+                                                        <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    }
                                 </div>
                             </div>
-                            <div class="flex"> 
-                                <div>
-                                    <input class="my-3" type="checkbox" />
-                                </div>
-                                <div style={{marginLeft: "2em"}}>
-                                    <div class="mb-8">
-                                        <div class="text-gray-800 font-bold text-xl mb-2">Client Management</div>
-                                        <hr class="border-gray-400" />
-                                        <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        :
+                        <p>No roles has been defined for CCAe till now</p>
+                    }
+
+                    
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@ import {
   SidebarContent,
 } from 'react-pro-sidebar';
 import { Link } from "react-router-dom";
-import { FaTachometerAlt, FaGem, FaUsers, FaGithub } from 'react-icons/fa';
+import { FaTachometerAlt, FaGem, FaUsers, FaGithub, FaServicestack } from 'react-icons/fa';
 
 const SPCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
   return (
@@ -53,6 +53,8 @@ const SPCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
               <MenuItem><Link to="/user/cases">Requested Cases</Link></MenuItem>
             </SubMenu>
             <MenuItem icon={<FaUsers />}><Link to="/user/employees">Employees</Link></MenuItem>
+            <MenuItem icon={<FaServicestack />}><Link to="/user/services">Services</Link></MenuItem>
+            <MenuItem icon={<FaUsers />}><Link to="/user/clients">Clients</Link></MenuItem>
           </Menu>
         </SidebarContent>
 

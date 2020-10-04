@@ -40,7 +40,7 @@ const EmployeeDetails = (props) => {
         var string = document.location.pathname
         var urlvalues = string.toString().split('/')
         return (
-          props.history.push("/user/employee/roles/"+ urlvalues[3])
+          props.history.push("/sadmin/employee/roles/"+ urlvalues[3])
         )
       }
 

@@ -3,16 +3,16 @@ import {useDispatch, useSelector} from "react-redux";
 import {PulseLoader} from "react-spinners";
 import _ from "lodash";
 import validator from "validator";
-import { AddEmployeeDispatcher, AddEmployeeResponseReset } from "../../actions/employee_management/AddEmployeeAction";
+import { AddClientDispatcher, AddClientResponseReset } from "../../actions/client_management/AddClientAction";
 
-const AddEmployee = (props) => {
+const AddClients = (props) => {
     const [email, setEmail] = useState("")
     const [emailError, setEmailError] = useState("")
     const dispatch = useDispatch()
-    const response = useSelector(state => state.addEmployeeResponse)
+    const response = useSelector(state => state.ClientRegisterResponse)
 
     const handleEmailChange = e => {
-        dispatch(AddEmployeeResponseReset())
+        dispatch(AddClientResponseReset())
         setEmail(e.target.value)
         if(validator.isEmail(email)){
             setEmailError("")
@@ -31,7 +31,7 @@ const AddEmployee = (props) => {
                 "email": email
             }
             var addNext = "true"
-            dispatch(AddEmployeeDispatcher(data, addNext))
+            dispatch(AddClientDispatcher(data, addNext))
         }
     }
 
@@ -46,7 +46,7 @@ const AddEmployee = (props) => {
             var data = {
                 "email": email
             }
-            dispatch(AddEmployeeDispatcher(data))
+            dispatch(AddClientDispatcher(data))
         }
     }
 
@@ -71,7 +71,7 @@ const AddEmployee = (props) => {
                 )
             }
             return(
-                props.history.push("/sadmin/employees")
+                props.history.push("/user/clients")
             )
         }
     }
@@ -113,12 +113,12 @@ const AddEmployee = (props) => {
         <div class="flex mb-4">
             <div class="w-3/5 ml-5">
                 <form>
-                    <p class="text-3xl my-3">Invite Employees</p>
+                    <p class="text-3xl my-3">Add Client</p>
                     {showServerError()}
                     {confirmEmployeeRegister()}
                     <div class="mt-6 mb-3" >
                         <label class="block text-gray-700 text-sm mb-2" for="password">
-                            Employee Email
+                            Client Email
                         </label>
                         {
                             emailError == "" ? 
@@ -151,4 +151,4 @@ const AddEmployee = (props) => {
     )
 }
 
-export default AddEmployee
+export default AddClients
