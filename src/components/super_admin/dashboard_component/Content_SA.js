@@ -3,6 +3,7 @@ import {Redirect, Route, Link, BrowserRouter as Router, Switch} from 'react-rout
 import ViewCasesSA from "../case_management/Cases";
 import ViewCaseDetailsSA from "../case_management/Case_details";
 import ChangePassword from "../Change_password";
+import AddPeoples from "../client_mangement/Add_people";
 import Clients from "../client_mangement/Clients";
 import AddEmployee from "../employee_management/Add_employee";
 import EmployeeDetails from "../employee_management/Employee_details";
@@ -22,6 +23,7 @@ const SAContent = () => {
                 <Route exact path='/sadmin/case/:id' component={ViewCaseDetailsSA} />
 
                 <Route exact path='/sadmin/peoples' component={Clients} />
+                <Route exact path="/sadmin/people/add" component={AddPeoples} />
             </Switch>
         </div>
     )

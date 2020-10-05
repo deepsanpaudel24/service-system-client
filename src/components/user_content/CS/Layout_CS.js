@@ -23,7 +23,7 @@ function CSLayout() {
           handleToggleSidebar={handleToggleSidebar}
         />  
       </div>
-      <div class="w-full" style={{marginLeft: "16.9em"}}>
+      <div class="w-full" style={{marginLeft: "16.5em"}}>
         <CSNavbar />
       </div>
     </div>

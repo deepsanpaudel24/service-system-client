@@ -24,7 +24,7 @@ function SPCALayout() {
         handleToggleSidebar={handleToggleSidebar}
       />
       </div>
-      <div class="w-full" style={{marginLeft: "16.9em"}}>
+      <div class="w-full" style={{marginLeft: "16.5em"}}>
         <SPCANavbar />
       </div>
     </div>

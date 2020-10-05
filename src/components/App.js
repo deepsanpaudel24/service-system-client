@@ -46,6 +46,7 @@ function App() {
             <Route path={"/sadmin/cases"} component={SAHomePage} />
             <Route path={"/sadmin/case/:id"} component={SAHomePage} />
             <Route path={"/sadmin/peoples"} component={SAHomePage} />
+            <Route path={"/sadmin/people/add"} component={SAHomePage} />
 
             <Route path={"/user/setup/profile/basic"} component={ProfileSetupBasic} />
             <Route path={"/user/setup/profile/details"} component={ProfileSetupDetailed} />

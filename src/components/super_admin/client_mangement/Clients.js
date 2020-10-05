@@ -33,7 +33,7 @@ const Clients = (props) => {
     const handleAdd = () => {
         dispatch(AddClientResponseReset())
         return (
-            props.history.push("/user/client/add")
+            props.history.push("/sadmin/people/add")
         )
     }
 

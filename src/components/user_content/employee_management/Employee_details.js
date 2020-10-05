@@ -175,7 +175,7 @@ const EmployeeDetails = (props) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        {/* <tr>
                                             <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
                                                 <div class="flex items-center">
                                                     <div class="ml-3">
@@ -221,7 +221,7 @@ const EmployeeDetails = (props) => {
                                                     <button class="focus:outline-none" >Delete</button>
                                                 </p>
                                             </td>
-                                        </tr>
+                                        </tr> */}
                                     </tbody>
                                 </table>
                             </div>
