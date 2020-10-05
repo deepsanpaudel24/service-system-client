@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-// import axios from "../Axios";
 import axios from "axios";
 import _ from "lodash";
 import {PulseLoader} from "react-spinners";
@@ -29,27 +28,26 @@ const Login = (props) => {
         }
         axios(config)
         .then((res) => {
-            console.log(res.data)
-            // if(!res.data['logout']){
-            //     if(res.data['user_type'] == "SA" || res.data['user_type'] == "SAe"){
-            //         return props.history.push("/sadmin/home")
-            //     }
-            //     else if(res.data['user_type'] == "UVU"){
-            //         return props.history.push("/user/setup/user-type")
-            //     }
-            //     else if(!res.data['profile_detailed_completion']){
-            //         return props.history.push("/user/setup/profile/details")
-            //     }
-            //     else if(!res.data['profile_basic_completion']){
-            //         return props.history.push("/user/setup/profile/basic")
-            //     }
-            //     else {
-            //         return props.history.push("/user/home")
-            //     }
-            // }
-            // else{
-            //     setShowLoginForm(true)
-            // }
+            if(!res.data['logout']){
+                if(res.data['user_type'] == "SA" || res.data['user_type'] == "SAe"){
+                    return props.history.push("/sadmin/home")
+                }
+                else if(res.data['user_type'] == "UVU"){
+                    return props.history.push("/user/setup/user-type")
+                }
+                else if(!res.data['profile_detailed_completion']){
+                    return props.history.push("/user/setup/profile/details")
+                }
+                else if(!res.data['profile_basic_completion']){
+                    return props.history.push("/user/setup/profile/basic")
+                }
+                else {
+                    return props.history.push("/user/home")
+                }
+            }
+            else{
+                setShowLoginForm(true)
+            }
         })
         .catch((error) => {
             console.log("error from login catch", error.response)

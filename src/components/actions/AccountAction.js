@@ -1,4 +1,3 @@
-// import axios from "../Axios";
 import axios from "axios";
 
 // Action Types
@@ -69,7 +68,6 @@ export const LoginUser = (data) => async dispatch => {
             url: '/api/v1/user/login',
             headers: {
                 'Content-Type': 'application/json',
-                'access-control-allow-origin' : '*',
             },
             data: data
         }

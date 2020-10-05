@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-// import axios from "../Axios";
 import axios from "axios";
 import {PulseLoader} from "react-spinners";
 import './styles/App.scss';
@@ -19,8 +18,7 @@ const SAHomePage = (props) => {
             setUserType(res.data['user_type'])
         })
         .catch((error) => {
-            console.log("error from Home catch", error.response)
-            //props.history.push("/user/login")
+            props.history.push("/user/login")
         })
     }, [])
 
