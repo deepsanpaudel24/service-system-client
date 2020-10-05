@@ -1,5 +1,6 @@
 //imports for react
 import React from 'react';
+import axios from "axios";
 import { BrowserRouter, Switch, Route, NavLink, Redirect} from "react-router-dom";
 
 //imports for redux use
@@ -23,6 +24,8 @@ import EmployeePasswordSetup from './account/Employee_password_setup';
 
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
+
+//axios.defaults.baseURL = "http://127.0.0.1:5000";
 
 function App() {
   return (
