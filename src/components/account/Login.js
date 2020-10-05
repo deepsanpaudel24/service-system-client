@@ -28,6 +28,7 @@ const Login = (props) => {
         }
         axios(config)
         .then((res) => {
+            console.log(res.data)
             if(!res.data['logout']){
                 if(res.data['user_type'] == "SA" || res.data['user_type'] == "SAe"){
                     return props.history.push("/sadmin/home")
