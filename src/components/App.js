@@ -1,6 +1,6 @@
 //imports for react
 import React from 'react';
-import axios from "axios";
+// import axios from "axios";
 import { BrowserRouter, Switch, Route, NavLink, Redirect} from "react-router-dom";
 
 //imports for redux use

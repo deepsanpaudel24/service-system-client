@@ -5,7 +5,7 @@ module.exports = function(app) {
     '/api',
     createProxyMiddleware({
       target: 'https://service-system-backend.herokuapp.com/',
-      changeOrigin: true,
+      // changeOrigin: true,
     })
   );
 };
