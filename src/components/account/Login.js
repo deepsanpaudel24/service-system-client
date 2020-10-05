@@ -147,6 +147,7 @@ const Login = (props) => {
                 if(!response.data['logout']){
                     if(response.data['user_type'] == "SA" || response.data['user_type'] == "SAe"){
                         return props.history.push("/sadmin/home")
+                        console.log("Check point 1")
                     }
                     else if(response.data['user_type'] == "UVU"){
                         return props.history.push("/user/setup/user-type")

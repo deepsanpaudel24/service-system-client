@@ -18,7 +18,8 @@ const SAHomePage = (props) => {
             setUserType(res.data['user_type'])
         })
         .catch((error) => {
-            props.history.push("/user/login")
+            //props.history.push("/user/login")
+            console.log(error.response, "check point 2")
         })
     }, [])
 
