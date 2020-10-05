@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "axios";
 
 // Action Types
 export const REGISTER_USER_LOADING = 'REGISTER_USER_LOADING'
@@ -67,7 +67,7 @@ export const LoginUser = (data) => async dispatch => {
             method: 'post',
             url: '/api/v1/user/login',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             data: data
         }
