@@ -56,5 +56,6 @@
     "autoprefixer": "^10.0.0",
     "postcss-cli": "^8.0.0",
     "tailwindcss": "^1.8.10"
-  }
+  },
+  "proxy": "https://service-system-backend.herokuapp.com"
 }
