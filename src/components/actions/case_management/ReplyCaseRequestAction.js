@@ -5,7 +5,6 @@ export const REPLY_CASE_REQUEST_FAIL =   'REPLY_CASE_REQUEST_FAIL'
 export const REPLY_CASE_REQUEST_SERVER_FAIL =   'REPLY_EMPLOYEE_SERVER_FAIL'
 export const REPLY_CASE_REQUEST_SUCCESS = 'REPLY_CASE_REQUEST_SUCCESS'
 
-
 export const ReplyCaseRequestDispacther = (data, caseid) => async dispatch => {
     try {
         dispatch({
@@ -15,7 +14,8 @@ export const ReplyCaseRequestDispacther = (data, caseid) => async dispatch => {
             method: 'post',
             url: '/api/v1/case-request/reply/'+ caseid,
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

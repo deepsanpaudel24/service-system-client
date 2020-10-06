@@ -15,7 +15,8 @@ export const ProposalAcceptDispacther = (data, proposalId) => async dispatch => 
             method: 'put',
             url: '/api/v1/proposal/'+ proposalId,
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

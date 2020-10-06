@@ -16,7 +16,8 @@ export const ChangePasswordDispatcher = (data) => async dispatch => {
             method: 'put',
             url: '/api/v1/user/change-password',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

@@ -20,6 +20,9 @@ const EmployeeRoles = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/employee/' + urlvalues[4],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
           }
           axios(config)
           .then((res) => {

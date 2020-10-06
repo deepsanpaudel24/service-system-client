@@ -18,10 +18,12 @@ const ViewEmployees = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/user/employee/list',
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
           }
           axios(config)
           .then((res) => {
-              console.log(res.data)
               setEmployees(res.data)
               setTableLoading(false)
           })
@@ -55,6 +57,9 @@ const ViewEmployees = (props) => {
             const config = {
                 method: 'get',
                 url: '/api/v1/user/employee/list',
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  }
               }
             axios(config)
             .then((res) => {

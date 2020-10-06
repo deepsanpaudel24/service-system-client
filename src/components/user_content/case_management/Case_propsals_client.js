@@ -14,6 +14,9 @@ const ViewCasesProposalClient = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/case/proposals/' + urlvalues[4],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
             }
             axios(config)
             .then((res) => {

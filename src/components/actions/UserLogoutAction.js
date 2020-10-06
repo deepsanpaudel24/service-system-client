@@ -16,7 +16,8 @@ export const LogoutUser = () => async dispatch => {
             method: 'post',
             url: '/api/v1/user/logout',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
         }
         await axios(config)

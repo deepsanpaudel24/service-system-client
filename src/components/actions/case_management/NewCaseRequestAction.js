@@ -15,7 +15,8 @@ export const NewCaseRequestDispacther = (data) => async dispatch => {
             method: 'post',
             url: '/api/v1/case-request',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

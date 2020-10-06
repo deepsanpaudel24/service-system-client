@@ -16,7 +16,8 @@ export const UpdateUserType = (data) => async dispatch => {
             method: 'put',
             url: '/api/v1/user/update/user_type',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

@@ -15,7 +15,8 @@ export const ListEmployeeDispatcher = () => async dispatch => {
             method: 'get',
             url: '/api/v1/user/employee/list',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
         }
         await axios(config)
