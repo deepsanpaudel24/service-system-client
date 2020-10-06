@@ -57,4 +57,5 @@
     "postcss-cli": "^8.0.0",
     "tailwindcss": "^1.8.10"
   }
+  
 }

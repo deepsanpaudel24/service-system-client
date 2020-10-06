@@ -4,10 +4,9 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://service-system-backend.herokuapp.com/',
-      changeOrigin: true,
-      pathRewrite: {'^/api' : ''}
-    })
+      target: 'https://service-system-backend.herokuapp.com',
+      changeOrigin: true
+      })
   );
   
 };

@@ -1,6 +1,5 @@
 //imports for react
 import React from 'react';
-// import axios from "axios";
 import { BrowserRouter, Switch, Route, NavLink, Redirect} from "react-router-dom";
 
 //imports for redux use
@@ -22,6 +21,7 @@ import HomePage from "./user_content/Home";
 import SAHomePage from './super_admin/Home';
 import EmployeePasswordSetup from './account/Employee_password_setup';
 // import axios from 'axios';
+
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
 
