@@ -12,6 +12,9 @@ const SAHomePage = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/user/validity',
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
         }
         axios(config)
         .then((res) => {
@@ -19,7 +22,6 @@ const SAHomePage = (props) => {
         })
         .catch((error) => {
             props.history.push("/user/login")
-            console.log(error.response, "check point 2")
         })
     }, [])
 
