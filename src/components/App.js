@@ -26,8 +26,8 @@ import axios from 'axios';
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
 
-axios.defaults.baseURL = "https://service-system-backend.herokuapp.com/";
-//axios.defaults.baseURL = "http://127.0.0.1:5000";
+//axios.defaults.baseURL = "https://service-system-backend.herokuapp.com/";
+axios.defaults.baseURL = "http://127.0.0.1:5000";
 //axios.defaults.withCredentials = true;
 
 function App() {
