@@ -70,7 +70,9 @@ const ChangePassword =  () => {
 
     const changePasswordLogout = () => {
         if(!_.isEmpty(response.data)){
-          window.location.reload(true)
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+            window.location.reload(true)
         }
       }
 

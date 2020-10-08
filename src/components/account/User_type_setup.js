@@ -71,6 +71,8 @@ const SetupUserType = (props) => {
 
     const showData = () => {
         if(!_.isEmpty(response.data)) {
+            localStorage.setItem('access_token', response.data['access_token'])
+            localStorage.setItem('refresh_token', response.data['refresh_token'])
             return props.history.push("/user/setup/profile/details")
         }
         if(response.loading){
