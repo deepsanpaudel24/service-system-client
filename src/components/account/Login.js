@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from "axios";
+//import axios from "../Axios";
 import _ from "lodash";
 import {PulseLoader} from "react-spinners";
 import validator from "validator";
@@ -25,6 +26,9 @@ const Login = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/user/validity',
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
         }
         axios(config)
         .then((res) => {
@@ -149,7 +153,6 @@ const Login = (props) => {
                 if(!response.data['logout']){
                     if(response.data['user_type'] == "SA" || response.data['user_type'] == "SAe"){
                         return props.history.push("/sadmin/home")
-                        console.log("Check point 1")
                     }
                     else if(response.data['user_type'] == "UVU"){
                         return props.history.push("/user/setup/user-type")

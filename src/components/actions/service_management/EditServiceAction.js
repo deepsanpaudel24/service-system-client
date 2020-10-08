@@ -16,7 +16,8 @@ export const EditServiceDispatcher = (data, id) => async dispatch => {
             method: 'put',
             url: '/api/v1/service/' + id,
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

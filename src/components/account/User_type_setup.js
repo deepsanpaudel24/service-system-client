@@ -21,6 +21,9 @@ const SetupUserType = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/user/validity',
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
         }
         axios(config)
         .then((res) => {

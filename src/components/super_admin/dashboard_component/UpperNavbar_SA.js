@@ -18,6 +18,8 @@ const SANavbar = () => {
 
     const LogoutUserResponse = (props) => {
       if(!_.isEmpty(logoutResponse.data)){
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
         window.location.reload(true)
       }
     }

@@ -22,6 +22,9 @@ const EditService = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/service/' + urlvalues[3],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
         }
         axios(config)
         .then((res) => {

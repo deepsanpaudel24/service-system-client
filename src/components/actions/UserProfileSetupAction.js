@@ -28,7 +28,8 @@ export const UpdateUserBasicProfile = (data) => async dispatch => {
             method: 'put',
             url: '/api/v1/user/update/profile/basic',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }
@@ -63,7 +64,8 @@ export const UpdateUserDetailedProfile = (data) => async dispatch => {
             method: 'put',
             url: '/api/v1/user/update/profile/detailed',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }
@@ -98,7 +100,8 @@ export const UpdateUserBillingProfile = (data) => async dispatch => {
             method: 'put',
             url: '/api/v1/user/update/profile/billing',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

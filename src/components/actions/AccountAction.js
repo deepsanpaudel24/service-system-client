@@ -1,5 +1,5 @@
 import axios from "axios";
-
+//import axios from "../Axios";
 // Action Types
 export const REGISTER_USER_LOADING = 'REGISTER_USER_LOADING'
 export const REGISTER_USER_FAIL =   'REGISTER_USER_FAIL'
@@ -71,8 +71,10 @@ export const LoginUser = (data) => async dispatch => {
             },
             data: data
         }
-        await axios(config)
+        await axios(config, {withCredentials: true})
         .then((res) => {
+            localStorage.setItem("access_token", res.data['access_token'])
+            localStorage.setItem("refresh_token", res.data['refresh_token'])
             dispatch({
                 type: "LOGIN_USER_SUCCESS",
                 payload: res.data

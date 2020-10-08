@@ -16,7 +16,8 @@ export const AddClientDispatcher = (data, addNext) => async dispatch => {
             method: 'post',
             url: '/api/v1/client/register',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

@@ -15,7 +15,8 @@ export const ForewardCaseRequestDispacther = (caseId) => async dispatch => {
             method: 'put',
             url: '/api/v1/forward/case-request/' + caseId,
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
         }
         await axios(config)

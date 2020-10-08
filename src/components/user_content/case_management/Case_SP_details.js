@@ -18,6 +18,9 @@ const ViewCaseDetailsSP = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/case-sp/' + urlvalues[3],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
         }
         axios(config)
         .then((res) => {
@@ -31,6 +34,9 @@ const ViewCaseDetailsSP = (props) => {
         const config2 = {
             method: 'get',
             url: '/api/v1/case-request/reply/'+ urlvalues[3],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
         }
         axios(config2)
         .then((res) => {

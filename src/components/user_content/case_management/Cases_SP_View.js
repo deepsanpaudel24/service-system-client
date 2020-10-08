@@ -12,6 +12,9 @@ const ViewCasesSP = (props) => {
       const config = {
           method: 'get',
           url: '/api/v1/cases-sp',
+          headers: { 
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+          }
         }
         axios(config)
         .then((res) => {

@@ -16,7 +16,8 @@ export const RemoveEmployeeDispatcher = (id) => async dispatch => {
             method: 'delete',
             url: '/api/v1/employee/' + id,
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
         }
         await axios(config)

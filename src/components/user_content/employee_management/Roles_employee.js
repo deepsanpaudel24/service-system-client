@@ -20,6 +20,9 @@ const EmployeeRoles = (props) => {
         const config = {
             method: 'get',
             url: '/api/v1/employee/' + urlvalues[4],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
           }
           axios(config)
           .then((res) => {
@@ -46,6 +49,9 @@ const EmployeeRoles = (props) => {
             const config = {
                 method: 'put',
                 url: '/api/v1/employee/' + urlvalues[4],
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  },
                 data: {
                     'serviceManagement': true,
                     'clientManagement': CM
@@ -69,6 +75,9 @@ const EmployeeRoles = (props) => {
             const config = {
                 method: 'put',
                 url: '/api/v1/employee/' + urlvalues[4],
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  },
                 data: {
                     'serviceManagement': false,
                     'clientManagement': CM
@@ -97,6 +106,9 @@ const EmployeeRoles = (props) => {
             const config = {
                 method: 'put',
                 url: '/api/v1/employee/' + urlvalues[4],
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  },
                 data: {
                     'clientManagement': true,
                     'serviceManagement': SM
@@ -119,6 +131,9 @@ const EmployeeRoles = (props) => {
             const config = {
                 method: 'put',
                 url: '/api/v1/employee/' + urlvalues[4],
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  },
                 data: {
                     'clientManagement': false,
                     'serviceManagement': SM
