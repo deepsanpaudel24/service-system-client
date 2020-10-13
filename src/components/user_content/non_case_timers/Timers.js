@@ -1,48 +1,109 @@
 import React , {useState, useEffect, useLayoutEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {Link} from "react-router-dom";
-import {PulseLoader} from "react-spinners";
 import axios from "axios";
 import _ from "lodash";
+import Timer from "react-compound-timer";
+import { AddNonCaseTimerResponseReset } from "../../actions/Timer_management/AddNonCaseTimerAction";
+import { UpdateNonCaseTimerDispatcher } from "../../actions/Timer_management/UpdateNonCaseTimerAction";
 
-const ViewCasesSP = (props) => {
-    const [cases, setCases] = useState([])
-    const [tableLoading, setTableLoading] = useState(true)
-    
-    useLayoutEffect(() => {
-      const config = {
-          method: 'get',
-          url: '/api/v1/cases-sp',
-          headers: { 
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-          }
-        }
-        axios(config)
-        .then((res) => {
-            setCases(res.data)
-            setTableLoading(false)
-        })
-        .catch((error) => {
-            setTableLoading(false)
-        })
-    }, [])
-
-    useEffect(() => {
-        
-    }, [cases])
+const Timers = (props) => {
+    const [timers, setTimers] = useState([])
+    const [tableLoading, setTableLoading] = useState(false)
+    const dispatch = useDispatch()
+    const response = useSelector(state => state.AddNonCaseTimerResponse)
 
     const handleAdd = () => {
+        dispatch(AddNonCaseTimerResponseReset())
         return (
-          props.history.push("/user/create-case-request")
+          props.history.push("/user/add-timer")
         )
-      }
+    }
+
+    useLayoutEffect(() => {
+        const config = {
+            method: 'get',
+            url: '/api/v1/non-case-timer',
+            headers: { 
+              'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+            }
+          }
+          axios(config)
+          .then((res) => {
+              setTimers(res.data)
+              setTableLoading(false)
+          })
+          .catch((error) => {
+              setTableLoading(false)
+          })
+      }, [])
+  
+      useEffect(() => {
+          
+      }, [timers])
+
+    const handleNonCaseStart = (start) => {
+        start();
+    }
+
+    const handleNonCaseStop = (stop, reset, timerRunningTime) => {
+        stop();
+        reset();
+        var data = {
+            timerValue: timerRunningTime
+        }
+        var timerId = "5f85bf469dc3294097768162"
+        dispatch(UpdateNonCaseTimerDispatcher(data, timerId))
+    }
 
     return (
         <div>
             <div class="px-4 sm:px-8">
-                <div class="flex">
-                    <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Cases</p></div>
+                <div class="flex min-w-full">
+                    <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Non Case Timers</p></div>
+                    <div class="w-3/5"></div>
+                    <div class="w-1/5 flex justify-end">
+                        <button class="focus:outline-none" onClick={() => handleAdd()}>
+                            <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Add Timers</div>
+                        </button>
+                    </div>
                 </div>
-                <div class="py-4">
+                <Timer
+                        initialTime={0}
+                        startImmediately={false}
+                    >
+                        {({ start, stop, reset, getTime}) => (
+                            <React.Fragment>
+                                <div class="flex bg-black" style={{marginRight: "3rem"}}>
+                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
+                                        <Timer.Hours />
+                                        <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Hour(s)</p>
+                                    </div>
+                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
+                                        :
+                                    </div>
+                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
+                                        <Timer.Minutes />
+                                        <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Minutes(s)</p>
+                                    </div>
+                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
+                                        :
+                                    </div>
+                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1">
+                                        <Timer.Seconds />
+                                        <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Seconds(s)</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="bg-gray-200 px-2 py-2 m-1" onClick={() => handleNonCaseStart(start)}>Start</button>
+                                    <button class="bg-gray-200 px-2 py-2 m-1" onClick={() => handleNonCaseStop(stop, reset, getTime())}>Stop</button>
+                                </div>
+                                <br />
+                            </React.Fragment>
+                        )}
+                    </Timer>
+
+                <div class="py-8">
                     {
                         tableLoading ? 
                             <div class="animate-pulse flex space-x-4">
@@ -88,25 +149,7 @@ const ViewCasesSP = (props) => {
                             </div>
                         :
                         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 overflow-x-auto">
-                            <div class="flex">
-                                <div class="w-3/5">
-                                    <div
-                                        class="text-xs inline-flex items-center font-bold leading-sm uppercase mt-4 mr-4 bg-white border text-blue-700 rounded-full"
-                                    >
-                                        <button class="rounded-full text-sm px-3 py-1 focus:outline-none focus:bg-blue-500 focus:text-white">
-                                            Forwarded
-                                        </button>
-                                    </div>
-                                    <div
-                                        class="text-xs inline-flex items-center font-bold leading-sm uppercase mt-4 mr-4 bg-white border text-blue-700 rounded-full"
-                                    >
-                                        <button class="rounded-full text-sm px-3 py-1 focus:outline-none focus:bg-blue-500 focus:text-white">
-                                            On-progress
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="inline-block min-w-full shadow rounded-lg overflow-hidden mt-4">
+                            <div class="min-w-full shadow rounded-lg overflow-hidden">
                                 <table class="min-w-full leading-normal">
                                     <thead>
                                         <tr>
@@ -116,15 +159,11 @@ const ViewCasesSP = (props) => {
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Fee
+                                                Total time worked 
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Status
-                                            </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Requested On
+                                                Created date
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -134,70 +173,27 @@ const ViewCasesSP = (props) => {
                                     </thead>
                                     <tbody>
                                         {
-                                            cases.map((item, index) => {
+                                            timers.map((item, index) => {
                                                 return(
                                                     <tr>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '14em'}}>
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
-                                                                    <p class="text-gray-900 ">
+                                                                    <p class="text-gray-900">
                                                                         {item.title}
                                                                     </p>
                                                                 </div>
                                                             </div>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            <p class="text-gray-900 whitespace-no-wrap">
-                                                                {
-                                                                    item.fee ? 
-                                                                    <p>${item.fee}</p>
-                                                                    :
-                                                                    <p> - </p>
-                                                                }
-                                                            </p>
+                                                            {item.humanizeTime['seconds']}
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            {
-                                                                item.status == "Requested" ?
-                                                                <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
-                                                                    <span aria-hidden
-                                                                        class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Requested</span>
-                                                                </span>
-                                                                :
-                                                                item.status == "Forwarded" ? 
-                                                                <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
-                                                                    <span aria-hidden
-                                                                        class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Forwarded</span>
-                                                                </span>
-                                                                :
-                                                                item.status == "Proposal-Forwarded" ?
-                                                                <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                                    <span aria-hidden
-                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Proposal Forwarded</span>
-                                                                </span>
-                                                                :
-                                                                <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                                    <span aria-hidden
-                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">On-progress</span>
-                                                                </span>
-                                                            }
-                                                        </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            <p class="text-gray-900">
-                                                                {item.requestedDate}
-                                                            </p>
+                                                            {item.createdDate}
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-blue-700 whitespace-no-wrap">
-                                                               <Link to={`/user/case/${item._id.$oid}`}>View Details</Link> 
+                                                               <Link to={`/user/case/${item._id.$oid}`}>Start</Link> 
                                                             </p>
                                                         </td>
                                                     </tr>
@@ -216,4 +212,4 @@ const ViewCasesSP = (props) => {
     )
 }
 
-export default ViewCasesSP
+export default Timers

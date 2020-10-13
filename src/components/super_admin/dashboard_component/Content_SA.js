@@ -3,12 +3,14 @@ import {Redirect, Route, Link, BrowserRouter as Router, Switch} from 'react-rout
 import ViewCasesSA from "../case_management/Cases";
 import ViewCaseDetailsSA from "../case_management/Case_details";
 import ChangePassword from "../Change_password";
-import AddPeoples from "../client_mangement/Add_people";
-import Clients from "../client_mangement/Clients";
+import Peoples from "../people_mangement/Peoples";
+import AddPeoples from "../people_mangement/Add_people";
 import AddEmployee from "../employee_management/Add_employee";
 import EmployeeDetails from "../employee_management/Employee_details";
 import EmployeeRoles from "../employee_management/Roles_employee";
 import ViewEmployees from "../employee_management/View_employees";
+import PeopleDetails from "../people_mangement/People_details";
+import Proposals from "../case_management/Proposals";
 
 const SAContent = () => {
     return(
@@ -22,8 +24,11 @@ const SAContent = () => {
                 <Route exact path='/sadmin/cases' component={ViewCasesSA} />
                 <Route exact path='/sadmin/case/:id' component={ViewCaseDetailsSA} />
 
-                <Route exact path='/sadmin/peoples' component={Clients} />
+                <Route exact path='/sadmin/peoples' component={Peoples} />
                 <Route exact path="/sadmin/people/add" component={AddPeoples} />
+                <Route exact path="/sadmin/people/:id" component={PeopleDetails} />
+
+                <Route exact path='/sadmin/proposals/:id' component={Proposals} />
             </Switch>
         </div>
     )

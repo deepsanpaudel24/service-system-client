@@ -21,6 +21,12 @@ import ServiceRegisterReducer from './AddServiceReducer';
 import ServiceRemoveReducer from './RemoveServiceReducer';
 import ServiceEditReducer from './EditServiceReducer';
 import ClientRegisterReducer from './Add_clientReducer';
+import PeopleRegisterReducer from './Add_peopleReducer';
+import PeopleDeactivateReducer from './DeactivatePeopleReducer';
+import AddTimerReducer from './AddTimerReducer';
+import TimerActionReducer from './TimerActionReducer';
+import TimerRunningTimeReducer from './TimerRunningTimeReducer';
+import AddNonCaseTimerReducer from './Add_nonCaseTimerReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -45,7 +51,13 @@ const rootReducer =  combineReducers({
     ServiceRegisterReponse: ServiceRegisterReducer,
     ServiceRemoveResponse: ServiceRemoveReducer,
     ServiceEditResponse: ServiceEditReducer,
-    ClientRegisterResponse: ClientRegisterReducer
+    ClientRegisterResponse: ClientRegisterReducer,
+    PeopleRegisterResponse: PeopleRegisterReducer,
+    PeopleDeactivateResponse: PeopleDeactivateReducer,
+    AddTimerResponse: AddTimerReducer,
+    TimerActionResponse: TimerActionReducer,
+    TimerRunningTimeResponse: TimerRunningTimeReducer,
+    AddNonCaseTimerResponse: AddNonCaseTimerReducer
 })
 
 export default rootReducer

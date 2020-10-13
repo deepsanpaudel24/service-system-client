@@ -10,29 +10,35 @@ import {
 } from 'react-pro-sidebar';
 import { FaTachometerAlt, FaGem, FaUsers, FaGithub, FaRegLaughWink, FaHeart } from 'react-icons/fa';
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
-const SPCAeAside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
+const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
   const [SM, setSM] = useState(false)  
   const [CM, setCM] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useLayoutEffect(() => {
       const config = {
           method: 'get',
           url: '/api/v1/user/validity',
+          headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
       }
       axios(config)
       .then((res) => {
+          console.log("employee dashboard", res.data)
           setSM(res.data['serviceManagement'])
           setCM(res.data['clientManagement'])
       })
       .catch((error) => {
-          props.history.push("/user/login")
+          localStorage.removeItem('access_token')
+          window.location.reload(true)
       })
   }, [])
 
   useEffect(() => {
-      
+  
   }, [SM])
 
   return (
@@ -89,6 +95,20 @@ const SPCAeAside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
               </Menu>
             </SidebarContent>
           :
+          CM ? 
+          <SidebarContent>
+              <Menu iconShape="circle">
+                <MenuItem
+                  icon={<FaTachometerAlt />}
+                  suffix={<span className="badge red">New</span>}
+                >
+                  Dashboard
+                </MenuItem>
+                <MenuItem icon={<FaGem />}> Cases</MenuItem>
+                <MenuItem icon={<FaUsers />}><Link to="/user/clients"> Client Management </Link></MenuItem>
+              </Menu>
+            </SidebarContent>
+            :
           <SidebarContent>
             <Menu iconShape="circle">
               <MenuItem
@@ -125,4 +145,4 @@ const SPCAeAside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
   );
 };
 
-export default SPCAeAside;
+export default Aside;

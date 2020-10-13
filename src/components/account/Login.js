@@ -145,22 +145,20 @@ const Login = (props) => {
         if(!_.isEmpty(response.data)) {
             if(response.data['login']){
                 console.log(response.data)
-                if(!response.data['logout']){
-                    if(response.data['user_type'] == "SA" || response.data['user_type'] == "SAe"){
-                        return props.history.push("/sadmin/home")
-                    }
-                    else if(response.data['user_type'] == "UVU"){
-                        return props.history.push("/user/setup/user-type")
-                    }
-                    else if(!response.data['profile_detailed_completion']){
-                        return props.history.push("/user/setup/profile/details")
-                    }
-                    else if(!response.data['profile_basic_completion']){
-                        return props.history.push("/user/setup/profile/basic")
-                    }
-                    else {
-                        return props.history.push("/user/home")
-                    }
+                if(response.data['user_type'] == "SA" || response.data['user_type'] == "SAe"){
+                    return props.history.push("/sadmin/home")
+                }
+                else if(response.data['user_type'] == "UVU"){
+                    return props.history.push("/user/setup/user-type")
+                }
+                else if(!response.data['profile_detailed_completion']){
+                    return props.history.push("/user/setup/profile/details")
+                }
+                else if(!response.data['profile_basic_completion']){
+                    return props.history.push("/user/setup/profile/basic")
+                }
+                else {
+                    return props.history.push("/user/home")
                 }
             }
         }

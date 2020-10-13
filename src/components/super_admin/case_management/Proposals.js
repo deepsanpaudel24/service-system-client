@@ -4,7 +4,7 @@ import {PulseLoader} from "react-spinners";
 import axios from "axios";
 import _ from "lodash";
 
-const ViewCasesProposalClient = (props) => {
+const Proposals = (props) => {
     const [proposals, setProposals] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
     
@@ -13,7 +13,7 @@ const ViewCasesProposalClient = (props) => {
         var urlvalues = string.toString().split('/')
         const config = {
             method: 'get',
-            url: '/api/v1/case/proposals/' + urlvalues[4],
+            url: '/api/v1/case/proposals/' + urlvalues[3],
             headers: { 
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
@@ -32,12 +32,6 @@ const ViewCasesProposalClient = (props) => {
         
     }, [proposals])
 
-    const handleAdd = () => {
-        return (
-          props.history.push("/user/create-case-request")
-        )
-      }
-
     return (
         <div>
             <div class="px-4 sm:px-8">
@@ -47,9 +41,6 @@ const ViewCasesProposalClient = (props) => {
                     <div class="w-1/5"></div>
                     <div class="w-1/5"></div>
                     <div class="w-1/5">
-                        <button class="focus:outline-none" onClick={() => handleAdd()}>
-                            <div class="rounded-full h-16 w-16 flex items-center justify-center bg-white text-blue-500 shadow-md text-4xl hover:shadow-lg">+</div>
-                        </button>
                     </div>
                 </div>
                 <div class="py-8">
@@ -80,7 +71,7 @@ const ViewCasesProposalClient = (props) => {
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Timetaken
+                                                Time Taken
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -94,10 +85,6 @@ const ViewCasesProposalClient = (props) => {
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Sent By
                                             </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Action
-                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -108,7 +95,7 @@ const ViewCasesProposalClient = (props) => {
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '14em'}}>
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
-                                                                    <p class="text-gray-900 ">
+                                                                    <p class="text-gray-900">
                                                                         {item.title}
                                                                     </p>
                                                                 </div>
@@ -131,11 +118,6 @@ const ViewCasesProposalClient = (props) => {
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             {item.serviceProvidername}
                                                         </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            <p class="text-blue-700 whitespace-no-wrap">
-                                                               <Link to={`/user/proposal/${item._id.$oid}`}>View Details</Link>
-                                                            </p>
-                                                        </td>
                                                     </tr>
                                                 )
                                             })
@@ -152,4 +134,4 @@ const ViewCasesProposalClient = (props) => {
     )
 }
 
-export default ViewCasesProposalClient
+export default Proposals

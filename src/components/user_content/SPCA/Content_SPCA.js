@@ -13,6 +13,8 @@ import AddEmployee from "../employee_management/Add_employee";
 import EmployeeDetails from "../employee_management/Employee_details";
 import EmployeeRoles from "../employee_management/Roles_employee";
 import ViewEmployees from "../employee_management/View_employees";
+import AddTimers from "../non_case_timers/Add_timer";
+import Timers from "../non_case_timers/Timers";
 import AddService from "../service_management/Add_Service";
 import EditService from "../service_management/Edit_service";
 import Services from "../service_management/Services";
@@ -28,8 +30,6 @@ const SPCAContent = () => {
                 <Route exact path='/user/employee/roles/:id' component={EmployeeRoles} />
 
                 <Route exact path='/user/cases' component={ViewCasesSP} />
-                <Route exact path='/user/cases/active' component={ViewCasesSPActive} />
-                <Route exact path='/user/case/active/:id' component={ViewCaseActiveDetailsSP} />
                 <Route exact path='/user/case/:id' component={ViewCaseDetailsSP} />
                 <Route exact path='/user/case/reply/:id' component={ReplyCaseRequest} />
 
@@ -40,6 +40,9 @@ const SPCAContent = () => {
                 <Route exact path="/user/clients" component={Clients} />
                 <Route exact path="/user/client/add" component={AddClients} />
                 <Route exact path="/user/client/:id" component={ClientDetails} />
+
+                <Route exact path="/user/timers" component={Timers} />
+                <Route exact path="/user/add-timer" component={AddTimers} />
             </Switch>
         </div>
     )

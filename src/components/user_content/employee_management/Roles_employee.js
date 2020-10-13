@@ -54,7 +54,8 @@ const EmployeeRoles = (props) => {
                   },
                 data: {
                     'serviceManagement': true,
-                    'clientManagement': CM
+                    'clientManagement': CM,
+                    'notification_title': "Service management module has been activated by your admin"
                 }
             }
             axios(config)
@@ -80,7 +81,8 @@ const EmployeeRoles = (props) => {
                   },
                 data: {
                     'serviceManagement': false,
-                    'clientManagement': CM
+                    'clientManagement': CM,
+                    'notification_title': "Service management module has been deactivated by your admin"
                 }
             }
             axios(config)
@@ -111,7 +113,8 @@ const EmployeeRoles = (props) => {
                   },
                 data: {
                     'clientManagement': true,
-                    'serviceManagement': SM
+                    'serviceManagement': SM,
+                    'notification_title': "Client management module has been activated by your admin"
                 }
             }
             axios(config)
@@ -136,7 +139,8 @@ const EmployeeRoles = (props) => {
                   },
                 data: {
                     'clientManagement': false,
-                    'serviceManagement': SM
+                    'serviceManagement': SM,
+                    'notification_title': "Client management module has been deactivated by your admin"
                 }
             }
             axios(config)

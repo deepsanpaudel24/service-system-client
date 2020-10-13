@@ -6,7 +6,7 @@ import { AddEmployeeResponseReset } from "../../actions/employee_management/AddE
 import { Link } from "react-router-dom";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import { RemoveEmployeeDispatcher } from "../../actions/employee_management/RemoveEmployeeAction";
+import { RemoveEmployeeDispatcher, RemoveEmployeeResponseReset } from "../../actions/employee_management/RemoveEmployeeAction";
 
 const ViewEmployees = (props) => {
     const [employees, setEmployees] = useState([])
@@ -66,6 +66,7 @@ const ViewEmployees = (props) => {
             .then((res) => {
                 setEmployees(res.data)
                 setTableLoading(false)
+                dispatch(RemoveEmployeeResponseReset())
             })
             .catch((error) => {
                 console.log(error.response)

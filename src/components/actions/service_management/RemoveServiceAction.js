@@ -43,7 +43,7 @@ export const RemoveServiceDispatcher = (id) => async dispatch => {
     }
 }
 
-export const RemoveSERVICEResponseReset = () => async dispatch => {
+export const RemoveServiceResponseReset = () => async dispatch => {
     dispatch({
         type: "REMOVE_SERVICE_RESPONSE_RESET"
     })

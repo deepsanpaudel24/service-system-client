@@ -1,4 +1,4 @@
-import { NEW_CASE_REQUEST_LOADING, NEW_CASE_REQUEST_FAIL, NEW_CASE_REQUEST_SERVER_FAIL , NEW_CASE_REQUEST_SUCCESS, NEW_CASE_REQUEST_RESPONSE_RESET} from "../actions/case_management/NewCaseRequestAction";
+import { DEACTIVATE_PEOPLE_LOADING, DEACTIVATE_PEOPLE_FAIL, DEACTIVATE_PEOPLE_SERVER_FAIL, DEACTIVATE_PEOPLE_SUCCESS, DEACTIVATE_PEOPLE_RESPONSE_RESET} from "../actions/people_mangement/DeactivatePeopleAction";
 
 const DefaultState = {
     loading: false,
@@ -8,34 +8,36 @@ const DefaultState = {
     emailConfirmationMessage: ""
 }
 
-const NewCaseRequestReducer = (state = DefaultState, action) => {
+const PeopleDeactivateReducer = (state = DefaultState, action) => {
     switch (action.type) {
-        case NEW_CASE_REQUEST_LOADING:
+        case DEACTIVATE_PEOPLE_LOADING:
             return {
                 ...state,
                 loading: true,
                 errorMsg: ""
             }
-        case NEW_CASE_REQUEST_FAIL: 
+        case DEACTIVATE_PEOPLE_FAIL: 
             return {
                 ...state,
                 loading: false,
                 errorMsg: "Something went wrong"
             }
-        case NEW_CASE_REQUEST_SUCCESS:
+        case DEACTIVATE_PEOPLE_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 data: action.payload,
                 errorMsg: "",
+                emailConfirmationMessage: "Check your email for confirmation",
+                DEACTIVATENext: action.DEACTIVATENext
             }
-        case NEW_CASE_REQUEST_SERVER_FAIL:
+        case DEACTIVATE_PEOPLE_SERVER_FAIL:
             return {
                 ...state,
                 loading: false,
                 serverErrorMsg: action.serverErrorMsg
             }
-        case NEW_CASE_REQUEST_RESPONSE_RESET:
+        case DEACTIVATE_PEOPLE_RESPONSE_RESET:
             return {
                 ...state,
                 loading: false,
@@ -50,4 +52,4 @@ const NewCaseRequestReducer = (state = DefaultState, action) => {
     }
 }
 
-export default NewCaseRequestReducer
+export default PeopleDeactivateReducer
