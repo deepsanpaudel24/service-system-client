@@ -11,6 +11,7 @@ const Clients = (props) => {
     const [tableLoading, setTableLoading] = useState(false)
     const dispatch = useDispatch()
 
+    // gets authorized client
     useLayoutEffect(() => {
         const config = {
             method: 'get',
@@ -33,6 +34,7 @@ const Clients = (props) => {
         
     }, [clients])
 
+    //reset prvious state value
     const handleAdd = () => {
         dispatch(AddClientResponseReset())
         return (

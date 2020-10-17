@@ -11,7 +11,6 @@ const SANavbar = () => {
     const dispatch = useDispatch()
     const logoutResponse = useSelector(state => state.logoutUserResponse)
 
-
     const handleLogout = () => {
         dispatch(LogoutUser())
     }
