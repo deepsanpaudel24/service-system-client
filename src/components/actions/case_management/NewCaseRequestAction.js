@@ -4,7 +4,7 @@ export const NEW_CASE_REQUEST_LOADING = 'NEW_CASE_REQUEST_LOADING'
 export const NEW_CASE_REQUEST_FAIL =   'NEW_CASE_REQUEST_FAIL'
 export const NEW_CASE_REQUEST_SERVER_FAIL =   'ADD_EMPLOYEE_SERVER_FAIL'
 export const NEW_CASE_REQUEST_SUCCESS = 'NEW_CASE_REQUEST_SUCCESS'
-
+export const NEW_CASE_REQUEST_RESPONSE_RESET = 'NEW_CASE_REQUEST_RESPONSE_RESET'
 
 export const NewCaseRequestDispacther = (data) => async dispatch => {
     try {
@@ -40,4 +40,10 @@ export const NewCaseRequestDispacther = (data) => async dispatch => {
             type: "NEW_CASE_REQUEST_FAIL"
         })
     }
+}
+
+export const NewCaseRequestResponseReset = () => async dispatch => {
+    dispatch({
+        type: "NEW_CASE_REQUEST_RESPONSE_RESET"
+    })
 }

@@ -3,35 +3,193 @@ import axios from "axios";
 import {useDispatch, useSelector} from "react-redux";
 import _ from "lodash";
 import { Link } from "react-router-dom";
+import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import { AddClientResponseReset } from "../../actions/client_management/AddClientAction";
+import {AddPeopleResponseReset} from "../../actions/people_mangement/AddPeople"
+import { DeactivatePeopleDispatcher, DeactivatePeopleResponseReset } from "../../actions/people_mangement/DeactivatePeopleAction";
 
-const Clients = (props) => {
-    const [clients, setClients] = useState([])
+const Peoples = (props) => {
+    const [peoples, setPeoples] = useState([])
     const [tableLoading, setTableLoading] = useState(false)
     const dispatch = useDispatch()
+    const response = useSelector(state => state.PeopleDeactivateResponse)
 
     useLayoutEffect(() => {
         const config = {
             method: 'get',
-            url: '/api/v1/service-providers/list',
+            url: '/api/v1/peoples',
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
           }
           axios(config)
           .then((res) => {
-              setClients(res.data)
-              setTableLoading(false)
+                setPeoples(res.data)
+                setTableLoading(false)
           })
           .catch((error) => {
-              console.log(error.response)
+                console.log(error.response)
           })
       }, [])
   
     useEffect(() => {
         
-    }, [clients])
+    }, [peoples])
+
+    const showServerError = () => {
+        if(!_.isEmpty(response.serverErrorMsg)){
+            return (
+                <div class="bg-red-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                    <p class="font-bold">Be Warned</p>
+                    <p>{response.serverErrorMsg}</p>
+                </div>
+            )
+        }
+    }
+  
+    const confirmDeactivationPeople = () => {
+        if(!_.isEmpty(response.data)){
+            const config = {
+                method: 'get',
+                url: '/api/v1/peoples',
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  }
+              }
+            axios(config)
+            .then((res) => {
+                setPeoples(res.data)
+                setTableLoading(false)
+                dispatch(DeactivatePeopleResponseReset())
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+    }
+
+    const handleConfirmActivation = (id) => {
+        // dispatch action to activate the item with the id parameter
+        var data = {
+            "deactivate": false
+        }
+        dispatch(DeactivatePeopleDispatcher(data, id))
+    }
+
+    const handleConfirmDeactivation = (id) => {
+        var data = {
+            "deactivate": true
+        }
+        // dispatch action to activate the item with the id parameter
+        dispatch(DeactivatePeopleDispatcher(data, id))
+    }
+
+    const DeactivationStatusPopUp = (email, id) => {
+        confirmAlert({
+            customUI: ({ onClose }) => {
+              return (
+                <div className="bg-white shadow border rounded px-4 py-4 mx-auto max-w-lg">
+                    <h1 class="text-3xl text-red-600 px-4">Deactivate People. Are you sure?</h1>
+                    <hr class="border-gray-300 my-4" />
+                    <div class= "px-4">
+                        <div class="flex items-center bg-orange-100 text-black px-4 py-3 mb-3" role="alert">
+                            <div class="flex">
+                                <div class="py-1">
+                                    <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-md text-gray-800">You are about to deactivate people account.</p>
+                                    <p class="text-sm text-gray-800">
+                                        Once a employee account is deactivated, immediately they will not be allowed to login to their account in the system.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-black px-4 py-3 mb-3" role="alert">
+                            <div>
+                                <p class="text-sm text-gray-900">This action will stop people from using any of the feature of the system. Please confirm the following action: </p>
+                                <p class="inline-block bg-gray-100 text-black pr-3 py-1">Deactivate {email} </p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end mx-3">
+                            <button 
+                                onClick={onClose} 
+                                class="focus:outline-none inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-gray-600 hover:text-black hover:bg-gray-200 mt-4 lg:mt-0"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    handleConfirmDeactivation(id);
+                                    onClose();
+                                }}
+                                class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-red-700 border-red-700 hover:border-transparent hover:text-white hover:bg-red-700 mt-4 lg:mt-0"
+                            >
+                                Yes, Deactiate it!
+                            </button>
+                        </div>
+                  </div>
+                </div>
+              )
+            },
+            title: 'Confirm to submit'
+        })
+    }
+
+    const ActivationStatusPopUp = (email, id) => {
+        confirmAlert({
+            customUI: ({ onClose }) => {
+              return (
+                <div className="bg-white shadow border rounded px-4 py-4 mx-auto max-w-lg">
+                    <h1 class="text-3xl text-red-600 px-4">Activate People. Are you sure?</h1>
+                    <hr class="border-gray-300 my-4" />
+                    <div class= "px-4">
+                        <div class="flex items-center bg-orange-100 text-black px-4 py-3 mb-3" role="alert">
+                            <div class="flex">
+                                <div class="py-1">
+                                    <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-md text-gray-800">You are about to activate people account.</p>
+                                    <p class="text-sm text-gray-800">
+                                        Once a employee account is activated, immediately they will be allowed to login to their account in the system.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-black px-4 py-3 mb-3" role="alert">
+                            <div>
+                                <p class="text-sm text-gray-900">This action will all people from using all of the feature of the system. Please confirm the following action: </p>
+                                <p class="inline-block bg-gray-100 text-black pr-3 py-1">Activate {email} </p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end mx-3">
+                            <button 
+                                onClick={onClose} 
+                                class="focus:outline-none inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-gray-600 hover:text-black hover:bg-gray-200 mt-4 lg:mt-0"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    handleConfirmActivation(id);
+                                    onClose();
+                                }}
+                                class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-red-700 border-red-700 hover:border-transparent hover:text-white hover:bg-red-700 mt-4 lg:mt-0"
+                            >
+                                Yes, Activate it!
+                            </button>
+                        </div>
+                  </div>
+                </div>
+              )
+            },
+            title: 'Confirm to submit'
+        })
+    }
 
     const handleAdd = () => {
-        dispatch(AddClientResponseReset())
+        dispatch(AddPeopleResponseReset())
         return (
             props.history.push("/sadmin/people/add")
         )
@@ -50,6 +208,8 @@ const Clients = (props) => {
                     </div>
                 </div>
                 <div class="py-8">
+                    {showServerError()}
+                    {confirmDeactivationPeople()}
                     {
                         tableLoading ? 
                         <div class="animate-pulse flex space-x-4">
@@ -110,6 +270,10 @@ const Clients = (props) => {
                                                 </th>
                                                 <th
                                                     class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                    Subscription Expiry
+                                                </th>
+                                                <th
+                                                    class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                     Status
                                                 </th>
                                                 <th
@@ -132,8 +296,6 @@ const Clients = (props) => {
                     </div>
                         :
                         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 overflow-x-auto">
-
-                            
                             {/* Tags code , take from here */}
                             <div class="flex">
                                 <div class="w-3/5">
@@ -258,11 +420,19 @@ const Clients = (props) => {
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                Type
+                                            </th>
+                                            <th
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Cases
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                user Since
+                                                User Since
+                                            </th>
+                                            <th
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                Account Expiry
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -276,19 +446,19 @@ const Clients = (props) => {
                                     </thead>
                                     <tbody>
                                         {
-                                            clients.map((item, index) => {
+                                            peoples.map((item, index) => {
                                                 return(
                                                     <tr>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <div class="flex items-center">
                                                                 <div class="flex-shrink-0 w-10 h-10">
-                                                                    <Link to={`/user/client/${item._id.$oid}`}>
+                                                                    <Link to={`/sadmin/people/${item._id.$oid}`}>
                                                                         <img class="w-full h-full rounded-full"
                                                                             src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
                                                                             alt="" />
                                                                     </Link>
                                                                 </div>
-                                                                <Link to={`/user/client/${item._id.$oid}`}>
+                                                                <Link to={`/sadmin/people/${item._id.$oid}`}>
                                                                     <div class="ml-3">
                                                                         <p class="text-blue-700 whitespace-no-wrap">
                                                                             {item.email}
@@ -299,12 +469,22 @@ const Clients = (props) => {
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900 whitespace-no-wrap">
+                                                                {item.user_type}
+                                                            </p>
+                                                        </td>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                            <p class="text-gray-900 whitespace-no-wrap">
                                                                 3
                                                             </p>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900 whitespace-no-wrap">
                                                                 {item.createdDate}
+                                                            </p>
+                                                        </td>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                            <p class="text-gray-900 whitespace-no-wrap">
+                                                                2022-10-01
                                                             </p>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -328,7 +508,14 @@ const Clients = (props) => {
                                                         
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-blue-700 whitespace-no-wrap">
-                                                                <Link to={`/user/client/${item._id.$oid}`}>Details </Link></p>
+                                                                <Link to={`/sadmin/people/${item._id.$oid}`}>Details | </Link>
+                                                                {
+                                                                    item.deactivate ? 
+                                                                        <button class="focus:outline-none" onClick={() => ActivationStatusPopUp(item.email, item._id.$oid)}>Activate</button>
+                                                                    :
+                                                                        <button class="focus:outline-none" onClick={() => DeactivationStatusPopUp(item.email, item._id.$oid)}>Deactivate</button>
+                                                                }
+                                                            </p>
                                                         </td>
                                                     </tr>
                                                 )
@@ -346,4 +533,4 @@ const Clients = (props) => {
     )
 }
 
-export default Clients
+export default Peoples

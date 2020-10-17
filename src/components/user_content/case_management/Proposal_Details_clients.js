@@ -122,7 +122,7 @@ const ViewProposalDetailsClient = (props) => {
 
     return (
         <div>
-            <div class="container mx-auto px-4 sm:px-8">
+            <div class="px-4 sm:px-8">
                 {
                     pageLoading ? 
                         <div class="flex h-screen">
@@ -150,12 +150,7 @@ const ViewProposalDetailsClient = (props) => {
                                 <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                                     <div class="mb-8">
                                         <p class="text-sm text-gray-600 flex items-center">
-                                            {
-                                                proposalDetails.fee == "" ? 
-                                                    <div>Proposed budget: ${proposalDetails.budgetClient}</div>
-                                                    :
-                                                    <div>Fee: ${proposalDetails.fee}</div>
-                                            }
+                                            <div>Fee: ${proposalDetails.rate} {proposalDetails.rateType}</div>
                                         </p>
                                         <div class="text-gray-900 font-bold text-xl mb-2">{proposalDetails.title}</div>
                                         <p class="text-gray-700 text-base">{proposalDetails.desc}</p>
@@ -163,7 +158,8 @@ const ViewProposalDetailsClient = (props) => {
                                     <div class="flex items-center">
                                         <div class="text-sm">
                                             <p class="text-gray-900 leading-none">{proposalDetails.serviceProvidername}</p>
-                                            <p class="text-gray-600">Proposal sent on: {proposalDetails.requestedDate}</p>
+                                            <p class="text-gray-600">Proposed completion deadline: {proposalDetails.spDeadline}</p>
+                                            <p class="text-gray-600">Proposal sent on: {proposalDetails.sentDate}</p>
                                         </div>
                                     </div>
                                     <div class="my-3">

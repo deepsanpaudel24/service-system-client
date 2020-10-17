@@ -14,9 +14,10 @@ export const AddPeopleDispatcher = (data, addNext) => async dispatch => {
         })
         const config = {
             method: 'post',
-            url: '/api/v1/people',
+            url: '/api/v1/peoples',
             headers: { 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data
         }

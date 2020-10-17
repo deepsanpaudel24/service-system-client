@@ -26,8 +26,8 @@ import axios from 'axios';
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
 
-axios.defaults.baseURL = "https://service-system-backend.herokuapp.com/";
-//axios.defaults.baseURL = "http://127.0.0.1:5000";
+//axios.defaults.baseURL = "https://service-system-backend.herokuapp.com/";
+axios.defaults.baseURL = "http://127.0.0.1:5000";
 //axios.defaults.withCredentials = true;
 
 function App() {
@@ -53,6 +53,8 @@ function App() {
             <Route path={"/sadmin/case/:id"} component={SAHomePage} />
             <Route path={"/sadmin/peoples"} component={SAHomePage} />
             <Route path={"/sadmin/people/add"} component={SAHomePage} />
+            <Route path={"/sadmin/people/:id"} component={SAHomePage} />
+            <Route path={"/sadmin/proposals/:id"} component={SAHomePage} />
 
             <Route path={"/user/setup/profile/basic"} component={ProfileSetupBasic} />
             <Route path={"/user/setup/profile/details"} component={ProfileSetupDetailed} />
@@ -82,6 +84,9 @@ function App() {
             <Route path={"/user/clients"} component={HomePage} />
             <Route path={"/user/client/add"} component={HomePage} />
             <Route path={"/user/client/:id"} component={HomePage} />
+
+            <Route path={"/user/timers"} component={HomePage} />
+            <Route path={"/user/add-timer"} component={HomePage} />
 
             <Redirect to={"/"} />
           </Switch>

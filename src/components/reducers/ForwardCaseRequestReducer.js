@@ -1,4 +1,4 @@
-import { FORWARD_CASE_REQUEST_LOADING, FORWARD_CASE_REQUEST_FAIL, FORWARD_CASE_REQUEST_SERVER_FAIL , FORWARD_CASE_REQUEST_SUCCESS} from "../actions/case_management/ForwardCaseRequestAction";
+import { FORWARD_CASE_REQUEST_LOADING, FORWARD_CASE_REQUEST_FAIL, FORWARD_CASE_REQUEST_SERVER_FAIL , FORWARD_CASE_REQUEST_SUCCESS, FORWARD_CASE_RESPONSE_RESET} from "../actions/case_management/ForwardCaseRequestAction";
 
 const DefaultState = {
     loading: false,
@@ -34,6 +34,15 @@ const ForwardCaseRequestReducer = (state = DefaultState, action) => {
                 ...state,
                 loading: false,
                 serverErrorMsg: action.serverErrorMsg
+            }
+        case FORWARD_CASE_RESPONSE_RESET:
+            return {
+                ...state,
+                loading: false,
+                data: [],
+                errorMsg: "",
+                serverErrorMsg: "",
+                emailConfirmationMessage: ""
             }
         default:
             return state

@@ -4,9 +4,10 @@ export const FORWARD_CASE_REQUEST_LOADING = 'FORWARD_CASE_REQUEST_LOADING'
 export const FORWARD_CASE_REQUEST_FAIL =   'FORWARD_CASE_REQUEST_FAIL'
 export const FORWARD_CASE_REQUEST_SERVER_FAIL =   'FORWARD_CASE_REQUEST_SERVER_FAIL'
 export const FORWARD_CASE_REQUEST_SUCCESS = 'FORWARD_CASE_REQUEST_SUCCESS'
+export const FORWARD_CASE_RESPONSE_RESET = 'FORWARD_CASE_RESPONSE_RESET'
 
 
-export const ForewardCaseRequestDispacther = (caseId) => async dispatch => {
+export const ForwardCaseRequestDispacther = (caseId, data) => async dispatch => {
     try {
         dispatch({
             type: "FORWARD_CASE_REQUEST_LOADING"
@@ -17,7 +18,8 @@ export const ForewardCaseRequestDispacther = (caseId) => async dispatch => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-              }
+              },
+            data: data
         }
         await axios(config)
         .then((res) => {
@@ -40,3 +42,9 @@ export const ForewardCaseRequestDispacther = (caseId) => async dispatch => {
         })
     }
 }
+
+export const ForwardCaseRequestDispactherResponseReset = () => async dispatch => {
+    dispatch({
+        type: "FORWARD_CASE_RESPONSE_RESET"
+    })
+} 

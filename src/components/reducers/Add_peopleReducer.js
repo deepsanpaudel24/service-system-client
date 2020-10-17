@@ -1,4 +1,4 @@
-import { NEW_CASE_REQUEST_LOADING, NEW_CASE_REQUEST_FAIL, NEW_CASE_REQUEST_SERVER_FAIL , NEW_CASE_REQUEST_SUCCESS, NEW_CASE_REQUEST_RESPONSE_RESET} from "../actions/case_management/NewCaseRequestAction";
+import { ADD_PEOPLE_LOADING, ADD_PEOPLE_FAIL, ADD_PEOPLE_SERVER_FAIL, ADD_PEOPLE_SUCCESS, ADD_PEOPLE_RESPONSE_RESET} from "../actions/people_mangement/AddPeople";
 
 const DefaultState = {
     loading: false,
@@ -8,34 +8,36 @@ const DefaultState = {
     emailConfirmationMessage: ""
 }
 
-const NewCaseRequestReducer = (state = DefaultState, action) => {
+const PeopleRegisterReducer = (state = DefaultState, action) => {
     switch (action.type) {
-        case NEW_CASE_REQUEST_LOADING:
+        case ADD_PEOPLE_LOADING:
             return {
                 ...state,
                 loading: true,
                 errorMsg: ""
             }
-        case NEW_CASE_REQUEST_FAIL: 
+        case ADD_PEOPLE_FAIL: 
             return {
                 ...state,
                 loading: false,
                 errorMsg: "Something went wrong"
             }
-        case NEW_CASE_REQUEST_SUCCESS:
+        case ADD_PEOPLE_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 data: action.payload,
                 errorMsg: "",
+                emailConfirmationMessage: "Check your email for confirmation",
+                addNext: action.addNext
             }
-        case NEW_CASE_REQUEST_SERVER_FAIL:
+        case ADD_PEOPLE_SERVER_FAIL:
             return {
                 ...state,
                 loading: false,
                 serverErrorMsg: action.serverErrorMsg
             }
-        case NEW_CASE_REQUEST_RESPONSE_RESET:
+        case ADD_PEOPLE_RESPONSE_RESET:
             return {
                 ...state,
                 loading: false,
@@ -50,4 +52,4 @@ const NewCaseRequestReducer = (state = DefaultState, action) => {
     }
 }
 
-export default NewCaseRequestReducer
+export default PeopleRegisterReducer

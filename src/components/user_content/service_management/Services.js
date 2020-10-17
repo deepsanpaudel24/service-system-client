@@ -6,7 +6,7 @@ import { AddServiceResponseReset } from "../../actions/service_management/AddSer
 import { Link } from "react-router-dom";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import { RemoveServiceDispatcher } from "../../actions/service_management/RemoveServiceAction";
+import { RemoveServiceDispatcher, RemoveServiceResponseReset } from "../../actions/service_management/RemoveServiceAction";
 
 const Services = (props) => {
     const [services, setServices] = useState([])
@@ -66,6 +66,7 @@ const Services = (props) => {
                   console.log(res.data)
                   setServices(res.data)
                   setTableLoading(false)
+                  dispatch(RemoveServiceResponseReset())
               })
               .catch((error) => {
                   console.log(error.response)

@@ -2,51 +2,40 @@ import React , {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {PulseLoader} from "react-spinners";
 import _ from "lodash";
-import validator from "validator";
-import { AddPeopleDispatcher, AddPeopleResponseReset } from "../../actions/people_mangement/AddPeople"
+import { AddNonCaseTimerDispatcher } from "../../actions/Timer_management/AddNonCaseTimerAction";
 
-const AddPeoples = (props) => {
-    const [email, setEmail] = useState("")
-    const [emailError, setEmailError] = useState("")
+const AddTimers = (props) => {
+    const [title, setTitle] = useState("")
+    const [titleError, setTitleError] = useState("")
     const dispatch = useDispatch()
-    const response = useSelector(state => state.ClientRegisterResponse)
+    const response = useSelector(state => state.AddNonCaseTimerResponse)
 
-    const handleEmailChange = e => {
-        dispatch(AddPeopleResponseReset())
-        setEmail(e.target.value)
-        if(validator.isEmail(email)){
-            setEmailError("")
-        }
+    const handleTitleChange = e => {
+        setTitle(e.target.value)
     }
 
     const dataValidatorNext = () => {
-        if(email == ""){
-            setEmailError("Please enter email address.")
-        }
-        else if(!validator.isEmail(email)){
-            setEmailError("The email address is not valid.")
+        if(title == ""){
+            setTitleError("Please enter the timer title.")
         }
         else {
             var data = {
-                "email": email
+                "title": title
             }
             var addNext = "true"
-            dispatch(AddPeopleDispatcher(data, addNext))
+            dispatch(AddNonCaseTimerDispatcher(data, addNext))
         }
     }
 
     const dataValidator = () => {
-        if(email == ""){
-            setEmailError("Please enter email address.")
-        }
-        else if(!validator.isEmail(email)){
-            setEmailError("The email address is not valid.")
+        if(title == ""){
+            setTitleError("Please enter the timer title.")
         }
         else {
             var data = {
-                "email": email
+                "title": title
             }
-            dispatch(AddPeopleDispatcher(data))
+            dispatch(AddNonCaseTimerDispatcher(data))
         }
     }
 
@@ -61,17 +50,17 @@ const AddPeoples = (props) => {
         }
     }
 
-    const confirmEmployeeRegister = () => {
+    const confirmTimerRegister = () => {
         if(!_.isEmpty(response.data)){
             if(response.addNext == "true"){
                 return (
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4" role="alert">
-                        <p class="font-bold">Invitation email sent successfully</p>
+                        <p class="font-bold">Custom timer added successfully</p>
                     </div>
                 )
             }
             return(
-                props.history.push("/sadmin/clients")
+                props.history.push("/user/timers")
             )
         }
     }
@@ -91,18 +80,18 @@ const AddPeoples = (props) => {
         return (
             <div>
                 <button 
-                    class="bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-2 px-4 mr-2 rounded focus:outline-none focus:shadow-outline" 
                     type="button" 
                     onClick={() => dataValidatorNext()}
                 >
-                    Invite and continue
+                    Add and continue
                 </button>
                 <button 
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-2 rounded focus:outline-none focus:shadow-outline" 
                     type="button" 
                     onClick={() => dataValidator()}
                 >
-                    Invite 
+                    Add 
                 </button>
             </div>
         )
@@ -113,32 +102,32 @@ const AddPeoples = (props) => {
         <div class="flex mb-4">
             <div class="w-3/5 ml-5">
                 <form>
-                    <p class="text-3xl my-3">Add People</p>
+                    <p class="text-3xl my-3">Add Timers</p>
                     {showServerError()}
-                    {confirmEmployeeRegister()}
+                    {confirmTimerRegister()}
                     <div class="mt-6 mb-3" >
                         <label class="block text-gray-700 text-sm mb-2" for="password">
-                            People Email
+                            Timer Title
                         </label>
                         {
-                            emailError == "" ? 
+                            titleError == "" ? 
                                 <div>
                                     <input 
                                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                        id="people_email" 
+                                        id="employee_email" 
                                         type="text"
-                                        onChange={(e) => handleEmailChange(e)} 
+                                        onChange={(e) => handleTitleChange(e)} 
                                     />
                                 </div>
                             :
                                 <div>
                                     <input 
                                         class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                        id="people_email" 
+                                        id="employee_email" 
                                         type="text"
-                                        onChange={(e) => handleEmailChange(e)} 
+                                        onChange={(e) => handleTitleChange(e)} 
                                     />
-                                    <p class="text-red-500 text-xs italic">{emailError}</p>
+                                    <p class="text-red-500 text-xs italic">{titleError}</p>
                                 </div>
                         }
                     </div>
@@ -151,4 +140,4 @@ const AddPeoples = (props) => {
     )
 }
 
-export default AddPeoples
+export default AddTimers

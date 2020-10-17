@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Aside from './Aside_SPCAe';
 import SPCANavbar from './UpperNavbar_SPCAe';
 
-function SPCAeLayout() {
+const SPCAeLayout= (props) => {
   const [collapsed, setCollapsed] = useState(false);
   const [toggled, setToggled] = useState(false);
 

@@ -70,7 +70,7 @@ const HomePage = (props) => {
                                 :
                                     userType == "SPCAe" ?
                                         <div>
-                                            <SPCAeLayout />
+                                            <SPCAeLayout/>
                                         </div>
                                     :
                                         userType == "CCAe" ?
