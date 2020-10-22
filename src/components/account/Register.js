@@ -6,6 +6,7 @@ import NavAccount from "./Nav";
 import validator from "validator";
 import PasswordStrengthBar from "react-password-strength-bar";
 import {PulseLoader} from "react-spinners";
+import { SendEmailConfirmationDispatcher } from "../actions/SendEmailConfirmationAction";
 
 const Register = (props) => {
     //create state
@@ -40,7 +41,8 @@ const Register = (props) => {
 
     var data = {
         "email": email,
-        "password": password
+        "password": password,
+        "confirm_password": confirmPassword
     }
 
     const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
@@ -62,7 +64,12 @@ const Register = (props) => {
             setConfirmPasswordValid("Does not match with the password above. please try again.")
         }
         else {
+            localStorage.setItem('emailID', email)
+            var edata = {
+                "email": email
+            }
             dispatch(RegisterUser(data))
+            dispatch(SendEmailConfirmationDispatcher(edata))
         }
     }
 

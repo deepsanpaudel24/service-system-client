@@ -143,7 +143,7 @@ const ProfileSetupDetailed = (props) => {
                                         <div class="w-1/6  h-15">
                                         </div>
                                         <div class="w-4/6  h-15">
-                                            <h1 class="text-3xl my-5" style={{textAlign: "center"}}>This information will help you later. test test test </h1>
+                                            <h1 class="text-3xl my-5" style={{textAlign: "center"}}>This information will help you later.</h1>
                                             <p class="text-1xl mt-5 mb-10 text-gray-500 text-s italic" style={{textAlign: "center"}}>Fill up your detailed information</p>
                                         </div>
                                         <div class="w-1/6  h-15"></div>

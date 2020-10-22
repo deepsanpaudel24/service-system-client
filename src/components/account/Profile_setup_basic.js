@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import ProfileNav from "./Profile_nav";
 import _ from "lodash";
+import luhn from "luhn";
 import {PulseLoader} from "react-spinners";
 import BasicInformationIcon from "../../images/profile_setup_basic_information-1.png";
 import { UpdateUserBasicProfile } from "../actions/UserProfileSetupAction";
@@ -11,6 +12,7 @@ const ProfileSetupBasic = (props) => {
     const [name, setName] = useState("")
     const [address, setAddress] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
+    const [personalNumber, setPersonalNumber] = useState("")
     const [registrationNumber, setRegistrationNumber] = useState("")
     const [formErrorMsg, setFormErrorMsg] = useState("")
     const [userType, setUserType] = useState("NR")
@@ -50,6 +52,10 @@ const ProfileSetupBasic = (props) => {
         setPhoneNumber(e.target.value)
     }
 
+    const handlePersonalNumberChange = (e) => {
+        setPersonalNumber(e.target.value)
+    }
+
     const handleRegistrationNumberChange = (e) => {
         setRegistrationNumber(e.target.value)
     }
@@ -82,15 +88,25 @@ const ProfileSetupBasic = (props) => {
             }
         }
         else {
-            if(!_.isEmpty(name) && !_.isEmpty(address) && !_.isEmpty(phoneNumber) ){
-                setFormErrorMsg("")
-                var data = {
-                    "name": name,
-                    "address": address,
-                    "phone_number": phoneNumber,
-                    "registration_number": registrationNumber
+            if(!_.isEmpty(name) && !_.isEmpty(address) && !_.isEmpty(personalNumber) ){
+                if(personalNumber.length == 10){
+                    if(luhn.validate(personalNumber)){
+                        setFormErrorMsg("")
+                        var data = {
+                            "name": name,
+                            "address": address,
+                            "phone_number": phoneNumber,
+                            "registration_number": registrationNumber
+                        }
+                        dispatch(UpdateUserBasicProfile(data))
+                    }
+                    else {
+                        setFormErrorMsg("Not a valid personal number")
+                    }
                 }
-                dispatch(UpdateUserBasicProfile(data))
+                else{
+                    setFormErrorMsg("Not a valid personal number")
+                }
             }
             else {
                 
@@ -297,14 +313,14 @@ const ProfileSetupBasic = (props) => {
                                                         </div>
                                                         <div class="w-2/6 ">
                                                         <label class="block text-gray-700 text-sm mb-2" for="phone_number">
-                                                                Phone Number
+                                                                Personal Number
                                                             </label>
                                                                 <input 
                                                                     class="shadow appearance-none border rounded w-full mb-5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                                                     id="phone_number" 
                                                                     type="text" 
                                                                     placeholder="Phone number" 
-                                                                    onChange={e => handlePhoneNumberChange(e)}
+                                                                    onChange={e => handlePersonalNumberChange(e)}
                                                                     style={{ width: "80%" }}
                                                                 />
                                                                 <label class="block text-gray-700 text-sm mb-2" for="registration_number">

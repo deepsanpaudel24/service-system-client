@@ -9,7 +9,7 @@ import {
   SidebarContent,
 } from 'react-pro-sidebar';
 import { Link } from "react-router-dom";
-import { FaTachometerAlt, FaGem, FaUsers, FaGithub, FaServicestack, FaClock } from 'react-icons/fa';
+import { FaTachometerAlt, FaGem, FaUsers, FaGithub, FaServicestack, FaTasks, FaWpforms } from 'react-icons/fa';
 
 const SPCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
   return (
@@ -49,7 +49,8 @@ const SPCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
             <MenuItem icon={<FaUsers />}><Link to="/user/employees">Employees</Link></MenuItem>
             <MenuItem icon={<FaServicestack />}><Link to="/user/services">Services</Link></MenuItem>
             <MenuItem icon={<FaUsers />}><Link to="/user/clients">Clients</Link></MenuItem>
-            <MenuItem icon={<FaClock />}><Link to="/user/timers">Timers</Link></MenuItem>
+            <MenuItem icon={<FaTasks />}><Link to="/user/tasks">Tasks</Link></MenuItem>
+            <MenuItem icon={<FaWpforms />}><Link to="/user/intake-form">Intake Form</Link></MenuItem>
           </Menu>
         </SidebarContent>
 

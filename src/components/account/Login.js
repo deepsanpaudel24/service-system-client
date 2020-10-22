@@ -7,6 +7,7 @@ import {PulseLoader} from "react-spinners";
 import validator from "validator";
 import NavAccount from "./Nav";
 import { LoginUser } from "../actions/AccountAction";
+import { SendEmailConfirmationDispatcher } from "../actions/SendEmailConfirmationAction";
 
 const Login = (props) => {
     const [email, setEmail] = useState("")
@@ -17,6 +18,7 @@ const Login = (props) => {
     const [showEmailBatch, setShowEmailBatch] = useState(true)
     const [showResetPasswordConfirm, setShowResetPasswordConfirm] = useState(true)
     const [showLoginForm, setShowLoginForm] = useState(false)
+    const [showResendEmail, setShowResendEmail] = useState(false)
     const dispatch = useDispatch()
     const response = useSelector(state => state.loginResponse)
     const emailConfirmationResponse = useSelector(state => state.resgiterResponse)
@@ -59,10 +61,19 @@ const Login = (props) => {
         
     }, [showLoginForm])
 
+    const handleResendEmailConfirmation = (e) => {
+        e.preventDefault();
+        setShowResendEmail(false);
+
+        var edata = {
+            "email": localStorage.getItem('emailID')
+        }
+        dispatch(SendEmailConfirmationDispatcher(edata))
+    }
     
     const handleEmailChange = e => {
         setEmail(e.target.value)
-        setShowEmailBatch(false)
+        //setShowEmailBatch(false)
         setShowResetPasswordConfirm(false)
         if(validator.isEmail(email)){
             setEmailError("")
@@ -72,7 +83,7 @@ const Login = (props) => {
     const handlePassword = e => {
         setPassword(e.target.value)
         setPasswordError("")
-        setShowEmailBatch(false)
+        //setShowEmailBatch(false)
         setShowResetPasswordConfirm(false)
     }
 
@@ -113,6 +124,13 @@ const Login = (props) => {
         }
     }
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setShowResendEmail(true)
+          }, 15000); 
+          return () => clearInterval(interval);
+      }, [showResendEmail]);
+
     const showEmailConfirmationMessage = () => {
         if(!_.isEmpty(emailConfirmationResponse.emailConfirmationMessage)){
             return (
@@ -120,8 +138,15 @@ const Login = (props) => {
                     <div class="flex">
                         <div class="py-1"><svg class="fill-current h-4 w-6 text-blue-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg></div>
                         <div>
-                        <p class="font-bold">{emailConfirmationResponse.emailConfirmationMessage}</p>
-                        {/* <p class="text-left text-sm italic">You did not get email?<a href="#"> Resend</a></p> */}
+                        <p class="font-bold">Check your email for confirmation</p>
+                        {
+                            showResendEmail ? 
+                            <button class="focus:outline-none" onClick={(e) => handleResendEmailConfirmation(e)}>
+                                <p class="text-blue-400 text-sm underline">Resend verification link</p>
+                            </button>
+                            :
+                            ""
+                        }
                         </div>
                     </div>
                 </div>

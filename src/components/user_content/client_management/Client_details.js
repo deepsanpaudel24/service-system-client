@@ -75,7 +75,7 @@ const ClientDetails = (props) => {
                                     </h1>
                                     <h1 class="text-1xl my-1">{_.isEmpty(employeeDetails.email)? "-": employeeDetails.email}</h1>
                                     <p class="flex mt-8 text-base text-gray-600">
-                                        TOTAL CASES <p class="ml-3 mr-10 text-base text-black">3</p>
+                                        TOTAL CASES <p class="ml-3 mr-10 text-base text-black">0</p>
                                         USER SINCE<p class="ml-3 mr-10 text-base text-black">{_.isEmpty(employeeDetails.createdDate)? "-": employeeDetails.createdDate}</p>
                                         STATUS {employeeDetails.is_verified ? <p class="ml-3 text-base text-green-600">ACTIVE</p> : <p class="ml-3 text-base text-red-600">UNVERIFIED</p>} 
                                     </p>
@@ -87,7 +87,7 @@ const ClientDetails = (props) => {
                         </div>
                     </div>
                 }
-                <div class="py-8">
+                {/* <div class="py-8">
                     {
                         empDetailsLoading ? 
                             <div class="animate-pulse flex space-x-4">
@@ -230,6 +230,7 @@ const ClientDetails = (props) => {
                     }
                     
                 </div>
+             */}
             </div>
         </div>
     )

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './components/App';
@@ -9,9 +9,11 @@ import i18n from "./i18n";
 
 ReactDOM.render(
   <React.StrictMode>
-    <I18nextProvider i18n={i18n}>
-      <App />
-    </I18nextProvider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <I18nextProvider i18n={i18n}>
+        <App />
+      </I18nextProvider>
+    </Suspense>
   </React.StrictMode>,
   document.getElementById('root')
 );

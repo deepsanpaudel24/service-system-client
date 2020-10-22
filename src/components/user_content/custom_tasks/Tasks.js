@@ -1,108 +1,57 @@
 import React , {useState, useEffect, useLayoutEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
 import {Link} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import _ from "lodash";
-import Timer from "react-compound-timer";
-import { AddNonCaseTimerResponseReset } from "../../actions/Timer_management/AddNonCaseTimerAction";
-import { UpdateNonCaseTimerDispatcher } from "../../actions/Timer_management/UpdateNonCaseTimerAction";
+import { AddCustomTaskResponseReset } from "../../actions/custom_task/AddCustomTaskAction";
 
-const Timers = (props) => {
-    const [timers, setTimers] = useState([])
-    const [tableLoading, setTableLoading] = useState(false)
+const Tasks = (props) => {
+    const [tasks, setTasks] = useState([])
+    const [tableLoading, setTableLoading] = useState(true)
     const dispatch = useDispatch()
-    const response = useSelector(state => state.AddNonCaseTimerResponse)
+    const response = useSelector(state => state.NewCaseRequestResponse)
+    
+    useLayoutEffect(() => {
+      const config = {
+          method: 'get',
+          url: '/api/v1/tasks',
+          headers: { 
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+          }
+        }
+        axios(config)
+        .then((res) => {
+            setTasks(res.data)
+            setTableLoading(false)
+        })
+        .catch((error) => {
+            setTableLoading(false)
+        })
+    }, [])
+
+    useEffect(() => {
+        
+    }, [tasks])
 
     const handleAdd = () => {
-        dispatch(AddNonCaseTimerResponseReset())
+        dispatch(AddCustomTaskResponseReset())
         return (
-          props.history.push("/user/add-timer")
+          props.history.push("/user/create-task")
         )
-    }
-
-    useLayoutEffect(() => {
-        const config = {
-            method: 'get',
-            url: '/api/v1/non-case-timer',
-            headers: { 
-              'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-            }
-          }
-          axios(config)
-          .then((res) => {
-              setTimers(res.data)
-              setTableLoading(false)
-          })
-          .catch((error) => {
-              setTableLoading(false)
-          })
-      }, [])
-  
-      useEffect(() => {
-          
-      }, [timers])
-
-    const handleNonCaseStart = (start) => {
-        start();
-    }
-
-    const handleNonCaseStop = (stop, reset, timerRunningTime) => {
-        stop();
-        reset();
-        var data = {
-            timerValue: timerRunningTime
-        }
-        var timerId = "5f85bf469dc3294097768162"
-        dispatch(UpdateNonCaseTimerDispatcher(data, timerId))
     }
 
     return (
         <div>
             <div class="px-4 sm:px-8">
                 <div class="flex min-w-full">
-                    <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Non Case Timers</p></div>
+                    <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Tasks</p></div>
                     <div class="w-3/5"></div>
                     <div class="w-1/5 flex justify-end">
                         <button class="focus:outline-none" onClick={() => handleAdd()}>
-                            <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Add Timers</div>
+                            <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Add Task</div>
                         </button>
                     </div>
                 </div>
-                <Timer
-                        initialTime={0}
-                        startImmediately={false}
-                    >
-                        {({ start, stop, reset, getTime}) => (
-                            <React.Fragment>
-                                <div class="flex bg-black" style={{marginRight: "3rem"}}>
-                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
-                                        <Timer.Hours />
-                                        <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Hour(s)</p>
-                                    </div>
-                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
-                                        :
-                                    </div>
-                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
-                                        <Timer.Minutes />
-                                        <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Minutes(s)</p>
-                                    </div>
-                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
-                                        :
-                                    </div>
-                                    <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1">
-                                        <Timer.Seconds />
-                                        <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Seconds(s)</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <button class="bg-gray-200 px-2 py-2 m-1" onClick={() => handleNonCaseStart(start)}>Start</button>
-                                    <button class="bg-gray-200 px-2 py-2 m-1" onClick={() => handleNonCaseStop(stop, reset, getTime())}>Stop</button>
-                                </div>
-                                <br />
-                            </React.Fragment>
-                        )}
-                    </Timer>
-
                 <div class="py-8">
                     {
                         tableLoading ? 
@@ -119,15 +68,11 @@ const Timers = (props) => {
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Fee
-                                                        </th>
-                                                        <th
-                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                             Status
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Requested On
+                                                            Created On
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -159,11 +104,11 @@ const Timers = (props) => {
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Total time worked 
+                                                Status
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Created date
+                                                Created On
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -173,7 +118,7 @@ const Timers = (props) => {
                                     </thead>
                                     <tbody>
                                         {
-                                            timers.map((item, index) => {
+                                            tasks.map((item, index) => {
                                                 return(
                                                     <tr>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '14em'}}>
@@ -186,14 +131,47 @@ const Timers = (props) => {
                                                             </div>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            {item.humanizeTime['seconds']}
+                                                            {
+                                                                item.status == "Requested" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Requested</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Forwarded" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Forwarded</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Proposal-Forwarded" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Proposal Forwarded</span>
+                                                                </span>
+                                                                :
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">On-progress</span>
+                                                                </span>
+                                                            }
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            {item.createdDate}
+                                                            <p class="text-gray-900">
+                                                                {item.requestedDate}
+                                                            </p>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-blue-700 whitespace-no-wrap">
-                                                               <Link to={`/user/case/${item._id.$oid}`}>Start</Link> 
+                                                               <Link to={`/user/tasks/${item._id.$oid}`}>View Details</Link> 
                                                             </p>
                                                         </td>
                                                     </tr>
@@ -212,4 +190,4 @@ const Timers = (props) => {
     )
 }
 
-export default Timers
+export default Tasks

@@ -26,7 +26,9 @@ import PeopleDeactivateReducer from './DeactivatePeopleReducer';
 import AddTimerReducer from './AddTimerReducer';
 import TimerActionReducer from './TimerActionReducer';
 import TimerRunningTimeReducer from './TimerRunningTimeReducer';
-import AddNonCaseTimerReducer from './Add_nonCaseTimerReducer';
+import AddCustomTaskReducer from './AddCustomTaskReducer';
+import SaveIntakeFormReducer from './SaveIntakeFormReducer';
+import SetClientPasswordReducer from './SetClientPasswordReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -57,7 +59,9 @@ const rootReducer =  combineReducers({
     AddTimerResponse: AddTimerReducer,
     TimerActionResponse: TimerActionReducer,
     TimerRunningTimeResponse: TimerRunningTimeReducer,
-    AddNonCaseTimerResponse: AddNonCaseTimerReducer
+    AddCustomTaskResponse: AddCustomTaskReducer,
+    SaveIntakeFormResponse: SaveIntakeFormReducer,
+    SetClientPasswordResponse: SetClientPasswordReducer
 })
 
 export default rootReducer

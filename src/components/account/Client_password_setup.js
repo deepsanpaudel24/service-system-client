@@ -3,16 +3,16 @@ import {useDispatch, useSelector} from "react-redux";
 import _ from "lodash";
 import NavAccount from "../account/Nav";
 import PasswordStrengthBar from "react-password-strength-bar";
-import { SetEmployeePasswordDispatcher }  from "../actions/employee_management/SetEmployeePasswordAction";
+import { SetClientPasswordDispatcher } from "../actions/client_management/SetClientPasswordAction";
 
-const EmployeePasswordSetup = (props) => {
+const ClientPasswordSetup = (props) => {
     const[password, setPassword] = useState("")
     const[confirmPassword, setConfirmPassword] = useState("")
     const[confirmPasswordValid, setConfirmPasswordValid] = useState(false)
     const [token, setToken] = useState("")
     const[passwordError, setPasswordError] = useState("")
     const dispatch = useDispatch()
-    const response = useSelector(state => state.setEmployeePasswordResponse)
+    const response = useSelector(state => state.SetClientPasswordResponse)
 
     useEffect(() => {
         var string = document.location.pathname
@@ -46,10 +46,9 @@ const EmployeePasswordSetup = (props) => {
         }
         else {
             var data = {
-                "password": password,
-                "confirm-password":confirmPassword
+                "password": password
             }
-            dispatch(SetEmployeePasswordDispatcher(data, token))
+            dispatch(SetClientPasswordDispatcher(data, token))
         }
     }
 
@@ -191,4 +190,4 @@ const EmployeePasswordSetup = (props) => {
     )
 }
 
-export default EmployeePasswordSetup
+export default ClientPasswordSetup

@@ -14,7 +14,7 @@ export const ReplyCaseRequestDispacther = (data, caseid) => async dispatch => {
             method: 'post',
             url: '/api/v1/case-request/reply/'+ caseid,
             headers: { 
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               },
             data: data

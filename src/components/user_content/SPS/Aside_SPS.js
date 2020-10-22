@@ -8,8 +8,8 @@ import {
   SidebarFooter,
   SidebarContent,
 } from 'react-pro-sidebar';
-import { FaTachometerAlt, FaGem, FaList, FaGithub, FaRegLaughWink, FaHeart } from 'react-icons/fa';
-import sidebarBg from '../assets/bg1.jpg';
+import { Link } from "react-router-dom";
+import { FaTachometerAlt, FaGem, FaUsers, FaGithub, FaServicestack, FaTasks, FaWpforms } from 'react-icons/fa';
 
 const SPSAside = ({ collapsed, toggled, handleToggleSidebar }) => {
   return (
@@ -43,42 +43,14 @@ const SPSAside = ({ collapsed, toggled, handleToggleSidebar }) => {
               icon={<FaTachometerAlt />}
               suffix={<span className="badge red">New</span>}
             >
-              Dashboard
+              <Link to="/user/home">Dashboard</Link>
             </MenuItem>
-            <MenuItem icon={<FaGem />}> Components</MenuItem>
-          </Menu>
-          <Menu iconShape="circle">
-            <SubMenu
-              suffix={<span className="badge yellow">3</span>}
-              title={"With Submenu"}
-              icon={<FaRegLaughWink />}
-            >
-              <MenuItem>Submenu 1</MenuItem>
-              <MenuItem>Submenu 2</MenuItem>
-              <MenuItem>Submenu 3</MenuItem>
-            </SubMenu>
-            <SubMenu
-              prefix={<span className="badge gray">3</span>}
-              title={"With Prefix"}
-              icon={<FaHeart />}
-            >
-              <MenuItem>Submenu 1</MenuItem>
-              <MenuItem>Submenu 2</MenuItem>
-              <MenuItem>Submenu 3</MenuItem>
-            </SubMenu>
-            <SubMenu title={"Multi level"} icon={<FaList />}>
-              <MenuItem>Submenu 1 </MenuItem>
-              <MenuItem>Submenu 2 </MenuItem>
-              <SubMenu title={`$Submenu 3`}>
-                <MenuItem>Submenu 3.1 </MenuItem>
-                <MenuItem>Submenu 3.2 </MenuItem>
-                <SubMenu title={`$Submenu 3.3`}>
-                  <MenuItem>Submenu 3.3.1 </MenuItem>
-                  <MenuItem>Submenu 3.3.2 </MenuItem>
-                  <MenuItem>Submenu 3.3.3 </MenuItem>
-                </SubMenu>
-              </SubMenu>
-            </SubMenu>
+            <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
+            <MenuItem icon={<FaUsers />}><Link to="/user/employees">Employees</Link></MenuItem>
+            <MenuItem icon={<FaServicestack />}><Link to="/user/services">Services</Link></MenuItem>
+            <MenuItem icon={<FaUsers />}><Link to="/user/clients">Clients</Link></MenuItem>
+            <MenuItem icon={<FaTasks />}><Link to="/user/tasks">Tasks</Link></MenuItem>
+            <MenuItem icon={<FaWpforms />}><Link to="/user/intake-form">Intake Form</Link></MenuItem>
           </Menu>
         </SidebarContent>
 
