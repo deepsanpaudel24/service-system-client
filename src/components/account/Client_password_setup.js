@@ -46,7 +46,8 @@ const ClientPasswordSetup = (props) => {
         }
         else {
             var data = {
-                "password": password
+                "password": password,
+                "confirm-password": confirmPassword
             }
             dispatch(SetClientPasswordDispatcher(data, token))
         }

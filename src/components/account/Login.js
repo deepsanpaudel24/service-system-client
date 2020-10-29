@@ -306,6 +306,18 @@ const Login = (props) => {
                                         Forgot Password?
                                     </a>
                                 </div>
+
+                                {/* <div class="flex mx-3 my-5">
+                                    <div class="w-6/12">
+                                        <label class="md:w-2/3 block">
+                                            <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
+                                            <span class="text-sm">
+                                                Remember me
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div> */}
+
                                 <div class="flex justify-between my-2" style={{ justifyContent: "center"}} >
                                     {showData()}
                                 </div>
