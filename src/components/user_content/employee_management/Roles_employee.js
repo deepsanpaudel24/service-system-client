@@ -2,7 +2,9 @@ import React , {useState, useEffect, useLayoutEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import _ from "lodash";
 import axios from "axios";
+import {PulseLoader} from "react-spinners";
 import EmpAvatar from "../../../images/emp_avatar.jpg";
+import { UpdateEmployeeRolesDispatcher } from "../../actions/employee_management/EmployeeRolesAction";
 
 const EmployeeRoles = (props) => {
     const [employeeDetails, setEmployeeDetails] = useState([])
@@ -11,8 +13,10 @@ const EmployeeRoles = (props) => {
     const [SM, setSM] = useState(false)
     const [CMloading, setCMloading] = useState(false)
     const [CM, setCM] = useState(false)
+    const [Collaborator, setCollaborator] = useState(false)
+    const [Reviewer, setReviewer] = useState(false)
     const dispatch = useDispatch()
-    const response = useSelector(state => state.addEmployeeResponse)
+    const response = useSelector(state => state.UpdateEmployeeRolesResponse)
 
     useLayoutEffect(() => {
         var string = document.location.pathname
@@ -37,121 +41,70 @@ const EmployeeRoles = (props) => {
     useEffect(() => {
         setSM(employeeDetails.serviceManagement)
         setCM(employeeDetails.clientManagement)
+        setCollaborator(employeeDetails.collaborator)
+        setReviewer(employeeDetails.reviewer)
     }, [employeeDetails])
 
-    const handleServiceManagementChange = e => {
-        if(e.target.checked){
-            // show the skeleton loading for Service Mangement Module div
-            setSMloading(true)
-            // dispatch the action to activate the SM module to the employee
-            var string = document.location.pathname
-            var urlvalues = string.toString().split('/')
-            const config = {
-                method: 'put',
-                url: '/api/v1/employee/' + urlvalues[4],
-                headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                  },
-                data: {
-                    'serviceManagement': true,
-                    'clientManagement': CM,
-                    'notification_title': "Service management module has been activated by your admin"
-                }
-            }
-            axios(config)
-            .then((res) => {
-                setSMloading(false)
-                setSM(true)
-            })
-            .catch((error) => {
-                setSMloading(false)
-            })
-            //after the module is activated, stop the loading.
-        }
-        else if (!e.target.checked){
-            setSMloading(true)
-            // dispatch the action to activate the SM module to the employee
-            var string = document.location.pathname
-            var urlvalues = string.toString().split('/')
-            const config = {
-                method: 'put',
-                url: '/api/v1/employee/' + urlvalues[4],
-                headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                  },
-                data: {
-                    'serviceManagement': false,
-                    'clientManagement': CM,
-                    'notification_title': "Service management module has been deactivated by your admin"
-                }
-            }
-            axios(config)
-            .then((res) => {
-                setSMloading(false)
-                setSM(false)
-            })
-            .catch((error) => {
-                setSMloading(false)
-            })
+    const handleCollaboratorChange = e => {
+        setCollaborator(e.target.checked)
+    }
 
-            //after the module is activated, stop the loading.
-        }
+    const handleReviewerChange = e => {
+        setReviewer(e.target.checked)
+    }
+
+    const handleServiceManagementChange = e => {
+        setSM(e.target.checked)
     }
 
     const handleClientManagementChange = e => {
-        if(e.target.checked){
-            // show the skeleton loading for Service Mangement Module div
-            setCMloading(true)
-            // dispatch the action to activate the SM module to the employee
-            var string = document.location.pathname
-            var urlvalues = string.toString().split('/')
-            const config = {
-                method: 'put',
-                url: '/api/v1/employee/' + urlvalues[4],
-                headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                  },
-                data: {
-                    'clientManagement': true,
-                    'serviceManagement': SM,
-                    'notification_title': "Client management module has been activated by your admin"
-                }
-            }
-            axios(config)
-            .then((res) => {
-                setCMloading(false)
-                setCM(true)
-            })
-            .catch((error) => {
-                setCMloading(false)
-            })
+        setCM(e.target.checked)
+    }
+
+    const handleRolesSubmit = () => {
+        var data = {
+            'serviceManagement': SM,
+            'clientManagement': CM,
+            'collaborator': Collaborator,
+            'reviewer': Reviewer,
         }
-        else if (!e.target.checked){
-            setCMloading(true)
-            // dispatch the action to activate the SM module to the employee
-            var string = document.location.pathname
-            var urlvalues = string.toString().split('/')
-            const config = {
-                method: 'put',
-                url: '/api/v1/employee/' + urlvalues[4],
-                headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                  },
-                data: {
-                    'clientManagement': false,
-                    'serviceManagement': SM,
-                    'notification_title': "Client management module has been deactivated by your admin"
-                }
-            }
-            axios(config)
-            .then((res) => {
-                setCMloading(false)
-                setCM(false)
-            })
-            .catch((error) => {
-                setCMloading(false)
-            })
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        dispatch(UpdateEmployeeRolesDispatcher(data, urlvalues[4]))
+    }
+
+    const confirmRolesUpdate = () => {
+        if(!_.isEmpty(response.data)){
+           return(
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4" role="alert">
+                <p class="font-bold">Roles updated successfully.</p>
+            </div>
+           )
         }
+    }
+
+    const showData = () => {
+        if(response.loading){
+            return (
+                <div class="">
+                    <PulseLoader
+                        size={10}
+                        color={"#6DADE3"}
+                        loading={true}
+                    />
+                </div>
+            )
+        }
+        return(
+            <button 
+                class="hover:bg-blue-500 text-white font-bold py-2 px-4 mx-2 rounded focus:outline-none focus:shadow-outline" 
+                type="button" 
+                style={{backgroundColor: "#3490ff"}}
+                onClick={() => handleRolesSubmit()}
+                >
+                    Submit
+                </button>
+        )
     }
 
     return (
@@ -193,45 +146,31 @@ const EmployeeRoles = (props) => {
             }
                 <div class="my-8">
                     <h1 class="text-2xl text-gray-800">Roles and Permissions</h1>
-                        <p class="text-sm text-gray-600 flex items-center">
-                            <svg class="fill-current text-gray-500 w-3 h-3 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" />
-                            </svg>
-                            Admin only
-                        </p>
+                    <p class="text-sm text-gray-600 flex items-center">
+                        <svg class="fill-current text-gray-500 w-3 h-3 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" />
+                        </svg>
+                        Admin only
+                    </p>
+                    {confirmRolesUpdate()}
                     {
                         employeeDetails.user_type == "SPCAe" ? 
                             <div class="flex my-3">
                                 <div class="w-3/5">
-                                    {
-                                        SMloading ? 
-                                            <div class="animate-pulse flex space-x-4 mb-8">
-                                                <div class="flex-1 space-y-4 py-1">
-                                                    <div class="h-4 bg-gray-400 rounded w-3/4"></div>
-                                                    <hr class="border-gray-400" />
-                                                    <div class="space-y-2">
-                                                        <div class="h-4 bg-gray-400 rounded"></div>
-                                                        <div class="h-4 bg-gray-400 rounded w-5/6"></div>
-                                                    </div>
+                                    <div class="flex"> 
+                                        <div>
+                                            <input class="my-3" type="checkbox" value="SM" onChange={e => handleServiceManagementChange(e)} checked={SM}/>
+                                        </div>
+                                        <div style={{marginLeft: "2em"}}>
+                                            <div class="mb-8">
+                                                <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                    Service Management
                                                 </div>
+                                                <hr class="border-gray-400" />
+                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
                                             </div>
-                                        :
-                                            <div class="flex"> 
-                                                <div>
-                                                    <input class="my-3" type="checkbox" value="SM" onChange={e => handleServiceManagementChange(e)} checked={SM}/>
-                                                </div>
-                                                <div style={{marginLeft: "2em"}}>
-                                                    <div class="mb-8">
-                                                        <div class="flex text-gray-800 font-bold text-xl mb-2">
-                                                            Service Management
-                                                        </div>
-                                                        <hr class="border-gray-400" />
-                                                        <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                    }
+                                        </div>
+                                    </div>
                                     {
                                         CMloading ? 
                                             <div class="animate-pulse flex space-x-4 mb-8">
@@ -260,13 +199,44 @@ const EmployeeRoles = (props) => {
                                                 </div>
                                             </div>
                                     }
+
+                                    <div class="flex"> 
+                                        <div>
+                                            <input class="my-3" type="checkbox" value="SM" onChange={e => handleCollaboratorChange(e)} checked={Collaborator}/>
+                                        </div>
+                                        <div style={{marginLeft: "2em"}}>
+                                            <div class="mb-8">
+                                                <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                    Collaborator                                                
+                                                </div>
+                                                <hr class="border-gray-400" />
+                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex"> 
+                                        <div>
+                                            <input class="my-3" type="checkbox" value="SM" onChange={e => handleReviewerChange(e)} checked={Reviewer}/>
+                                        </div>
+                                        <div style={{marginLeft: "2em"}}>
+                                            <div class="mb-8">
+                                                <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                    Reviewer                                                
+                                                </div>
+                                                <hr class="border-gray-400" />
+                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         :
                         <p>No roles has been defined for CCAe till now</p>
                     }
 
-                    
+                        <div class="flex justify-start my-2">
+                            {showData()}
+                        </div>
                 </div>
             </div>
         </div>

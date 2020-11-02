@@ -29,6 +29,8 @@ import TimerRunningTimeReducer from './TimerRunningTimeReducer';
 import AddCustomTaskReducer from './AddCustomTaskReducer';
 import SaveIntakeFormReducer from './SaveIntakeFormReducer';
 import SetClientPasswordReducer from './SetClientPasswordReducer';
+import UpdateEmployeeRolesReducer from './EmployeeRoleReducer';
+import CaseAssignmentReducer from './caseAssignmentReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -61,7 +63,9 @@ const rootReducer =  combineReducers({
     TimerRunningTimeResponse: TimerRunningTimeReducer,
     AddCustomTaskResponse: AddCustomTaskReducer,
     SaveIntakeFormResponse: SaveIntakeFormReducer,
-    SetClientPasswordResponse: SetClientPasswordReducer
+    SetClientPasswordResponse: SetClientPasswordReducer,
+    UpdateEmployeeRolesResponse: UpdateEmployeeRolesReducer,
+    CaseAssignmentResponse: CaseAssignmentReducer
 })
 
 export default rootReducer

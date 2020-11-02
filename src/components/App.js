@@ -23,6 +23,7 @@ import SAHomePage from './super_admin/Home';
 import EmployeePasswordSetup from './account/Employee_password_setup';
 import axios from 'axios';
 import ClientPasswordSetup from './account/Client_password_setup';
+import ProfileSetupPreferences from './account/Profile_setup_preferences';
 
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
@@ -59,6 +60,7 @@ function App() {
 
             <Route path={"/user/setup/profile/basic"} component={ProfileSetupBasic} />
             <Route path={"/user/setup/profile/details"} component={ProfileSetupDetailed} />
+            <Route path={"/user/setup/profile/preferences"} component={ProfileSetupPreferences} />
 
             <Route path={"/user/home"} component={HomePage} />
             <Route path={"/user/change-password"} component={HomePage} />

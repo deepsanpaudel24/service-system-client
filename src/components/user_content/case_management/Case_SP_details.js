@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { PulseLoader } from "react-spinners";
 import axios from "axios";
 import _ from "lodash";
+import { Link } from "react-router-dom";
 import {
   AddTimerResponseReset,
 } from "../../actions/TimerAction";
@@ -14,6 +15,10 @@ import { TimerDispatcher } from "../../actions/Timer_management/TimerAction";
 import VideoPlayer from "../video_player/VideoPlayer";
 import { MdFileDownload } from "react-icons/md";
 import GoogleDriveRelatedFiles from "./Case_related_google_drive_files";
+
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import CaseAssignment from "./Case_Assignment";
 
 const ViewCaseDetailsSP = (props) => {
   const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -27,6 +32,7 @@ const ViewCaseDetailsSP = (props) => {
   const [startingTime, setStartingTime] = useState(null);
   const [stoppingTime, setStoppingTime] = useState(null);
   const [showIfBillable, setShowIfBillable] = useState(false);
+  const [userName, setUserName] = useState("")
   const [activeTab, setActiveTab] = useState("documents")
   const dispatch = useDispatch();
   const response = useSelector((state) => state.AddTimerResponse);
@@ -45,7 +51,6 @@ const ViewCaseDetailsSP = (props) => {
     axios(config)
       .then((res) => {
         setCaseDetails(res.data);
-        console.log(res.data)
         setPageLoaoding(false);
         var tagslist = res.data["caseTags"].toString().split(",");
         setCaseTags(tagslist);
@@ -62,12 +67,27 @@ const ViewCaseDetailsSP = (props) => {
       },
     }
     axios(config2)
-      .then((res) => {
-        setProposalDetails(res.data)
-      })
-      .catch((error) => {
-        console.log(error.response)
-      });
+    .then((res) => {
+      setProposalDetails(res.data)
+    })
+    .catch((error) => {
+      console.log(error.response)
+    });
+    
+    var config3 = {
+      method: "get",
+      url: "/api/v1/user/validity",
+      headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+      }
+    }
+    axios(config3)
+    .then((res) => {
+        setUserName(res.data["name"])
+    })
+    .catch((error) => {
+        
+    })
 
   }, []);
 
@@ -87,6 +107,10 @@ const ViewCaseDetailsSP = (props) => {
 
   const activeGDriveTab = () => {
     setActiveTab("google-drive")
+  }
+
+  const activeAssignmentTab = () => {
+    setActiveTab("assignment")
   }
 
   const handleReply = () => {
@@ -382,6 +406,9 @@ const ViewCaseDetailsSP = (props) => {
                               <li class="mr-1">
                                   <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
                               </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
+                              </li>
                           </ul>
                       :
                         activeTab == "intro" ?
@@ -402,6 +429,9 @@ const ViewCaseDetailsSP = (props) => {
                               }
                               <li class="mr-1">
                                   <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
+                              </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
                               </li>
                           </ul>
                       :
@@ -424,8 +454,12 @@ const ViewCaseDetailsSP = (props) => {
                               <li class="mr-1">
                                   <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
                               </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
+                              </li>
                           </ul>
                       :
+                        activeTab == "google-drive" ?
                         <ul class="flex border-b">
                           <li class="mr-1">
                               <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateDocsTab()}>Related Documents</button>
@@ -443,6 +477,32 @@ const ViewCaseDetailsSP = (props) => {
                           }
                           <li class="-mb-px mr-1">
                               <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
+                          </li>
+                          <li class="mr-1">
+                              <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
+                          </li>
+                        </ul>
+                      :
+                        <ul class="flex border-b">
+                          <li class="mr-1">
+                              <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateDocsTab()}>Related Documents</button>
+                          </li>
+                          <li class="mr-1">
+                              <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Client's Introduction</button>
+                          </li>
+                          {
+                            caseDetails.status == "Proposal-Forwarded" || caseDetails.status == "On-progress" ? 
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
+                              </li>
+                            :
+                            ""
+                          }
+                          <li class="mr-1">
+                              <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
+                          </li>
+                          <li class="-mb-px mr-1">
+                              <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
                           </li>
                         </ul>
                     }
@@ -778,8 +838,13 @@ const ViewCaseDetailsSP = (props) => {
                       </div>
                   </div>
                 :
+                  activeTab == "google-drive" ?
                     <div>
-                      <GoogleDriveRelatedFiles />
+                      <GoogleDriveRelatedFiles caseTitle={caseDetails.title} userName={userName}/>
+                    </div>
+                  :
+                    <div>
+                      <CaseAssignment />
                     </div>
                 }
 

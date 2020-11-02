@@ -8,9 +8,6 @@ const ProfileSetting = (props) => {
     const [empDetailsLoading, setEmpDetailsLoading] = useState(false)
     const [activeTab, setActiveTab] = useState("basic_info")
 
-    const handleAdd = () => {
-        //console.log("Hello")
-      }
 
     const activeBasicInfoTab = () => {
         setActiveTab("basic_info")
@@ -45,7 +42,7 @@ const ProfileSetting = (props) => {
                                     </h1>
                                     <h1 class="text-1xl my-1">johnlenon@gmail.com</h1>
                                     <p class="flex mt-8 text-base text-gray-600">
-                                        TOTAL CASES <p class="ml-3 mr-10 text-base text-black">3</p>
+                                        ADDRESS <p class="ml-3 mr-10 text-base text-black">Kathmandu, Nepal</p>
                                         JOINED ON<p class="ml-3 mr-10 text-base text-black">2020-10-13</p>
                                         CONTACT NUMBER <p class="ml-3 text-base text-black">9842574166</p>
                                     </p>
@@ -57,28 +54,62 @@ const ProfileSetting = (props) => {
                     </div>
                 }
                 <div class="py-8">
-                <div class="pt-8 pb-5">
-                    {
-                        activeTab == "basic_info" ? 
-                            <ul class="flex border-b">
-                                <li class="-mb-px mr-1">
-                                    <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
-                                </li>
-                                <li class="mr-1">
-                                    <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBillingInfoTab()}>Billing Information</button>
-                                </li>
-                            </ul>
-                        :
-                            <ul class="flex border-b">
-                                <li class="mr-1">
-                                    <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
-                                </li>
-                                <li class="-mb-px mr-1">
-                                    <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeBillingInfoTab()}>Billing Information</button>
-                                </li>
-                            </ul>
-                    }
-                </div>
+                    <div class="pt-8 pb-5">
+                        {
+                            activeTab == "basic_info" ? 
+                                <ul class="flex border-b">
+                                    <li class="-mb-px mr-1">
+                                        <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
+                                    </li>
+                                    <li class="mr-1">
+                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBillingInfoTab()}>Billing Information</button>
+                                    </li>
+                                </ul>
+                            :
+                                <ul class="flex border-b">
+                                    <li class="mr-1">
+                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
+                                    </li>
+                                    <li class="-mb-px mr-1">
+                                        <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeBillingInfoTab()}>Billing Information</button>
+                                    </li>
+                                </ul>
+                        }
+                    </div>
+                    <div>
+                        {
+                            activeTab == "basic_info" ? 
+                                <div class="flex my-3">
+                                    <div class="w-3/5">
+                                        <div class="flex"> 
+                                            <div style={{marginLeft: "0.5rem"}}>
+                                                <div class="mb-8">
+                                                    <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                        Preferences
+                                                    </div>
+                                                    <p class="flex mt-4 text-base text-gray-600">
+                                                        DATE FORMAT <p class="ml-3 mr-10 text-base text-black">YYYY-MM-DD</p>
+                                                        <p class="ml-10">CURRENCY</p> <p class="ml-3 mr-10 text-base text-black">EURO</p>
+                                                    </p>
+                                                </div>
+                                                <div class="mt-4 mb-8">
+                                                    <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                        Google Account
+                                                    </div>
+                                                    <p class="flex mt-4 text-base text-gray-600">
+                                                        DATE FORMAT <p class="ml-3 mr-10 text-base text-black">YYYY-MM-DD</p>
+                                                        <p class="ml-10">CURRENCY</p> <p class="ml-3 mr-10 text-base text-black">EURO</p>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            :
+                            ""
+                        }
+                        
+                    </div>
                 </div>
             </div>
         </div>

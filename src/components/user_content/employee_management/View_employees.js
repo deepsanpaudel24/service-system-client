@@ -215,7 +215,7 @@ const ViewEmployees = (props) => {
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Status
+                                                Action
                                             </th>
                                         </tr>
                                     </thead>
@@ -235,9 +235,16 @@ const ViewEmployees = (props) => {
                                                                 </div>
                                                                 <div class="ml-3">
                                                                     <Link to={`/user/employee/${item._id.$oid}`}>
-                                                                        <p class="text-blue-700 whitespace-no-wrap">
-                                                                            {item.email}
-                                                                        </p>
+                                                                        {
+                                                                            item.hasOwnProperty("name") ?
+                                                                                <p class="text-blue-700 whitespace-no-wrap">
+                                                                                    {item.name}
+                                                                                </p>
+                                                                            :
+                                                                                <p class="text-blue-700 whitespace-no-wrap">
+                                                                                    {item.email}
+                                                                                </p>
+                                                                        }
                                                                     </Link>
                                                                 </div>
                                                             </div>

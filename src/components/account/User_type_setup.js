@@ -82,7 +82,7 @@ const SetupUserType = (props) => {
                     type="button" 
                     disabled
                 >
-                    Loading ...
+                    Submit
                 </button>
             )
         }

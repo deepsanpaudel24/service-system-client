@@ -140,9 +140,16 @@ const Clients = (props) => {
                                                                 </div>
                                                                 <Link to={`/user/client/${item._id.$oid}`}>
                                                                     <div class="ml-3">
-                                                                        <p class="text-blue-700 whitespace-no-wrap">
-                                                                            {item.email}
-                                                                        </p>
+                                                                        {
+                                                                            item.hasOwnProperty("name") ?
+                                                                                <p class="text-blue-700 whitespace-no-wrap">
+                                                                                    {item.name}
+                                                                                </p>
+                                                                            :
+                                                                                <p class="text-blue-700 whitespace-no-wrap">
+                                                                                    {item.email}
+                                                                                </p>
+                                                                        }
                                                                     </div>
                                                                 </Link>
                                                             </div>

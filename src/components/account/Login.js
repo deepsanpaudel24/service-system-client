@@ -200,7 +200,7 @@ const Login = (props) => {
         }
         return (
             <button 
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline" 
                 type="button" 
                 onClick={() => HandleLoginUser()}
             >
@@ -218,7 +218,7 @@ const Login = (props) => {
                     <div>
                         <NavAccount />
                     </div>
-                    <div class="container mx-auto w-full max-w-sm py-4 mt-3">
+                    <div class="container mx-auto w-full max-w-md py-4 mt-3">
                         <form>
                             <div class="bg-white align-bottom shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
                                 {
@@ -292,7 +292,7 @@ const Login = (props) => {
                                             </div>
                                     }
                                 </div>
-                                <div class="md:flex md:items-center my-6">
+                                {/* <div class="md:flex md:items-center my-6">
                                     <div class="md:w-1/3"></div>
                                     <label class="md:w-2/3 block">
                                     <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
@@ -305,9 +305,9 @@ const Login = (props) => {
                                     <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/user/forgot-password">
                                         Forgot Password?
                                     </a>
-                                </div>
+                                </div> */}
 
-                                {/* <div class="flex mx-3 my-5">
+                                <div class="flex mx-3 my-5">
                                     <div class="w-6/12">
                                         <label class="md:w-2/3 block">
                                             <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
@@ -316,10 +316,22 @@ const Login = (props) => {
                                             </span>
                                         </label>
                                     </div>
-                                </div> */}
+                                    <div class="w-2/12"></div>
+                                    <div class="w-4/12" style={{ justifyContent: "right"}}>
+                                        <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/user/forgot-password">
+                                            Forgot Password?
+                                        </a>
+                                    </div>
+                                </div>
 
-                                <div class="flex justify-between my-2" style={{ justifyContent: "center"}} >
+                                <div class="flex justify-between my-4" style={{ justifyContent: "center"}} >
                                     {showData()}
+                                </div>
+
+                                <div class="flex justify-between my-4" style={{ justifyContent: "center"}}>
+                                    <a class="inline-block align-baseline text-sm text-blue-500 hover:text-blue-800" href="/user/register">
+                                        Don't have account?
+                                    </a> 
                                 </div>
                             </div>
                         </form>
