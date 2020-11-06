@@ -7,8 +7,11 @@ import { SaveIntakeFormDispatcher } from "../../actions/form_generator/SaveIntak
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { FormBuilder } from "./FormBuilder";
+import { CreateIntakeFormDispatcher } from "../../actions/form_generator/CreateIntakeFormAction";
 
-const CreateIntakeForm = () => {
+const NewCreateIntakeForm = (props) => {
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const [formTitle, setFormTitle] = useState("");
   const [formFields, setFormFields] = useState([]); // store the formfields from database form firsttime with axiso request
   const [showBuilder, setShowBuilder] = useState(false);
   const [options, setOptions] = useState(["Choose..."]);
@@ -20,28 +23,7 @@ const CreateIntakeForm = () => {
   const [editingMode, setEditingMode] = useState(false);
   const [editingFieldIndex, setEditingFieldIndex] = useState(null);
   const dispatch = useDispatch();
-  // const response = useSelector((state) => state.ProfileDetailsResponse);
-
-  useLayoutEffect(() => {
-    var string = document.location.pathname;
-    var urlvalues = string.toString().split("/");
-    const config = {
-      method: "get",
-      url: "/api/v1/intake/form/"+ urlvalues[4],
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
-      },
-    };
-    axios(config)
-      .then((res) => {
-        setFormFields(res.data["formFields"]);
-        setRequestMethodDecider("put");
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-  }, []);
-  useEffect(() => {}, []);
+  const response = useSelector((state) => state.CreateIntakeFormResponse);
 
   const reset = () => {
     setShowBuilder(false);
@@ -82,17 +64,20 @@ const CreateIntakeForm = () => {
 
   //When submiting from form displaying
   const handelFinalFormSubmit = () => {
-    var string = document.location.pathname;
-    var urlvalues = string.toString().split("/");
     var data = {
       formFields: formFields,
-      formTitle: "form1",
+      formTitle: formTitle,
     };
     // var method = requestMethodDecider;
-    dispatch(SaveIntakeFormDispatcher(data, urlvalues[4]));
+    dispatch(CreateIntakeFormDispatcher(data));
     setShowSaveChangeButton(false);
   };
 
+  const ConfirmFormSave = () => {
+    if (!_.isEmpty(response.data)) {
+      return props.history.push("/user/intake-form/list");
+    }
+  };
   const showSaveButton = () => {
     return (
       <button
@@ -104,6 +89,9 @@ const CreateIntakeForm = () => {
         Save Changes
       </button>
     );
+  };
+  const handleTitleChange = (e) => {
+    setFormTitle(e.target.value);
   };
 
   // THESE FUNCTIONS ARE SEND TO FORMBUILDER AS PROPS
@@ -178,10 +166,21 @@ const CreateIntakeForm = () => {
   return (
     <div class="mb-4">
       <p class="text-3xl mt-3 mb-6">Client Intake Form</p>
+      {ConfirmFormSave()}
       <div class="flex ">
         {/* Form Display div */}
         <div class="w-2/5">
-          <p class="text-xl text-gray-700 mb-2">Form Builder</p>
+          <div class="mt-6 mb-5">
+            <label class="block text-gray-700 text-sm" for="title">
+              Form Title:
+            </label>
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="title"
+              type="text"
+              onChange={(e) => handleTitleChange(e)}
+            />
+          </div>
           <div class="border-dashed border-2 border-gray-300  px-5 py-3">
             {/* Displaying formfields that are first time fetched form database */}
             {formFields.map((field, index) => {
@@ -291,12 +290,14 @@ const CreateIntakeForm = () => {
           ></FormBuilder>
         )}
       </div>
-      
-      {/* <pre>{JSON.stringify(formBuilderInputType, null, 2)}</pre> */}
+      <pre>{JSON.stringify(formBuilderLabel, null, 2)}</pre>
+      <pre>{JSON.stringify(formBuilderInputType, null, 2)}</pre>
+      <pre>{JSON.stringify(editingMode, null, 2)}</pre>
+      <pre>{JSON.stringify(editingFieldIndex, null, 2)}</pre>
     </div>
   );
 };
-export default CreateIntakeForm;
+export default NewCreateIntakeForm;
 
 // BELOW EXPORT COMPONENTS ARE FORM  FORM FIELDS
 

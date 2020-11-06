@@ -50,7 +50,7 @@ const SPCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
             <MenuItem icon={<FaServicestack />}><Link to="/user/services">Services</Link></MenuItem>
             <MenuItem icon={<FaUsers />}><Link to="/user/clients">Clients</Link></MenuItem>
             <MenuItem icon={<FaTasks />}><Link to="/user/tasks">Tasks</Link></MenuItem>
-            <MenuItem icon={<FaWpforms />}><Link to="/user/intake-form">Intake Form</Link></MenuItem>
+            <MenuItem icon={<FaWpforms />}><Link to="/user/intake-form/list">Intake Form</Link></MenuItem>
           </Menu>
         </SidebarContent>
 

@@ -3,9 +3,12 @@ import {Redirect, Route, Link, BrowserRouter as Router, Switch} from 'react-rout
 import ViewCasesClient from "../case_management/Cases";
 import ViewCaseDetailsClient from "../case_management/Case_details";
 import ViewCasesProposalClient from "../case_management/Case_propsals_client";
+import ContractDetailsClient from "../case_management/ContractDetailsClient";
 import CreateCaseRequest from "../case_management/Create_caseRequest";
 import ViewProposalDetailsClient from "../case_management/Proposal_Details_clients";
 import ChangePassword from "../Change_password";
+import ClientFillForm from "../client_intake_form/ClientFillForm";
+import ContractDetails from "../contract_management/Contract_Details";
 import AddEmployee from "../employee_management/Add_employee";
 import EmployeeDetails from "../employee_management/Employee_details";
 import EmployeeRoles from "../employee_management/Roles_employee";
@@ -25,6 +28,9 @@ const CCAContent = () => {
                 <Route exact path='/user/case/:id' component={ViewCaseDetailsClient} />
                 <Route exact path='/user/case/proposals/:id' component={ViewCasesProposalClient} />
                 <Route exact path='/user/proposal/:id' component={ViewProposalDetailsClient} />
+
+                <Route exact path='/user/contract/:id' component={ContractDetailsClient} />
+                <Route exact path='/user/fill-form' component={ClientFillForm} />
             </Switch>
         </div>
     )

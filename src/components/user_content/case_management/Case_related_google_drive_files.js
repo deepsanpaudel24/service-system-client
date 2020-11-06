@@ -9,7 +9,7 @@ import folderEmptyIcon from "../../../images/folder_empty.png";
 import {PulseLoader} from "react-spinners";
 
 const GoogleDriveRelatedFiles = (props) => {
-
+    const [googleFileCreateLoading, setGoogleFileCreateLoading] = useState(false)
     const [googleAccountLinked, setGoogleAccountLinked] = useState(false)
     const [fileName, setFileName] = useState("")
     const [googleFiles, setGoogleFiles] = useState([])
@@ -21,6 +21,8 @@ const GoogleDriveRelatedFiles = (props) => {
 
     // To check if the user has google credentials already saved 
     useLayoutEffect(() => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
         var config = {
             method: "get",
             url: "/api/v1/google-credentials-details",
@@ -33,7 +35,7 @@ const GoogleDriveRelatedFiles = (props) => {
             setGoogleAccountLinked(true)
             var config3 = {
                 method: "get",
-                url: "/api/v1/google-fetch-files/" + userName +  "-" + caseTitle.slice(0,15),
+                url: "/api/v1/google-fetch-files/" + caseTitle.slice(0,25) +  "-" + urlvalues[3],
                 headers: {
                   Authorization: "Bearer " + localStorage.getItem("access_token"),
                 }
@@ -71,11 +73,9 @@ const GoogleDriveRelatedFiles = (props) => {
         }
         axios(config)
         .then((res) => {
-            //console.log('Response from then', res.data)
             window.open(res.data['auth_uri'], "_self");
         })
         .catch((error) => {
-            //console.log(error.response)
         })
     }
 
@@ -84,9 +84,12 @@ const GoogleDriveRelatedFiles = (props) => {
     }
 
     const handleCreateFile = (fileType) => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        setGoogleFileCreateLoading(true)
         setFileName(formFileName)
         var data = {
-            "folder_name": userName +  "-" + caseTitle.slice(0,15),
+            "folder_name": caseTitle.slice(0,25) +  "-" + urlvalues[3],
             "file_type": fileType,
             "file_name": formFileName
         }
@@ -100,9 +103,11 @@ const GoogleDriveRelatedFiles = (props) => {
         }
         axios(config)
         .then((res) => {
+            setGoogleFileCreateLoading(false)
             window.open(res.data['redirect_to']);
         })
         .catch((error) => {
+            setGoogleFileCreateLoading(false)
             console.log(error.response)
         })
     }
@@ -220,11 +225,22 @@ const GoogleDriveRelatedFiles = (props) => {
             {
                 googleAccountLinked ? 
                 <div>
-                    <div class="flex my-2">
-                        <button class="bg-blue-500 text-white px-3 py-2 mx-2 focus:outline-none" onClick={() => OpenModalCreateGoogleFile("document")}>Create Google Docs</button>
-                        <button class="bg-orange-400 text-white px-3 py-2 mx-2 focus:outline-none" onClick={() => OpenModalCreateGoogleFile("presentation")}>Create Google Slides</button>
-                        <button class="bg-green-600 text-white px-3 py-2 mx-2 focus:outline-none" onClick={() => OpenModalCreateGoogleFile("spreadsheet")}>Create Google Sheets</button>
-                    </div>
+                    {
+                        googleFileCreateLoading ? 
+                        <div class="">
+                            <PulseLoader
+                                size={10}
+                                color={"#6DADE3"}
+                                loading={true}
+                            />
+                        </div>
+                        :
+                        <div class="flex my-2">
+                            <button class="bg-blue-500 text-white px-3 py-2 mx-2 focus:outline-none" onClick={() => OpenModalCreateGoogleFile("document")}>Create Google Docs</button>
+                            <button class="bg-orange-400 text-white px-3 py-2 mx-2 focus:outline-none" onClick={() => OpenModalCreateGoogleFile("presentation")}>Create Google Slides</button>
+                            <button class="bg-green-600 text-white px-3 py-2 mx-2 focus:outline-none" onClick={() => OpenModalCreateGoogleFile("spreadsheet")}>Create Google Sheets</button>
+                        </div>
+                    }
                     <div class="flex gap-6 mt-8">
                         {
                             googleFiles.length >= 1 ?

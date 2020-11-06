@@ -51,8 +51,12 @@ const ViewCaseDetailsClient = (props) => {
         setActiveTab("documents")
     }
     
-    const activeIntroTab = () => {
-    setActiveTab("intro")
+    const handleViewContract = () => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        return(
+            props.history.push("/user/contract/" + urlvalues[3])
+        )
     }
 
     return (
@@ -75,10 +79,26 @@ const ViewCaseDetailsClient = (props) => {
                         <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                             <div class="mb-8">
                             <div class="flex">
-                                <div class="w-5/5">
-                                <p class="text-4xl my-3" style={{ textAlign: "left" }}>
-                                    {caseDetails.title}
-                                </p>
+                                <div class="w-4/5">
+                                    <p class="text-4xl my-3" style={{ textAlign: "left" }}>
+                                        {caseDetails.title}
+                                    </p>
+                                </div>
+                                <div class="w-1/5 flex justify-end">
+                                    {
+                                        caseDetails.status == "Contract-Sent" || caseDetails.status == "Contract-Replied" ? (
+                                            <button class="focus:outline-none">
+                                              <div
+                                                class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
+                                                onClick={() => handleViewContract()}
+                                              >
+                                                View Contract Paper
+                                              </div>
+                                            </button>
+                                          )
+                                          :
+                                          ""
+                                    }
                                 </div>
                             </div>
                             {caseDetails.status == "On-progress" ? (
@@ -104,6 +124,18 @@ const ViewCaseDetailsClient = (props) => {
                                     <p class="ml-3 mr-10 text-base text-blue-600">
                                         PROPOSAL RECEIVED
                                     </p>
+                                    ) : caseDetails.status == "Contract-Sent" ? (
+                                        <p class="ml-3 mr-10 text-base text-blue-600">
+                                          CONTRACT PAPER RECEIVED
+                                        </p>
+                                    ) : caseDetails.status == "Contract-Waiting" ? (
+                                        <p class="ml-3 mr-10 text-base text-blue-600">
+                                            WAITING CONTRACT PAPER
+                                        </p>
+                                    ) : caseDetails.status == "Contract-Replied" ? (
+                                        <p class="ml-3 mr-10 text-base text-blue-600">
+                                            SIGNED CONTRACT PAPER SENT
+                                        </p>
                                     ) : (
                                     <p class="ml-3 mr-10 text-base text-green-600">
                                         ON-PROGRESS
@@ -133,6 +165,18 @@ const ViewCaseDetailsClient = (props) => {
                                     <p class="ml-3 mr-10 text-base text-blue-600">
                                     PROPOSAL RECEIVED
                                     </p>
+                                ) : caseDetails.status == "Contract-Waiting" ? (
+                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                        WAITING CONTRACT PAPER
+                                    </p>
+                                ) : caseDetails.status == "Contract-Sent" ? (
+                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                      CONTRACT PAPER RECEIVED
+                                    </p>
+                                ) : caseDetails.status == "Contract-Replied" ? (
+                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                        SIGNED CONTRACT PAPER SENT
+                                    </p>
                                 ) : (
                                     <p class="ml-3 mr-10 text-base text-green-600">
                                     ON-PROGRESS
@@ -148,27 +192,27 @@ const ViewCaseDetailsClient = (props) => {
                             </p>
                             </div>
                             <div class="flex items-center">
-                            <div class="text-sm ">
-                                <p>
-                                Tags: &nbsp;&nbsp;
-                                {caseTags.map((item, index) => {
-                                    return (
-                                    <span
-                                        key={index}
-                                        class="relative inline-block px-3 py-1 my-4 mx-2 font-semibold text-gray-900 leading-tight"
-                                    >
+                                <div class="text-sm ">
+                                    <p>
+                                    Tags: &nbsp;&nbsp;
+                                    {caseTags.map((item, index) => {
+                                        return (
                                         <span
-                                        aria-hidden
-                                        class="absolute inset-0 bg-gray-300 opacity-50"
-                                        ></span>
-                                        <span class="relative">{item}</span>
-                                    </span>
-                                    );
-                                })}
-                                </p>
+                                            key={index}
+                                            class="relative inline-block px-3 py-1 my-4 mx-2 font-semibold text-gray-900 leading-tight"
+                                        >
+                                            <span
+                                            aria-hidden
+                                            class="absolute inset-0 bg-gray-300 opacity-50"
+                                            ></span>
+                                            <span class="relative">{item}</span>
+                                        </span>
+                                        );
+                                    })}
+                                    </p>
+                                </div>
                             </div>
-                            </div>
-                            <div class="text-sm my-3">
+                            <div class="text-lg my-3">
                                 <p class="text-blue-600 leading-none"><Link to={`/user/case/proposals/${caseDetails._id.$oid}`}>View Proposals for this case</Link></p>
                             </div>
                             <div class="pt-8 pb-5">

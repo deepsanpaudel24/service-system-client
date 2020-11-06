@@ -31,6 +31,10 @@ import SaveIntakeFormReducer from './SaveIntakeFormReducer';
 import SetClientPasswordReducer from './SetClientPasswordReducer';
 import UpdateEmployeeRolesReducer from './EmployeeRoleReducer';
 import CaseAssignmentReducer from './caseAssignmentReducer';
+import ProfileDetailsReducer from './Account_profileDetailsReducer';
+import UploadContractPaperReducer from './UploadContractPaperReducer';
+import ContractDetailsStorageReducer from './Contract_DetailsStorageReducer';
+import CreateIntakeFormReducer from './CreateIntakeFormReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -44,6 +48,7 @@ const rootReducer =  combineReducers({
     resetPasswordResponse: GetNewPasswordReducer,
     logoutUserResponse: AccountLogoutReducer,
     changePasswordResponse: ChangePasswordReducer,
+    ProfileDetailsResponse: ProfileDetailsReducer,
     addEmployeeResponse: EmployeeRegisterReducer,
     getEmployeeResponse: GetEmployeeListReducer,
     setEmployeePasswordResponse: SetEmployeePasswordReducer,
@@ -65,7 +70,10 @@ const rootReducer =  combineReducers({
     SaveIntakeFormResponse: SaveIntakeFormReducer,
     SetClientPasswordResponse: SetClientPasswordReducer,
     UpdateEmployeeRolesResponse: UpdateEmployeeRolesReducer,
-    CaseAssignmentResponse: CaseAssignmentReducer
+    CaseAssignmentResponse: CaseAssignmentReducer,
+    UploadContractPaperResponse: UploadContractPaperReducer,
+    ContractDetailsStorageResponse: ContractDetailsStorageReducer,
+    CreateIntakeFormResponse: CreateIntakeFormReducer
 })
 
 export default rootReducer

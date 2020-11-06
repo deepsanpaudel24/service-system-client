@@ -124,6 +124,15 @@ const ViewCaseDetailsSP = (props) => {
     getTotalTimeWored();
   }, []);
 
+
+  const handleSendContract = () => {
+    // redirect to a page with the form where service provider can upload the contract paper 
+    // and send it to the client
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    props.history.push('/user/case/send/contract/'+ urlvalues[3])
+  }
+
   const getTotalTimeWored = async () => {
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");
@@ -198,6 +207,14 @@ const ViewCaseDetailsSP = (props) => {
     dispatch(TimerDispatcher(data));
   };
 
+  const handleViewContract = () => {
+    var string = document.location.pathname
+    var urlvalues = string.toString().split('/')
+    return(
+        props.history.push("/user/contract/" + urlvalues[3])
+    )
+}
+
   return (
     <div>
       <div class="px-4 sm:px-8">
@@ -265,73 +282,117 @@ const ViewCaseDetailsSP = (props) => {
                             Make Proposal
                           </div>
                         </button>
-                      ) : (
-                        ""
-                      )}
+                      ) : caseDetails.status == "Contract-Waiting" ? (
+                        <button class="focus:outline-none">
+                          <div
+                            class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
+                            onClick={() => handleSendContract()}
+                          >
+                            Send Contract Paper
+                          </div>
+                        </button>
+                      ): caseDetails.status == "Contract-Sent" || caseDetails.status == "Contract-Replied" ? (
+                        <button class="focus:outline-none">
+                          <div
+                            class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
+                            onClick={() => handleViewContract()}
+                          >
+                            View Contract Paper
+                          </div>
+                        </button>
+                      )
+                      :
+                      ""
+                      }
                     </div>
                   </div>
                   {caseDetails.status == "On-progress" ? (
-                    _.isEmpty(totalTimeWorked) ? (
-                      <p class="flex my-3 text-base text-gray-600">
-                        FEE{" "}
-                        <p class="ml-3 mr-10 text-base text-black">
-                          ${caseDetails.rate}/ {caseDetails.rateType}
-                        </p>
-                        CASE REQUESTED ON
-                        <p class="ml-3 mr-10 text-base text-black">
-                          {caseDetails.requestedDate}
-                        </p>
-                        STATUS{" "}
-                        {caseDetails.status == "Forwarded" ? (
-                          <p class="ml-3 mr-10 text-base text-blue-600">
-                            RECEIVED
+                      _.isEmpty(totalTimeWorked) ? (
+                        <p class="flex my-3 text-base text-gray-600">
+                          FEE{" "}
+                          <p class="ml-3 mr-10 text-base text-black">
+                            ${caseDetails.rate}/ {caseDetails.rateType}
                           </p>
-                        ) : caseDetails.status == "Proposal-Forwarded" ? (
-                          <p class="ml-3 mr-10 text-base text-blue-600">
-                            PROPOSAL FORWARDED
+                          CASE REQUESTED ON
+                          <p class="ml-3 mr-10 text-base text-black">
+                            {caseDetails.requestedDate}
                           </p>
+                          STATUS{" "}
+                          {caseDetails.status == "Forwarded" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              RECEIVED
+                            </p>
+                          ) : caseDetails.status == "Proposal-Forwarded" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              PROPOSAL FORWARDED
+                            </p>
+                          ) : caseDetails.status == "Contract-Waiting" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              PROPOSAL ACCEPTED
+                            </p>
+                          )  : caseDetails.status == "Contract-Sent" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              CONTRACT PAPER SENT
+                            </p>
+                          ) : caseDetails.status == "Contract-Replied" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                                SIGNED CONTRACT PAPER RECEIVED
+                            </p>
+                          ) : (
+                            <p class="ml-3 mr-10 text-base text-green-600">
+                              ON-PROGRESS
+                            </p>
+                          )}
+                          TOTAL TIME WORKED
+                          <p class="ml-3 text-base text-black">NOT STARTED YET</p>
+                        </p>
                         ) : (
-                          <p class="ml-3 mr-10 text-base text-green-600">
-                            ON-PROGRESS
+                          <p class="flex my-3 text-base text-gray-600">
+                            FEE{" "}
+                            <p class="ml-3 mr-10 text-base text-black">
+                              ${caseDetails.rate}/ {caseDetails.rateType}
+                            </p>
+                            CASE REQUESTED ON
+                            <p class="ml-3 mr-10 text-base text-black">
+                              {caseDetails.requestedDate}
+                            </p>
+                            STATUS{" "}
+                            {caseDetails.status == "Forwarded" ? (
+                              <p class="ml-3 mr-10 text-base text-blue-600">
+                                RECEIVED
+                              </p>
+                            ) : caseDetails.status == "Proposal-Forwarded" ? (
+                              <p class="ml-3 mr-10 text-base text-blue-600">
+                                PROPOSAL FORWARDED
+                              </p>
+                            ) : caseDetails.status == "Contract-Waiting" ? (
+                              <p class="ml-3 mr-10 text-base text-blue-600">
+                                PROPOSAL ACCEPTED
+                              </p>
+                            ) : caseDetails.status == "Contract-Sent" ? (
+                              <p class="ml-3 mr-10 text-base text-blue-600">
+                                CONTRACT PAPER SENT
+                              </p>
+                            ) : caseDetails.status == "Contract-Replied" ? (
+                              <p class="ml-3 mr-10 text-base text-blue-600">
+                                  SIGNED CONTRACT PAPER RECEIVED
+                              </p>
+                            ) : (
+                              <p class="ml-3 mr-10 text-base text-green-600">
+                                ON-PROGRESS
+                              </p>
+                            )}
+                            TOTAL TIME WORKED
+                            <p class="ml-3 text-base text-black">
+                              {" "}
+                              {totalTimeWorked.hours} hours:{" "}
+                              {totalTimeWorked.minutes} mins:{" "}
+                              {totalTimeWorked.seconds} seconds
+                            </p>
                           </p>
-                        )}
-                        TOTAL TIME WORKED
-                        <p class="ml-3 text-base text-black">NOT STARTED YET</p>
-                      </p>
-                    ) : (
-                      <p class="flex my-3 text-base text-gray-600">
-                        FEE{" "}
-                        <p class="ml-3 mr-10 text-base text-black">
-                          ${caseDetails.rate}/ {caseDetails.rateType}
-                        </p>
-                        CASE REQUESTED ON
-                        <p class="ml-3 mr-10 text-base text-black">
-                          {caseDetails.requestedDate}
-                        </p>
-                        STATUS{" "}
-                        {caseDetails.status == "Forwarded" ? (
-                          <p class="ml-3 mr-10 text-base text-blue-600">
-                            RECEIVED
-                          </p>
-                        ) : caseDetails.status == "Proposal-Forwarded" ? (
-                          <p class="ml-3 mr-10 text-base text-blue-600">
-                            PROPOSAL FORWARDED
-                          </p>
-                        ) : (
-                          <p class="ml-3 mr-10 text-base text-green-600">
-                            ON-PROGRESS
-                          </p>
-                        )}
-                        TOTAL TIME WORKED
-                        <p class="ml-3 text-base text-black">
-                          {" "}
-                          {totalTimeWorked.hours} hours:{" "}
-                          {totalTimeWorked.minutes} mins:{" "}
-                          {totalTimeWorked.seconds} seconds
-                        </p>
-                      </p>
-                    )
-                  ) : (
+                        )
+                      ) 
+                  : (
                     <p class="flex my-3 text-base text-gray-600">
                       PROPOSED BUDGET{" "}
                       <p class="ml-3 mr-10 text-base text-black">
@@ -349,6 +410,18 @@ const ViewCaseDetailsSP = (props) => {
                       ) : caseDetails.status == "Proposal-Forwarded" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
                           PROPOSAL FORWARDED
+                        </p>
+                      ) : caseDetails.status == "Contract-Waiting" ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                          PROPOSAL ACCEPTED
+                        </p>
+                      ) : caseDetails.status == "Contract-Sent" ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                          CONTRACT PAPER SENT
+                        </p>
+                      ) : caseDetails.status == "Contract-Replied" ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                            SIGNED CONTRACT PAPER RECEIVED
                         </p>
                       ) : (
                         <p class="ml-3 mr-10 text-base text-green-600">

@@ -6,14 +6,14 @@ export const SAVE_INTAKE_FORM_SERVER_FAIL =   'SAVE_INTAKE_FORM_SERVER_FAIL'
 export const SAVE_INTAKE_FORM_SUCESS = 'SAVE_INTAKE_FORM_SUCESS'
 export const SAVE_INTAKE_FORM_RESPONSE_RESET = 'SAVE_INTAKE_FORM_RESPONSE_RESET'
 
-export const SaveIntakeFormDispatcher = (data, method) => async dispatch => {
+export const SaveIntakeFormDispatcher = (data, id) => async dispatch => {
     try {
         dispatch({
             type: "SAVE_INTAKE_FORM_LOADING"
         })
         const config = {
-            method: method,
-            url: '/api/v1/intake-form',
+            method: "put",
+            url: '/api/v1/intake/form/'+id,
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')

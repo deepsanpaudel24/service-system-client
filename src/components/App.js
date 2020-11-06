@@ -29,7 +29,7 @@ import ProfileSetupPreferences from './account/Profile_setup_preferences';
 const store = createStore(rootReducer, applyMiddleware(thunk))
 
 //axios.defaults.baseURL = "https://service-system-backend.herokuapp.com/";
-axios.defaults.baseURL = "http://127.0.0.1:5000";
+//axios.defaults.baseURL = "http://127.0.0.1:5000";
 //axios.defaults.withCredentials = true;
 
 function App() {
@@ -84,6 +84,8 @@ function App() {
             <Route path={"/user/case/reply/:id"} component={HomePage} />
             <Route path={"/user/case/proposals/:id"} component={HomePage} />
             <Route path={"/user/proposal/:id"} component={HomePage} />
+            <Route path={"/user/case/send/contract/:id"} component={HomePage} />
+            <Route path={"/user/contract/:id"} component={HomePage} />
             
             <Route path={"/user/client/password-setup/:token"} component={ClientPasswordSetup} />
             <Route path={"/user/clients"} component={HomePage} />
@@ -95,6 +97,10 @@ function App() {
             <Route path={"/user/tasks/:id"} component={HomePage} />
 
             <Route path={"/user/intake-form"} component={HomePage} />
+            <Route path={"/user/intake/form/:id"} component={HomePage} />
+            <Route path={"/user/create-intake-form"} component={HomePage} />
+            <Route path="/user/intake-form/list" component={HomePage} />
+            <Route path="/user/fill-form" component={HomePage} />
 
             <Redirect to={"/"} />
           </Switch>
