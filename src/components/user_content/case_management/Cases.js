@@ -146,9 +146,9 @@ const ViewCasesClient = (props) => {
                                                             {
                                                                 item.status == "Requested" ?
                                                                 <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-gray-900 leading-tight">
                                                                     <span aria-hidden
-                                                                        class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
+                                                                        class="absolute inset-0 bg-gray-300 opacity-50 rounded-full"></span>
                                                                     <span class="relative">Requested</span>
                                                                 </span>
                                                                 :
@@ -162,10 +162,34 @@ const ViewCasesClient = (props) => {
                                                                 :
                                                                 item.status == "Proposal-Forwarded" ?
                                                                 <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
                                                                     <span aria-hidden
-                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Proposal Forwarded</span>
+                                                                        class="absolute inset-0 bg-blue-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Proposal Received</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Contract-Waiting" ? 
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Waiting Contract Paper</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Contract-Sent" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Contract Paper Received</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Contract-Replied" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Signed Contract Paper Sent</span>
                                                                 </span>
                                                                 :
                                                                 <span

@@ -36,6 +36,18 @@ export const AddEmployeeDispatcher = (data, addNext) => async dispatch => {
                 serverErrorMsg: error.response.data['message']
             })
         })
+
+        const config2 = {
+            method: 'post',
+            url: '/api/v1/user/employee/send-email-confirmation',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              },
+            data: data
+        }
+        await axios(config2)
+
     }
     catch (e) {
         dispatch({

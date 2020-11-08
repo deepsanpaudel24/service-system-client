@@ -7,6 +7,7 @@ import {PulseLoader} from "react-spinners";
 import validator from "validator";
 import NavAccount from "./Nav";
 import { LoginUser } from "../actions/AccountAction";
+import { SendEmailConfirmationDispatcher } from "../actions/SendEmailConfirmationAction";
 
 const Login = (props) => {
     const [email, setEmail] = useState("")
@@ -17,6 +18,7 @@ const Login = (props) => {
     const [showEmailBatch, setShowEmailBatch] = useState(true)
     const [showResetPasswordConfirm, setShowResetPasswordConfirm] = useState(true)
     const [showLoginForm, setShowLoginForm] = useState(false)
+    const [showResendEmail, setShowResendEmail] = useState(false)
     const dispatch = useDispatch()
     const response = useSelector(state => state.loginResponse)
     const emailConfirmationResponse = useSelector(state => state.resgiterResponse)
@@ -59,10 +61,19 @@ const Login = (props) => {
         
     }, [showLoginForm])
 
+    const handleResendEmailConfirmation = (e) => {
+        e.preventDefault();
+        setShowResendEmail(false);
+
+        var edata = {
+            "email": localStorage.getItem('emailID')
+        }
+        dispatch(SendEmailConfirmationDispatcher(edata))
+    }
     
     const handleEmailChange = e => {
         setEmail(e.target.value)
-        setShowEmailBatch(false)
+        //setShowEmailBatch(false)
         setShowResetPasswordConfirm(false)
         if(validator.isEmail(email)){
             setEmailError("")
@@ -72,7 +83,7 @@ const Login = (props) => {
     const handlePassword = e => {
         setPassword(e.target.value)
         setPasswordError("")
-        setShowEmailBatch(false)
+        //setShowEmailBatch(false)
         setShowResetPasswordConfirm(false)
     }
 
@@ -113,6 +124,13 @@ const Login = (props) => {
         }
     }
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setShowResendEmail(true)
+          }, 15000); 
+          return () => clearInterval(interval);
+      }, [showResendEmail]);
+
     const showEmailConfirmationMessage = () => {
         if(!_.isEmpty(emailConfirmationResponse.emailConfirmationMessage)){
             return (
@@ -120,8 +138,15 @@ const Login = (props) => {
                     <div class="flex">
                         <div class="py-1"><svg class="fill-current h-4 w-6 text-blue-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg></div>
                         <div>
-                        <p class="font-bold">{emailConfirmationResponse.emailConfirmationMessage}</p>
-                        {/* <p class="text-left text-sm italic">You did not get email?<a href="#"> Resend</a></p> */}
+                        <p class="font-bold">Check your email for confirmation</p>
+                        {
+                            showResendEmail ? 
+                            <button class="focus:outline-none" onClick={(e) => handleResendEmailConfirmation(e)}>
+                                <p class="text-blue-400 text-sm underline">Resend verification link</p>
+                            </button>
+                            :
+                            ""
+                        }
                         </div>
                     </div>
                 </div>
@@ -175,7 +200,7 @@ const Login = (props) => {
         }
         return (
             <button 
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline" 
                 type="button" 
                 onClick={() => HandleLoginUser()}
             >
@@ -193,7 +218,7 @@ const Login = (props) => {
                     <div>
                         <NavAccount />
                     </div>
-                    <div class="container mx-auto w-full max-w-sm py-4 mt-3">
+                    <div class="container mx-auto w-full max-w-md py-4 mt-3">
                         <form>
                             <div class="bg-white align-bottom shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
                                 {
@@ -267,7 +292,7 @@ const Login = (props) => {
                                             </div>
                                     }
                                 </div>
-                                <div class="md:flex md:items-center my-6">
+                                {/* <div class="md:flex md:items-center my-6">
                                     <div class="md:w-1/3"></div>
                                     <label class="md:w-2/3 block">
                                     <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
@@ -280,9 +305,33 @@ const Login = (props) => {
                                     <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/user/forgot-password">
                                         Forgot Password?
                                     </a>
+                                </div> */}
+
+                                <div class="flex mx-3 my-5">
+                                    <div class="w-6/12">
+                                        <label class="md:w-2/3 block">
+                                            <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
+                                            <span class="text-sm">
+                                                Remember me
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="w-2/12"></div>
+                                    <div class="w-4/12" style={{ justifyContent: "right"}}>
+                                        <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/user/forgot-password">
+                                            Forgot Password?
+                                        </a>
+                                    </div>
                                 </div>
-                                <div class="flex justify-between my-2" style={{ justifyContent: "center"}} >
+
+                                <div class="flex justify-between my-4" style={{ justifyContent: "center"}} >
                                     {showData()}
+                                </div>
+
+                                <div class="flex justify-between my-4" style={{ justifyContent: "center"}}>
+                                    <a class="inline-block align-baseline text-sm text-blue-500 hover:text-blue-800" href="/user/register">
+                                        Don't have account?
+                                    </a> 
                                 </div>
                             </div>
                         </form>

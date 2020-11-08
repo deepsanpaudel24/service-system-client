@@ -227,9 +227,16 @@ const ViewEmployees = (props) => {
                                                                 </div>
                                                                 <div class="ml-3">
                                                                     <Link to={`/user/employee/${item._id.$oid}`}>
-                                                                        <p class="text-blue-700 whitespace-no-wrap">
-                                                                            {item.email}
-                                                                        </p>
+                                                                        {
+                                                                            item.hasOwnProperty("name") ?
+                                                                                <p class="text-blue-700 whitespace-no-wrap">
+                                                                                    {item.name}
+                                                                                </p>
+                                                                            :
+                                                                                <p class="text-blue-700 whitespace-no-wrap">
+                                                                                    {item.email}
+                                                                                </p>
+                                                                        }
                                                                     </Link>
                                                                 </div>
                                                             </div>

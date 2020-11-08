@@ -36,6 +36,17 @@ export const AddPeopleDispatcher = (data, addNext) => async dispatch => {
                 serverErrorMsg: error.response.data['message']
             })
         })
+
+        const config2 = {
+            method: 'post',
+            url: '/api/v1/people/send-email-confirmation',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              },
+            data: data
+        }
+        await axios(config2)
     }
     catch (e) {
         dispatch({

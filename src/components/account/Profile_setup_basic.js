@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import ProfileNav from "./Profile_nav";
 import _ from "lodash";
+import luhn from "luhn";
 import {PulseLoader} from "react-spinners";
 import BasicInformationIcon from "../../images/profile_setup_basic_information-1.png";
 import { UpdateUserBasicProfile } from "../actions/UserProfileSetupAction";
@@ -11,6 +12,7 @@ const ProfileSetupBasic = (props) => {
     const [name, setName] = useState("")
     const [address, setAddress] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
+    const [personalNumber, setPersonalNumber] = useState("")
     const [registrationNumber, setRegistrationNumber] = useState("")
     const [formErrorMsg, setFormErrorMsg] = useState("")
     const [userType, setUserType] = useState("NR")
@@ -50,6 +52,10 @@ const ProfileSetupBasic = (props) => {
         setPhoneNumber(e.target.value)
     }
 
+    const handlePersonalNumberChange = (e) => {
+        setPersonalNumber(e.target.value)
+    }
+
     const handleRegistrationNumberChange = (e) => {
         setRegistrationNumber(e.target.value)
     }
@@ -75,22 +81,42 @@ const ProfileSetupBasic = (props) => {
                     "phone_number": phoneNumber,
                     "registration_number": registrationNumber
                 }
-                dispatch(UpdateUserBasicProfile(data))
+                //dispatch(UpdateUserBasicProfile(data))
+                localStorage.setItem('name', name)
+                localStorage.setItem('address', address)
+                localStorage.setItem('phone_number', phoneNumber)
+                localStorage.setItem('registration_number', registrationNumber)
+                return props.history.push("/user/setup/profile/preferences")
             }
             else {
                 setFormErrorMsg("Please fill up all the required fields.")
             }
         }
         else {
-            if(!_.isEmpty(name) && !_.isEmpty(address) && !_.isEmpty(phoneNumber) ){
-                setFormErrorMsg("")
-                var data = {
-                    "name": name,
-                    "address": address,
-                    "phone_number": phoneNumber,
-                    "registration_number": registrationNumber
+            if(!_.isEmpty(name) && !_.isEmpty(address) && !_.isEmpty(phoneNumber) && !_.isEmpty(personalNumber) ){
+                if(personalNumber.length == 10){
+                    if(luhn.validate(personalNumber)){
+                        setFormErrorMsg("")
+                        var data = {
+                            "name": name,
+                            "address": address,
+                            "phone_number": phoneNumber,
+                            "personal_number": personalNumber
+                        }
+                        //dispatch(UpdateUserBasicProfile(data))
+                        localStorage.setItem('name', name)
+                        localStorage.setItem('address', address)
+                        localStorage.setItem('phone_number', phoneNumber)
+                        localStorage.setItem('personal_number', personalNumber)
+                        return props.history.push("/user/setup/profile/preferences")
+                    }
+                    else {
+                        setFormErrorMsg("Not a valid personal number")
+                    }
                 }
-                dispatch(UpdateUserBasicProfile(data))
+                else{
+                    setFormErrorMsg("Not a valid personal number")
+                }
             }
             else {
                 
@@ -100,20 +126,20 @@ const ProfileSetupBasic = (props) => {
     }
 
     const showData = () => {
-        if(!_.isEmpty(response.data)) {
-            return props.history.push("/user/home")
-        }
-        if(response.loading){
-            return (
-                <button 
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                    type="button" 
-                    disabled
-                >
-                    Loading ...
-                </button>
-            )
-        }
+        // if(!_.isEmpty(response.data)) {
+        //     return props.history.push("/user/home")
+        // }
+        // if(response.loading){
+        //     return (
+        //         <button 
+        //             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+        //             type="button" 
+        //             disabled
+        //         >
+        //             Loading ...
+        //         </button>
+        //     )
+        // }
         return (
             <button 
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
@@ -154,7 +180,7 @@ const ProfileSetupBasic = (props) => {
                                                         <div class="w-1/6  h-15">
                                                         </div>
                                                         <div class="w-4/6  h-15">
-                                                            <h1 class="text-3xl my-5" style={{textAlign: "center"}}>Welcome! Quickly setup your company profile to get started.</h1>
+                                                            <h1 class="text-3xl my-5" style={{textAlign: "center"}}>This information will help you later.</h1>
                                                             <p class="text-1xl mt-5 mb-10 text-gray-500 text-s italic" style={{textAlign: "center"}}>Fill up your company information</p>
                                                         </div>
                                                         <div class="w-1/6  h-15"></div>
@@ -308,17 +334,17 @@ const ProfileSetupBasic = (props) => {
                                                                     style={{ width: "80%" }}
                                                                 />
                                                                 <label class="block text-gray-700 text-sm mb-2" for="registration_number">
-                                                                    Registration Number
+                                                                    Personal Number
                                                                 </label>
                                                                 <input 
                                                                     class="shadow appearance-none border rounded w-full mb-5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                                                     id="registration_number" 
                                                                     type="text" 
                                                                     placeholder="Registration number" 
-                                                                    onChange={e => handleRegistrationNumberChange(e)}
+                                                                    onChange={e => handlePersonalNumberChange(e)}
                                                                     style={{ width: "80%" }}
                                                                 />
-                                                            <div class="flex justify-end" style={{marginRight: "5%"}}>
+                                                            <div class="flex justify-end" style={{marginRight: "20%"}}>
                                                                 {showData()}
                                                             </div>
                                                         </div>

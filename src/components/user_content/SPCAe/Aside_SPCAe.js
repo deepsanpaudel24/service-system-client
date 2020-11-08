@@ -76,7 +76,7 @@ const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
                 >
                   Dashboard
                 </MenuItem>
-                <MenuItem icon={<FaGem />}> Cases</MenuItem>
+                <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
                 <MenuItem icon={<FaUsers />}><Link to="/user/clients">Client Management</Link></MenuItem>
                 <MenuItem icon={<FaGem />}><Link to="/user/services"> Service Management </Link></MenuItem>
               </Menu>
@@ -90,7 +90,7 @@ const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
                 >
                   Dashboard
                 </MenuItem>
-                <MenuItem icon={<FaGem />}> Cases</MenuItem>
+                <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
                 <MenuItem icon={<FaGem />}><Link to="/user/services"> Service Management </Link></MenuItem>
               </Menu>
             </SidebarContent>
@@ -104,7 +104,7 @@ const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
                 >
                   Dashboard
                 </MenuItem>
-                <MenuItem icon={<FaGem />}> Cases</MenuItem>
+                <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
                 <MenuItem icon={<FaUsers />}><Link to="/user/clients"> Client Management </Link></MenuItem>
               </Menu>
             </SidebarContent>
@@ -117,7 +117,7 @@ const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
               >
                 Dashboard
               </MenuItem>
-              <MenuItem icon={<FaGem />}> Cases</MenuItem>
+              <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
             </Menu>
           </SidebarContent>
         }

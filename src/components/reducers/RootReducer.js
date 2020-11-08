@@ -26,7 +26,15 @@ import PeopleDeactivateReducer from './DeactivatePeopleReducer';
 import AddTimerReducer from './AddTimerReducer';
 import TimerActionReducer from './TimerActionReducer';
 import TimerRunningTimeReducer from './TimerRunningTimeReducer';
-import AddNonCaseTimerReducer from './Add_nonCaseTimerReducer';
+import AddCustomTaskReducer from './AddCustomTaskReducer';
+import SaveIntakeFormReducer from './SaveIntakeFormReducer';
+import SetClientPasswordReducer from './SetClientPasswordReducer';
+import UpdateEmployeeRolesReducer from './EmployeeRoleReducer';
+import CaseAssignmentReducer from './caseAssignmentReducer';
+import ProfileDetailsReducer from './Account_profileDetailsReducer';
+import UploadContractPaperReducer from './UploadContractPaperReducer';
+import ContractDetailsStorageReducer from './Contract_DetailsStorageReducer';
+import CreateIntakeFormReducer from './CreateIntakeFormReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -40,6 +48,7 @@ const rootReducer =  combineReducers({
     resetPasswordResponse: GetNewPasswordReducer,
     logoutUserResponse: AccountLogoutReducer,
     changePasswordResponse: ChangePasswordReducer,
+    ProfileDetailsResponse: ProfileDetailsReducer,
     addEmployeeResponse: EmployeeRegisterReducer,
     getEmployeeResponse: GetEmployeeListReducer,
     setEmployeePasswordResponse: SetEmployeePasswordReducer,
@@ -57,7 +66,14 @@ const rootReducer =  combineReducers({
     AddTimerResponse: AddTimerReducer,
     TimerActionResponse: TimerActionReducer,
     TimerRunningTimeResponse: TimerRunningTimeReducer,
-    AddNonCaseTimerResponse: AddNonCaseTimerReducer
+    AddCustomTaskResponse: AddCustomTaskReducer,
+    SaveIntakeFormResponse: SaveIntakeFormReducer,
+    SetClientPasswordResponse: SetClientPasswordReducer,
+    UpdateEmployeeRolesResponse: UpdateEmployeeRolesReducer,
+    CaseAssignmentResponse: CaseAssignmentReducer,
+    UploadContractPaperResponse: UploadContractPaperReducer,
+    ContractDetailsStorageResponse: ContractDetailsStorageReducer,
+    CreateIntakeFormResponse: CreateIntakeFormReducer
 })
 
 export default rootReducer

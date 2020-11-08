@@ -173,7 +173,7 @@ const SPCAeNavbar = () => {
                 </div>
             </nav>
             <div class="container max-w-full py-4">
-                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mx-6">
+                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mx-6" style={{minHeight: "53rem"}}>
                     <SPCAeContent />
                 </div>
             </div>

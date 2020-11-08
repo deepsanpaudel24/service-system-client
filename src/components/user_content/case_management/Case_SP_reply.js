@@ -12,6 +12,7 @@ const ReplyCaseRequest = () => {
     const [rate, setRate] = useState(0)
     const [avgTimeTaken, setAvgTimeTaken] = useState("")
     const [proposedDeadline, setProposedDeadline] = useState("")
+    const [fileToSend, setFileToSend] = useState([]);
     const [formEmptyError, setFormEmptyError] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.ReplyCaseRequestResponse)
@@ -51,24 +52,73 @@ const ReplyCaseRequest = () => {
         setProposedDeadline(e.target.value)
     }
 
+    // allowed file types
+    const fileTypes = [
+        "video/3gpp",
+        "video/3gpp2",
+        "video/3gp2",
+        "video/mpeg",
+        "video/mp4",
+        "video/ogg",
+        "video/webm",
+        "video/quicktime",
+        "image/jpg",
+        "image/jpeg",
+        "image/png",
+        "text/plain",
+        "text/csv",
+        "application/msword",
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    //Validate files
+    const validateFile = (file) => {
+        return fileTypes.includes(file.type);
+    };
+
+    const handleFileUpload = (e) => {
+        var targetFiles = e.target.files
+        var validateFilesList = []
+        for (let file of targetFiles) {
+            if (validateFile(file)) {
+                validateFilesList.push(file)
+            } else {
+            console.log("File Not valid....");
+            }
+        }
+        setFileToSend(validateFilesList)
+    }
+
     const handleReplyCaseRequest = () => {
         if(title == "" || desc == "" || rate == "" || avgTimeTaken == "" || proposedDeadline == ""){
           setFormEmptyError("Please fill up all the required fields")
         }
         else {
+            var formData = new FormData();
+            for (let file of fileToSend) {
+                formData.append(file.name, file);
+              }
+            formData.append("title", title)
+            formData.append("desc", desc)
+            formData.append("rateType", rateType)
+            formData.append("rate", rate)
+            formData.append("averageTimeTaken", avgTimeTaken)
+            formData.append("spDeadline", proposedDeadline)
+
           //send the case request to backend.
             var string = document.location.pathname
             var urlvalues = string.toString().split('/')
-            var data = {
-                "title": title,
-                "desc": desc,
-                "rateType": rateType,
-                "rate": rate,
-                "averageTimeTaken": avgTimeTaken,
-                "spDeadline": proposedDeadline
-            }
+            // var data = {
+            //     "title": title,
+            //     "desc": desc,
+            //     "rateType": rateType,
+            //     "rate": rate,
+            //     "averageTimeTaken": avgTimeTaken,
+            //     "spDeadline": proposedDeadline
+            // }
             var caseid = urlvalues[4]
-            dispatch(ReplyCaseRequestDispacther(data, caseid))
+            dispatch(ReplyCaseRequestDispacther(formData, caseid))
         }
       }
   
@@ -256,6 +306,8 @@ const ReplyCaseRequest = () => {
                                         id="budget" 
                                         type="file"
                                         multiple
+                                        onChange={e => handleFileUpload(e)}
+                                        accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                     />
                                 </div>
                                 <div class="flex justify-start my-5">

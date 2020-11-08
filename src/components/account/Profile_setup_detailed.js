@@ -73,7 +73,10 @@ const ProfileSetupDetailed = (props) => {
                 "service_type": serviceType,
                 "service_categories": serviceCategories
             }
-            dispatch(UpdateUserDetailedProfile(data))
+            localStorage.setItem('service_type', serviceType)
+            localStorage.setItem('service_categories', serviceCategories)
+            return props.history.push("/user/setup/profile/basic")
+            //dispatch(UpdateUserDetailedProfile(data))
         }
         else {
             setFormErrorMsg("Please fill up all the required fields.")
@@ -81,25 +84,25 @@ const ProfileSetupDetailed = (props) => {
     }
 
     const showData = () => {
-        if(!_.isEmpty(response.data)) {
-            if(response.data['user_type'] == "SPCA" || response.data['user_type'] == "CCA"){
-                return props.history.push("/user/setup/profile/basic")
-            }
-            else if(response.data['user_type'] == "SPS" || response.data['user_type'] == "CS"){
-                return props.history.push("/user/setup/profile/basic")
-            }
-        }
-        if(response.loading){
-            return (
-                <button 
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-5 rounded focus:outline-none focus:shadow-outline" 
-                    type="button" 
-                    disabled
-                >
-                    Loading ...
-                </button>
-            )
-        }
+        // if(!_.isEmpty(response.data)) {
+        //     if(response.data['user_type'] == "SPCA" || response.data['user_type'] == "CCA"){
+        //         return props.history.push("/user/setup/profile/basic")
+        //     }
+        //     else if(response.data['user_type'] == "SPS" || response.data['user_type'] == "CS"){
+        //         return props.history.push("/user/setup/profile/basic")
+        //     }
+        // }
+        // if(response.loading){
+        //     return (
+        //         <button 
+        //             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-5 rounded focus:outline-none focus:shadow-outline" 
+        //             type="button" 
+        //             disabled
+        //         >
+        //             Loading ...
+        //         </button>
+        //     )
+        // }
         return (
             <button 
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-5 rounded focus:outline-none focus:shadow-outline" 
@@ -143,7 +146,7 @@ const ProfileSetupDetailed = (props) => {
                                         <div class="w-1/6  h-15">
                                         </div>
                                         <div class="w-4/6  h-15">
-                                            <h1 class="text-3xl my-5" style={{textAlign: "center"}}>This information will help you later. test test test </h1>
+                                            <h1 class="text-3xl my-5" style={{textAlign: "center"}}>Welcome! Quickly setup your company profile to get started.</h1>
                                             <p class="text-1xl mt-5 mb-10 text-gray-500 text-s italic" style={{textAlign: "center"}}>Fill up your detailed information</p>
                                         </div>
                                         <div class="w-1/6  h-15"></div>

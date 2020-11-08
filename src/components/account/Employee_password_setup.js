@@ -46,7 +46,8 @@ const EmployeePasswordSetup = (props) => {
         }
         else {
             var data = {
-                "password": password
+                "password": password,
+                "confirm-password":confirmPassword
             }
             dispatch(SetEmployeePasswordDispatcher(data, token))
         }

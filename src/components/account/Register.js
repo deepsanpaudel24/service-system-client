@@ -6,6 +6,7 @@ import NavAccount from "./Nav";
 import validator from "validator";
 import PasswordStrengthBar from "react-password-strength-bar";
 import {PulseLoader} from "react-spinners";
+import { SendEmailConfirmationDispatcher } from "../actions/SendEmailConfirmationAction";
 
 const Register = (props) => {
     //create state
@@ -40,7 +41,8 @@ const Register = (props) => {
 
     var data = {
         "email": email,
-        "password": password
+        "password": password,
+        "confirm_password": confirmPassword
     }
 
     const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
@@ -62,7 +64,12 @@ const Register = (props) => {
             setConfirmPasswordValid("Does not match with the password above. please try again.")
         }
         else {
+            localStorage.setItem('emailID', email)
+            var edata = {
+                "email": email
+            }
             dispatch(RegisterUser(data))
+            dispatch(SendEmailConfirmationDispatcher(edata))
         }
     }
 
@@ -98,7 +105,7 @@ const Register = (props) => {
         }
         return (
             <button 
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline" 
                 type="button" 
                 onClick={() => dataValidator()}
             >
@@ -219,8 +226,13 @@ const Register = (props) => {
                                     </div>
                             }
                         </div>
-                        <div class="flex justify-between" style={{ justifyContent: "center"}}>
+                        <div class="flex justify-between my-4" style={{ justifyContent: "center"}}>
                             {showData()}
+                        </div>
+                        <div class="flex justify-between my-4" style={{ justifyContent: "center"}}>
+                            <a class="inline-block align-baseline text-sm text-blue-500 hover:text-blue-800" href="/user/login">
+                                Already have account?
+                            </a> 
                         </div>
                     </div>
                 </form>

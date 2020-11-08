@@ -163,69 +163,71 @@ const ViewCaseDetailsSA = (props) => {
                                     <div class="min-w-full border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 justify-between leading-normal">
                                         {showServerError()}
                                         {confirmCaseForwarded()}
-                                        <div class="mb-4">
-                                            <p class="text-sm text-gray-600 flex items-center mb-2">
-                                                {
-                                                    caseDetails.status == "Requested" ?
-                                                    <span
-                                                        class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
-                                                        <span aria-hidden
-                                                            class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
-                                                        <span class="relative">Requested</span>
-                                                    </span>
-                                                    :
-                                                    caseDetails.status == "Forwarded" ?
-                                                    <span
-                                                        class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
-                                                        <span aria-hidden
-                                                            class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
-                                                        <span class="relative">Forwarded</span>
-                                                    </span>
-                                                    :
-                                                    caseDetails.status == "Proposal-Forwarded" ?
-                                                    <span
-                                                        class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                        <span aria-hidden
-                                                            class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                        <span class="relative">Proposal Forwarded</span>
-                                                    </span>
-                                                    :
-                                                    <span
-                                                        class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                        <span aria-hidden
-                                                            class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                        <span class="relative">On-progress</span>
-                                                    </span>
-                                                }
+                                        <div class="w-4/5">
+                                            <p class="text-4xl my-3" style={{ textAlign: "left" }}>
+                                                {caseDetails.title}
                                             </p>
-                                            <div class="text-gray-900 font-bold text-3xl min-w-full">{caseDetails.title}</div>
                                         </div>
-                                        <div class="flex items-center">
-                                            <div class="text-sm ">
-                                                <p class="text-gray-900 leading-none mb-1">
-                                                {
-                                                    caseDetails.fee ? 
-                                                        <div>Fee: ${caseDetails.fee}</div>
-                                                    :
-                                                        <div>Proposed budget: ${caseDetails.budgetClient}</div>
-                                                }
+                                        {caseDetails.status == "On-progress" ? (
+                                            <p class="flex my-3 text-base text-gray-600">
+                                                FEE{" "}
+                                                <p class="ml-3 mr-10 text-base text-black">
+                                                ${caseDetails.rate}/ {caseDetails.rateType}
                                                 </p>
-                                                <p class="text-gray-600 mb-1">Case requested on: {caseDetails.requestedDate}</p>
-                                                {
-                                                    caseTags.map((item, index) => {
-                                                        return(
-                                                            <span
-                                                                key={index}
-                                                                class="relative inline-block px-3 py-1 mr-2 font-semibold text-gray-900 leading-tight">
-                                                                <span aria-hidden
-                                                                    class="absolute inset-0 bg-gray-300 opacity-50"></span>
-                                                                <span class="relative">{item}</span>
-                                                            </span>
-                                                        )
-                                                    })
-                                                }
-                                            </div>
-                                        </div>
+                                                CASE REQUESTED ON
+                                                <p class="ml-3 mr-10 text-base text-black">
+                                                {caseDetails.requestedDate}
+                                                </p>
+                                                STATUS{" "}
+                                                {caseDetails.status == "Forwarded" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    CASE FORWARDED
+                                                </p>
+                                                ): caseDetails.status == "Requested" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    CASE RECEIVED
+                                                </p>
+                                                ): caseDetails.status == "Proposal-Forwarded" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    PROPOSAL FORWARDED
+                                                </p>
+                                                ) : (
+                                                <p class="ml-3 mr-10 text-base text-green-600">
+                                                    ON-PROGRESS
+                                                </p>
+                                                )}
+                                            </p>
+                                            ) 
+                                             : (
+                                            <p class="flex my-3 text-base text-gray-600">
+                                            PROPOSED BUDGET{" "}
+                                            <p class="ml-3 mr-10 text-base text-black">
+                                                ${caseDetails.budgetClient}
+                                            </p>
+                                            CASE REQUESTED ON
+                                            <p class="ml-3 mr-10 text-base text-black">
+                                                {caseDetails.requestedDate}
+                                            </p>
+                                            STATUS{" "}
+                                            {caseDetails.status == "Forwarded" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                CASE FORWARDED
+                                                </p>
+                                            ): caseDetails.status == "Requested" ? (
+                                            <p class="ml-3 mr-10 text-base text-blue-600">
+                                                CASE RECEIVED
+                                            </p>
+                                            ): caseDetails.status == "Proposal-Forwarded" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                PROPOSAL FORWARDED
+                                                </p>
+                                            ) : (
+                                                <p class="ml-3 mr-10 text-base text-green-600">
+                                                ON-PROGRESS
+                                                </p>
+                                            )}
+                                            </p>
+                                        )}
                                         {
                                             caseDetails.status == "Requested" ?
                                             <div>
@@ -276,7 +278,7 @@ const ViewCaseDetailsSA = (props) => {
                                             <div>
                                                 {
                                                     caseDetails.status == "Proposal-Forwarded" ?
-                                                    <div class="flex items-center mt-5">
+                                                    <div class="flex items-center mt-8">
                                                         <div class="text-sm">
                                                             <a href={`/sadmin/proposals/${caseDetails._id.$oid}`} class=" text-gray-900 text-blue-700 leading-none mb-2">
                                                                 View Proposals for this case

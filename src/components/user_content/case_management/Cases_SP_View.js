@@ -171,22 +171,62 @@ const ViewCasesSP = (props) => {
                                                                     class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Forwarded</span>
+                                                                    <span class="relative">Received</span>
                                                                 </span>
                                                                 :
                                                                 item.status == "Proposal-Forwarded" ?
+                                                                    item.proposalStatus && item.proposalStatus == "Declined" ?
+                                                                        <span
+                                                                            class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                                                                            <span aria-hidden
+                                                                                class="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                                                            <span class="relative">Proposal Declined</span>
+                                                                        </span>
+                                                                     :
+                                                                     <span
+                                                                        class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                        <span aria-hidden
+                                                                            class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                        <span class="relative">Proposal Forwarded</span>
+                                                                    </span>
+                                                                :
+                                                                item.status == "Contract-Waiting" ?
                                                                 <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
                                                                     <span aria-hidden
-                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Proposal Forwarded</span>
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Proposal Accepted</span>
                                                                 </span>
                                                                 :
+                                                                item.status == "Contract-Sent" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Contract Paper Sent</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Contract-Replied" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Signed Contract Paper Received</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "On-progress" ?
                                                                 <span
                                                                     class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
                                                                     <span class="relative">On-progress</span>
+                                                                </span>
+                                                                :
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Proposal Declined</span>
                                                                 </span>
                                                             }
                                                         </td>

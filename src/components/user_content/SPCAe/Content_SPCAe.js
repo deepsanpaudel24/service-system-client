@@ -1,21 +1,27 @@
 import React from "react";
 import {Redirect, Route, Link, BrowserRouter as Router, Switch} from 'react-router-dom'
 import ChangePassword from "../Change_password";
-import ViewCasesSPActive from "../case_management/Cases_SP_active_view";
-import ViewCasesSP from "../case_management/Cases_SP_View";
-import ViewCaseActiveDetailsSP from "../case_management/Case_SP_active_details";
-import ViewCaseDetailsSP from "../case_management/Case_SP_details";
-import ReplyCaseRequest from "../case_management/Case_SP_reply";
+
+//clients related imports
 import AddClients from "../client_management/Add_Clients";
 import Clients from "../client_management/Clients";
 import ClientDetails from "../client_management/Client_details";
+
+//Employee Related imports
 import AddEmployee from "../employee_management/Add_employee";
 import EmployeeDetails from "../employee_management/Employee_details";
 import EmployeeRoles from "../employee_management/Roles_employee";
 import ViewEmployees from "../employee_management/View_employees";
+
+//services related imports
 import AddService from "../service_management/Add_Service";
 import EditService from "../service_management/Edit_service";
 import Services from "../service_management/Services";
+
+//Cases related import 
+import ViewCasesemp from "../case_management/Cases_employees";
+import ViewCaseDetailsSP from "../case_management/Case_SP_details";
+import ReplyCaseRequest from "../case_management/Case_SP_reply";
 
 const SPCAeContent = () => {
     return(
@@ -27,9 +33,7 @@ const SPCAeContent = () => {
                 <Route exact path='/user/employee/:id' component={EmployeeDetails} />
                 <Route exact path='/user/employee/roles/:id' component={EmployeeRoles} />
 
-                <Route exact path='/user/cases' component={ViewCasesSP} />
-                <Route exact path='/user/cases/active' component={ViewCasesSPActive} />
-                <Route exact path='/user/case/active/:id' component={ViewCaseActiveDetailsSP} />
+                <Route exact path='/user/cases' component={ViewCasesemp} />
                 <Route exact path='/user/case/:id' component={ViewCaseDetailsSP} />
                 <Route exact path='/user/case/reply/:id' component={ReplyCaseRequest} />
 

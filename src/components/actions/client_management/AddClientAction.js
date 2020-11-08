@@ -42,6 +42,17 @@ export const AddClientDispatcher = (data, addNext) => async dispatch => {
             type: "ADD_CLIENT_FAIL"
         })
     }
+
+    const config2 = {
+        method: 'post',
+        url: '/api/v1/client/send-email-confirmation',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+          },
+        data: data
+    }
+    await axios(config2)
 }
 
 export const AddClientResponseReset = () => async dispatch => {

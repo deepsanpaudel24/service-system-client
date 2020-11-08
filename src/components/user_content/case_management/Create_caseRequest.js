@@ -12,6 +12,7 @@ const CreateCaseRequest = () => {
     const [budget, setBudget] = useState("")
     const [deadline, setDeadline] = useState("")
     const [caseTags, setCaseTags] = useState("")
+    const [fileToSend, setFileToSend] = useState([]);
     const [formEmptyError, setFormEmptyError] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.NewCaseRequestResponse)
@@ -58,10 +59,42 @@ const CreateCaseRequest = () => {
         setFormStep(2)
     }
 
-    const handleFileUpload = ({target: { files }},  e) => {
-        console.log(files[0])
-        let data = new FormData();
-        data.append( 'file', files[0])
+    // allowed file types
+    const fileTypes = [
+        "video/3gpp",
+        "video/3gpp2",
+        "video/3gp2",
+        "video/mpeg",
+        "video/mp4",
+        "video/ogg",
+        "video/webm",
+        "video/quicktime",
+        "image/jpg",
+        "image/jpeg",
+        "image/png",
+        "text/plain",
+        "text/csv",
+        "application/msword",
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    //Validate files
+    const validateFile = (file) => {
+        return fileTypes.includes(file.type);
+    };
+
+    const handleFileUpload = (e) => {
+        var targetFiles = e.target.files
+        var validateFilesList = []
+        for (let file of targetFiles) {
+            if (validateFile(file)) {
+                validateFilesList.push(file)
+            } else {
+            console.log("File Not valid....");
+            }
+        }
+        setFileToSend(validateFilesList)
     }
 
     const handleNewCaseRequest = () => {
@@ -70,14 +103,17 @@ const CreateCaseRequest = () => {
         }
         else {
             //send the case request to backend.
-            var data = {
-                    "title": title,
-                    "desc": desc,
-                    "budget": budget,
-                    "deadline": deadline,
-                    "caseTags": caseTags
-            }
-            dispatch(NewCaseRequestDispacther(data))
+            var formData = new FormData();
+            for (let file of fileToSend) {
+                formData.append(file.name, file);
+              }
+            formData.append("title", title)
+            formData.append("desc", desc)
+            formData.append("caseTags", caseTags)
+            formData.append("budget", budget)
+            formData.append("deadline", deadline)
+            
+            dispatch(NewCaseRequestDispacther(formData))
         }
       }
   
@@ -225,7 +261,8 @@ const CreateCaseRequest = () => {
                                         id="budget" 
                                         type="file"
                                         multiple
-                                        onChange={handleFileUpload}
+                                        onChange={e => handleFileUpload(e)}
+                                        accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                     />
                                 </div>
                                 <div class="flex justify-start my-5">

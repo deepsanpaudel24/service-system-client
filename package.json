@@ -12,6 +12,7 @@
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-xhr-backend": "^3.2.2",
     "lodash": "^4.17.20",
+    "luhn": "^2.4.1",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-compound-timer": "^1.2.0",
@@ -19,6 +20,7 @@
     "react-dom": "^16.13.1",
     "react-i18next": "^11.7.3",
     "react-icons": "^3.11.0",
+    "react-id-generator": "^3.0.1",
     "react-password-strength-bar": "^0.3.2",
     "react-pro-sidebar": "^0.4.4",
     "react-redux": "^7.2.1",
@@ -29,7 +31,8 @@
     "react-switch": "^5.0.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "validator": "^13.1.17"
+    "validator": "^13.1.17",
+    "video-react": "^0.14.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -56,6 +59,6 @@
     "autoprefixer": "^10.0.0",
     "postcss-cli": "^8.0.0",
     "tailwindcss": "^1.8.10"
-  }
-  
+  },
+  "proxy": "http://127.0.0.1:5000"
 }

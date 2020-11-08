@@ -22,12 +22,14 @@ import SAHomePage from './super_admin/Home';
 import EmployeePasswordSetup from './account/Employee_password_setup';
 
 import axios from 'axios';
+import ClientPasswordSetup from './account/Client_password_setup';
+import ProfileSetupPreferences from './account/Profile_setup_preferences';
 
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
 
 //axios.defaults.baseURL = "https://service-system-backend.herokuapp.com/";
-axios.defaults.baseURL = "http://127.0.0.1:5000";
+//axios.defaults.baseURL = "http://127.0.0.1:5000";
 //axios.defaults.withCredentials = true;
 
 function App() {
@@ -58,9 +60,11 @@ function App() {
 
             <Route path={"/user/setup/profile/basic"} component={ProfileSetupBasic} />
             <Route path={"/user/setup/profile/details"} component={ProfileSetupDetailed} />
+            <Route path={"/user/setup/profile/preferences"} component={ProfileSetupPreferences} />
 
             <Route path={"/user/home"} component={HomePage} />
             <Route path={"/user/change-password"} component={HomePage} />
+            <Route path={"/user/profile-setting"} component={HomePage} />
 
             <Route path={"/user/employee/password-setup/:token"} component={EmployeePasswordSetup} />
             <Route path={"/user/employees"} component={HomePage} />
@@ -80,13 +84,23 @@ function App() {
             <Route path={"/user/case/reply/:id"} component={HomePage} />
             <Route path={"/user/case/proposals/:id"} component={HomePage} />
             <Route path={"/user/proposal/:id"} component={HomePage} />
-
+            <Route path={"/user/case/send/contract/:id"} component={HomePage} />
+            <Route path={"/user/contract/:id"} component={HomePage} />
+            
+            <Route path={"/user/client/password-setup/:token"} component={ClientPasswordSetup} />
             <Route path={"/user/clients"} component={HomePage} />
             <Route path={"/user/client/add"} component={HomePage} />
             <Route path={"/user/client/:id"} component={HomePage} />
 
-            <Route path={"/user/timers"} component={HomePage} />
-            <Route path={"/user/add-timer"} component={HomePage} />
+            <Route path={"/user/tasks"} component={HomePage} />
+            <Route path={"/user/create-task"} component={HomePage} />
+            <Route path={"/user/tasks/:id"} component={HomePage} />
+
+            <Route path={"/user/intake-form"} component={HomePage} />
+            <Route path={"/user/intake/form/:id"} component={HomePage} />
+            <Route path={"/user/create-intake-form"} component={HomePage} />
+            <Route path="/user/intake-form/list" component={HomePage} />
+            <Route path="/user/fill-form" component={HomePage} />
 
             <Redirect to={"/"} />
           </Switch>
