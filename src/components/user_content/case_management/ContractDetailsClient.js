@@ -11,6 +11,7 @@ import dataFileLogo from "../../../images/dataFile-Icon.png";
 import imageLogo from "../../../images/image-Icon.png";
 import { MdFileDownload } from "react-icons/md";
 import folderEmptyIcon from "../../../images/folder_empty.png";
+import { VscClose } from "react-icons/vsc";
 
 const ContractDetailsClient = (props) => {
     const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -18,7 +19,8 @@ const ContractDetailsClient = (props) => {
     const [activeTab, setActiveTab] = useState("tab1")
     const [pageLoading, setPageLoading] = useState(true)
     const [fileUploaderLoading, setFileUploaderLoading] = useState(false)
-    const [fileUploaderConfirm, setFileUploaderConfirm] = useState("")    
+    const [fileUploaderConfirm, setFileUploaderConfirm] = useState(false)  
+    const [fileNameToShow, setFileNameToShow] = useState([])  
     const [fileToSend, setFileToSend] = useState([]);
 
     const dispatch = useDispatch()
@@ -104,7 +106,33 @@ const ContractDetailsClient = (props) => {
             }
         }
         setFileToSend(validateFilesList)
+
+        // loop through files
+        var files = e.target.files
+        var filesNameList = [] 
+        for (var i = 0; i < files.length; i++) {
+        // get item
+        var file = files.item(i);
+        filesNameList.push(file.name)
+        }
+        setFileNameToShow(filesNameList)
     }
+
+    const handleRemoveChatFile = (name, index) => {
+        var filteredFileList = []
+        var fileList = fileToSend
+        var NewFileNameList = fileNameToShow
+    
+        for (var i = 0; i < fileList.length; i++) {
+          var file = fileList[i]
+          if(file.name !== name){
+            filteredFileList.push(file)
+          } 
+        }
+        NewFileNameList.splice(index, 1)
+        setFileToSend(filteredFileList)
+        setFileNameToShow(NewFileNameList)
+      }
 
     const submitFileUpload = () => {
         // send the put request to contracts collection in the database with the Id
@@ -132,11 +160,12 @@ const ContractDetailsClient = (props) => {
             axios(config)
             .then((res) => {
                 setFileUploaderLoading(false)
-                setFileUploaderConfirm("Files uploaded sucessfully")
+                setFileUploaderConfirm(true)
+                setActiveTab("tab1")
             })
             .catch((error) => {
                 setFileUploaderLoading(false)
-                setFileUploaderConfirm("Files uploaded failed")
+                setFileUploaderConfirm(false)
             })  
         }
     }
@@ -169,6 +198,14 @@ const ContractDetailsClient = (props) => {
                         <div class="max-w-sm w-full lg:max-w-full lg:flex">
                             <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                                 <div class="mb-8">
+                                { 
+                                    fileUploaderConfirm ?
+                                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                                        <p class="font-bold">Files uploaded sucessfully</p>
+                                    </div>
+                                    :
+                                    ""
+                                }
                                     <div class="flex">
                                         <div class="w-5/5">
                                             <p class="text-4xl my-3" style={{ textAlign: "left" }}>
@@ -389,6 +426,23 @@ const ContractDetailsClient = (props) => {
                                                 >
                                                     Upload
                                                 </button>
+                                                {
+                                                    !_.isEmpty(fileNameToShow) ? 
+                                                        fileNameToShow.map((item, index) => {
+                                                            return(
+                                                                <div class="flex mx-3 my-5">
+                                                                    <div class="w-3/12">
+                                                                        <p>{item}</p>
+                                                                    </div>
+                                                                    <div class="w-1/12">
+                                                                        <p class="text-red-400 mx-6 text-lg" onClick={() => handleRemoveChatFile(item, index)}><VscClose /></p>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    :
+                                                    ""
+                                                }
                                             </div>
                                         }
                                         {

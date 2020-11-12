@@ -84,25 +84,6 @@ const ProfileSetupDetailed = (props) => {
     }
 
     const showData = () => {
-        // if(!_.isEmpty(response.data)) {
-        //     if(response.data['user_type'] == "SPCA" || response.data['user_type'] == "CCA"){
-        //         return props.history.push("/user/setup/profile/basic")
-        //     }
-        //     else if(response.data['user_type'] == "SPS" || response.data['user_type'] == "CS"){
-        //         return props.history.push("/user/setup/profile/basic")
-        //     }
-        // }
-        // if(response.loading){
-        //     return (
-        //         <button 
-        //             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-5 rounded focus:outline-none focus:shadow-outline" 
-        //             type="button" 
-        //             disabled
-        //         >
-        //             Loading ...
-        //         </button>
-        //     )
-        // }
         return (
             <button 
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-5 rounded focus:outline-none focus:shadow-outline" 

@@ -7,30 +7,39 @@ import { Link } from "react-router-dom";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { RemoveServiceDispatcher, RemoveServiceResponseReset } from "../../actions/service_management/RemoveServiceAction";
+import { ServicesListStorageDispatcher } from "../../actions/service_management/ServicesListStorage";
 
 const Services = (props) => {
     const [services, setServices] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
     const dispatch = useDispatch()
     const response = useSelector(state => state.ServiceRemoveResponse)
+    const response2 = useSelector(state => state.SerivceListStorageResponse)
 
     useLayoutEffect(() => {
-        const config = {
-            method: 'get',
-            url: '/api/v1/services',
-            headers: { 
-                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-              }
-          }
-          axios(config)
-          .then((res) => {
-              setServices(res.data)
-              setTableLoading(false)
-          })
-          .catch((error) => {
-              console.log(error.response)
-          })
-      }, [])
+        if(_.isEmpty(response2.data)){
+            const config = {
+                method: 'get',
+                url: '/api/v1/services',
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                }
+            }
+            axios(config)
+            .then((res) => {
+                setServices(res.data)
+                setTableLoading(false)
+                dispatch(ServicesListStorageDispatcher(res.data))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+        else {
+            setServices(response2.data)
+            setTableLoading(false)
+        }
+    }, [])
   
     useEffect(() => {
         

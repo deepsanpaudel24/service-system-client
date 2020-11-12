@@ -4,8 +4,9 @@ import CreatableSelect from 'react-select/creatable';
 import {PulseLoader} from "react-spinners";
 import {useDispatch, useSelector} from "react-redux";
 import { NewCaseRequestDispacther } from "../../actions/case_management/NewCaseRequestAction"
+import { VscClose } from "react-icons/vsc";
 
-const CreateCaseRequest = () => {
+const CreateCaseRequest = (props) => {
     const [title, setTitle] = useState("")
     const [formStep, setFormStep] = useState(1)
     const [desc, setDesc] = useState("")
@@ -13,6 +14,7 @@ const CreateCaseRequest = () => {
     const [deadline, setDeadline] = useState("")
     const [caseTags, setCaseTags] = useState("")
     const [fileToSend, setFileToSend] = useState([]);
+    const [fileNameToShow, setFileNameToShow] = useState([])  
     const [formEmptyError, setFormEmptyError] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.NewCaseRequestResponse)
@@ -95,7 +97,32 @@ const CreateCaseRequest = () => {
             }
         }
         setFileToSend(validateFilesList)
+        // loop through files
+        var files = e.target.files
+        var filesNameList = [] 
+        for (var i = 0; i < files.length; i++) {
+        // get item
+        var file = files.item(i);
+        filesNameList.push(file.name)
+        }
+        setFileNameToShow(filesNameList)
     }
+
+    const handleRemoveChatFile = (name, index) => {
+        var filteredFileList = []
+        var fileList = fileToSend
+        var NewFileNameList = fileNameToShow
+    
+        for (var i = 0; i < fileList.length; i++) {
+          var file = fileList[i]
+          if(file.name !== name){
+            filteredFileList.push(file)
+          } 
+        }
+        NewFileNameList.splice(index, 1)
+        setFileToSend(filteredFileList)
+        setFileNameToShow(NewFileNameList)
+      }
 
     const handleNewCaseRequest = () => {
         if(title == "" || desc == "" ){
@@ -130,11 +157,7 @@ const CreateCaseRequest = () => {
   
     const confirmNewCaseRequest = () => {
         if(!_.isEmpty(response.data)){
-           return(
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4" role="alert">
-                <p class="font-bold">New case requested successfully</p>
-            </div>
-           )
+            props.history.push("/user/cases")
         }
     }
   
@@ -248,22 +271,39 @@ const CreateCaseRequest = () => {
                                     <label class="block text-black text-md mb-2" for="name">
                                         Case Tags:
                                     </label>
-                                    </div>
-                                    <CreatableSelect
-                                        isMulti
-                                        onChange={(e) => handleCaseTags(e)}
-                                        options={options}
-                                    />
+                                </div>
+                                <CreatableSelect
+                                    isMulti
+                                    onChange={(e) => handleCaseTags(e)}
+                                    options={options}
+                                />
                                 <div class="mt-6 mb-5" >
                                     <label for="price" class="block text-gray-700 text-sm">Related Files (Optional)</label>
                                     <input 
-                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                        class="rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                         id="budget" 
                                         type="file"
                                         multiple
                                         onChange={e => handleFileUpload(e)}
                                         accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                     />
+                                    {
+                                        !_.isEmpty(fileNameToShow) ? 
+                                            fileNameToShow.map((item, index) => {
+                                                return(
+                                                    <div class="flex mx-3 my-5">
+                                                        <div class="w-3/12">
+                                                            <p>{item}</p>
+                                                        </div>
+                                                        <div class="w-1/12">
+                                                            <p class="text-red-400 mx-6 text-lg" onClick={() => handleRemoveChatFile(item, index)}><VscClose /></p>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })
+                                        :
+                                        ""
+                                    }
                                 </div>
                                 <div class="flex justify-start my-5">
                                     {showData()}

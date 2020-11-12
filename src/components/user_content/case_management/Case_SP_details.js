@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PulseLoader } from "react-spinners";
 import axios from "axios";
+import download from "downloadjs";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 import {
@@ -19,6 +20,10 @@ import GoogleDriveRelatedFiles from "./Case_related_google_drive_files";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import CaseAssignment from "./Case_Assignment";
+import ChatClientSide from "../../chat/ChatClientSide";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { CaseDetailsStorageDispatcher } from "../../actions/case_management/CaseDetailsStorage";
+import { ReplyCaseRequestResponseReset } from "../../actions/case_management/ReplyCaseRequestAction";
 
 const ViewCaseDetailsSP = (props) => {
   const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -27,37 +32,78 @@ const ViewCaseDetailsSP = (props) => {
   const [pageLoading, setPageLoaoding] = useState(true);
   const [caseTags, setCaseTags] = useState([]);
   const [propsalDetails, setProposalDetails] = useState([]);
-  
+  const [proposalSentConfirm, setProposalSentConfirm] = useState(false);
+  const [fileToSend, setFileToSend] = useState([]);
   const [totalTimeWorked, setTotalTimeWorked] = useState();
   const [startingTime, setStartingTime] = useState(null);
   const [stoppingTime, setStoppingTime] = useState(null);
   const [showIfBillable, setShowIfBillable] = useState(false);
   const [userName, setUserName] = useState("")
   const [activeTab, setActiveTab] = useState("documents")
+  const [confirmFileUpload, setConfirmFileUpload] = useState(false)
+  const [confirmFileRemove, setConfirmFileRemove] = useState(false)
   const dispatch = useDispatch();
   const response = useSelector((state) => state.AddTimerResponse);
   const timerResponse = useSelector((state) => state.TimerActionResponse);
+  const CaseDetailsResponse = useSelector(state => state.CaseDetailsStorageReponse);
+  const ProposalSentResponse = useSelector(state => state.ReplyCaseRequestResponse)
+  const response2 = useSelector(state => state.UploadContractPaperResponse)
+  const response3 = useSelector(state => state.ConfirmContractResponse)
 
   useLayoutEffect(() => {
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");
-    const config = {
-      method: "get",
-      url: "/api/v1/case-sp/" + urlvalues[3],
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
-      },
-    };
-    axios(config)
-      .then((res) => {
-        setCaseDetails(res.data);
+    if(!_.isEmpty(ProposalSentResponse.data)){
+      setProposalSentConfirm(true)
+      dispatch(ReplyCaseRequestResponseReset())
+    }
+    if(_.isEmpty(CaseDetailsResponse.data) || !_.isEmpty(response2.data) || !_.isEmpty(response3.data)){
+      const config = {
+        method: "get",
+        url: "/api/v1/case-sp/" + urlvalues[3],
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config)
+        .then((res) => {
+          setCaseDetails(res.data);
+          setPageLoaoding(false);
+          var tagslist = res.data["caseTags"].toString().split(",");
+          setCaseTags(tagslist);
+          dispatch(CaseDetailsStorageDispatcher(res.data))
+        })
+        .catch((error) => {
+          setPageLoaoding(false);
+        });
+    }
+    else if (CaseDetailsResponse.data['_id'].$oid !== urlvalues[3]){
+      const config = {
+        method: "get",
+        url: "/api/v1/case-sp/" + urlvalues[3],
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config)
+        .then((res) => {
+          setCaseDetails(res.data);
+          setPageLoaoding(false);
+          var tagslist = res.data["caseTags"].toString().split(",");
+          setCaseTags(tagslist);
+          dispatch(CaseDetailsStorageDispatcher(res.data))
+        })
+        .catch((error) => {
+          setPageLoaoding(false);
+        });
+    }
+    else {
+        setCaseDetails(CaseDetailsResponse.data);
         setPageLoaoding(false);
-        var tagslist = res.data["caseTags"].toString().split(",");
+        var tagslist = CaseDetailsResponse.data["caseTags"].toString().split(",");
         setCaseTags(tagslist);
-      })
-      .catch((error) => {
-        setPageLoaoding(false);
-      });
+    }
+
 
     const config2 = {
       method: "get",
@@ -73,6 +119,7 @@ const ViewCaseDetailsSP = (props) => {
     .catch((error) => {
       console.log(error.response)
     });
+    
     
     var config3 = {
       method: "get",
@@ -92,6 +139,33 @@ const ViewCaseDetailsSP = (props) => {
   }, []);
 
   useEffect(() => {}, [caseDetails]);
+
+  const handleFileOpen = (filename) => {
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    let config = {
+      method: "post",
+      url: "/static/allFiles/" + filename,
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+      },
+      data: {
+        caseId: urlvalues[3],
+      },
+    };
+    axios(config)
+      .then((resp) => {
+        //takes the filename from the response and stores it in the resp_file_name
+        const resp_file_name = resp.headers["content-disposition"].split("filename=")[1];
+        //takes the content type in the content const
+        const content = resp.headers["content-type"];
+        //downloads the file in the response
+        download(resp.data, resp_file_name, content);
+      })
+      .catch((error) => {
+        console.log("File could not be accessed")
+      });
+  };
 
   const activateDocsTab = () => {
     setActiveTab("documents")
@@ -213,7 +287,91 @@ const ViewCaseDetailsSP = (props) => {
     return(
         props.history.push("/user/contract/" + urlvalues[3])
     )
-}
+  }
+
+  // allowed file types
+  const fileTypes = [
+    "video/3gpp",
+    "video/3gpp2",
+    "video/3gp2",
+    "video/mpeg",
+    "video/mp4",
+    "video/ogg",
+    "video/webm",
+    "video/quicktime",
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "text/plain",
+    "text/csv",
+    "application/msword",
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ];
+
+  //Validate files
+  const validateFile = (file) => {
+      return fileTypes.includes(file.type);
+  };
+
+  const handleFileUpload = (e) => {
+      var string = document.location.pathname;
+      var urlvalues = string.toString().split("/");
+      var targetFiles = e.target.files
+      var validateFilesList = []
+      for (let file of targetFiles) {
+          if (validateFile(file)) {
+              validateFilesList.push(file)
+          } else {
+          console.log("File Not valid....");
+          }
+      }
+      var formData = new FormData();
+      for (let file of validateFilesList) {
+          formData.append(file.name, file);
+        }
+      const config = {
+        method: "put",
+        url: "/api/v1/case/documents/" + urlvalues[3],
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+        data: formData
+      }
+      axios(config)
+      .then((res) => {
+        setConfirmFileUpload(true)
+        setConfirmFileRemove(false)
+        window.location.reload()
+      })
+      .catch((error) => {
+        console.log(error.response)
+      });
+  }
+
+  const handleRemoveFile = (file) => {
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    const config = {
+      method: "put",
+      url: "/api/v1/case/docs-remove/" + urlvalues[3],
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+      },
+      data: {
+        'file': file
+      }
+    }
+    axios(config)
+    .then((res) => {
+      setConfirmFileRemove(true)
+      setConfirmFileUpload(false)
+      window.location.reload()
+    })
+    .catch((error) => {
+      console.log(error.response)
+    });
+  }
 
   return (
     <div>
@@ -230,6 +388,30 @@ const ViewCaseDetailsSP = (props) => {
               <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                 <div class="mb-8">
                   {showTimerAddedConfirm()}
+                  {
+                    confirmFileUpload ? 
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                        <p class="font-bold">File uploaded successfully</p>
+                    </div>
+                    :
+                    ""
+                  }
+                  {
+                    confirmFileRemove ? 
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                        <p class="font-bold">File removed successfully</p>
+                    </div>
+                    :
+                    ""
+                  }
+                  {
+                    proposalSentConfirm ? 
+                      <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4" role="alert">
+                          <p class="font-bold">Proposal sent successfully</p>
+                      </div>
+                      :
+                      ""
+                  }
                   <div class="flex">
                     <div class="w-4/5">
                       <p class="text-4xl my-3" style={{ textAlign: "left" }}>
@@ -431,7 +613,7 @@ const ViewCaseDetailsSP = (props) => {
                     </p>
                   )}
                   <p
-                    class="text-gray-700 text-base mt-3"
+                    class="text-gray-700 text-base mt-3 tracking-wide"
                     style={{ marginTop: "3rem", "textAlign": "justify", "text-justify": "inter-word" }}
                   >
                     {caseDetails.desc}
@@ -582,156 +764,262 @@ const ViewCaseDetailsSP = (props) => {
                 </div>
                 {
                   activeTab == "documents" ?
-                  <div class="flex gap-6 mt-3">
-                    {
-                      caseDetails.files.map((item) => {
-                        var filename = item.split("/").slice(-1)[0]
-                        if(filename.length < 12){
-                          var display_name = filename
-                        }
-                        else {
-                          var display_name = filename.slice(0,12) + " ..."
-                        }
-                        var extension = filename.split(".").slice(-1)[0].toLowerCase()
-                        if(extension == "pdf"){
-                          return(
-                            <div
-                              class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                              style={{ maxWidth: "15rem" }}
-                            >
-                              <div
-                                class="inline-flex overflow-hidden"
-                                style={{ height: "10rem", width: "10rem" }}
-                              >
-                                <img
-                                  src={pdfLogo}
-                                  alt=""
-                                  class="h-full w-full"
-                                  style={{ opacity: "0.5" }}
-                                />
-                              </div>
-                              <div class="flex mt-4">
-                                <div class="w-5/6">
-                                <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
-                                </div>
-                                <div class="w-1/6">
-                                  <button class="focus:outline-none">
-                                    <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                      <MdFileDownload />
-                                    </div>
-                                  </button>
-                                </div>
-                              </div>
+                  <div>
+                    <nav class="flex flex-wrap">
+                      <div class="w-full block flex-grow lg:flex lg:w-auto">
+                          <div class="lg:flex-grow">
+                            <div class="flex gap-6 mt-4">
+                              {
+                                caseDetails.files.map((item) => {
+                                  var filename = item.split("/").slice(-1)[0]
+                                  if(filename.length < 12){
+                                    var display_name = filename
+                                  }
+                                  else {
+                                    var display_name = filename.slice(0,12) + " ..."
+                                  }
+                                  var extension = filename.split(".").slice(-1)[0].toLowerCase()
+                                  var owner = filename.split(".").slice(-2)[0]
+                                  if(extension == "pdf"){
+                                    return(
+                                      <div class="bg-gray-100  shadow rounded-lg">
+                                        {
+                                          owner == "sp" ? 
+                                          <div class="flex justify-end mr-2 mt-1 mb-2">
+                                            <button
+                                              class="focus:outline-none"
+                                              onClick={() => handleRemoveFile(item)}
+                                            >
+                                              <p class="text-red-400 ml-3">
+                                                <RiDeleteBin5Line />
+                                              </p>
+                                            </button>
+                                          </div>
+                                          :
+                                          ""
+                                        }
+                                          <div
+                                            class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                            style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                            onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                          >
+                                            <div
+                                              class="inline-flex overflow-hidden"
+                                              style={{ height: "10rem", width: "10rem" }}
+                                            >
+                                              <img
+                                                src={pdfLogo}
+                                                alt=""
+                                                class="h-full w-full"
+                                                style={{ opacity: "0.5" }}
+                                              />
+                                            </div>
+                                            <div class="flex mt-4">
+                                              <div class="w-5/6">
+                                                <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                  {" "}
+                                                  {display_name}{" "}
+                                                </button>
+                                              </div>
+                                              <div class="w-1/6">
+                                                <button class="focus:outline-none">
+                                                  <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                    <MdFileDownload />
+                                                  </div>
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                      </div>
+                                    )
+                                  }
+                                  else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
+                                    return(
+                                      <div class="bg-gray-100  shadow rounded-lg">
+                                        {
+                                          owner == "sp" ? 
+                                          <div class="flex justify-end mr-2 mt-1 mb-2">
+                                            <button
+                                              class="focus:outline-none"
+                                              onClick={() => handleRemoveFile(item)}
+                                            >
+                                              <p class="text-red-400 ml-3">
+                                                <RiDeleteBin5Line />
+                                              </p>
+                                            </button>
+                                          </div>
+                                          :
+                                          ""
+                                        }
+                                      <div
+                                        class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                        style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                        onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                      >
+                                        <div
+                                          class="inline-flex overflow-hidden"
+                                          style={{ height: "10rem", width: "10rem" }}
+                                        >
+                                          <img
+                                            src={docxLogo}
+                                            alt=""
+                                            class="h-full w-full"
+                                            style={{ opacity: "0.5" }}
+                                          />
+                                        </div>
+                                        <div class="flex mt-4">
+                                          <div class="w-5/6">
+                                            <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                              {" "}
+                                              {display_name}{" "}
+                                            </button>
+                                          </div>
+                                          <div class="w-1/6">
+                                            <button class="focus:outline-none">
+                                              <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                <MdFileDownload />
+                                              </div>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      </div>
+                                    )
+                                  }
+                                  else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
+                                    return(
+                                      <div class="bg-gray-100  shadow rounded-lg">
+                                        {
+                                          owner == "sp" ? 
+                                          <div class="flex justify-end mr-2 mt-1 mb-2">
+                                            <button
+                                              class="focus:outline-none"
+                                              onClick={() => handleRemoveFile(item)}
+                                            >
+                                              <p class="text-red-400 ml-3">
+                                                <RiDeleteBin5Line />
+                                              </p>
+                                            </button>
+                                          </div>
+                                          :
+                                          ""
+                                        }
+                                      <div
+                                        class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                        style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                        onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                      >
+                                        <div
+                                          class="inline-flex overflow-hidden"
+                                          style={{ height: "10rem", width: "10rem" }}
+                                        >
+                                          <img
+                                            src={imageLogo}
+                                            alt=""
+                                            class="h-full w-full"
+                                            style={{ opacity: "0.5" }}
+                                          />
+                                        </div>
+                                        <div class="flex mt-4">
+                                          <div class="w-5/6">
+                                            <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                              {" "}
+                                              {display_name}{" "}
+                                            </button>
+                                          </div>
+                                          <div class="w-1/6">
+                                            <button class="focus:outline-none">
+                                              <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                <MdFileDownload />
+                                              </div>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      </div>
+                                    )
+                                  }
+                                  else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
+                                    return(
+                                      <div class="bg-gray-100  shadow rounded-lg">
+                                        {
+                                          owner == "sp" ? 
+                                          <div class="flex justify-end mr-2 mt-1 mb-2">
+                                            <button
+                                              class="focus:outline-none"
+                                              onClick={() => handleRemoveFile(item)}
+                                            >
+                                              <p class="text-red-400 ml-3">
+                                                <RiDeleteBin5Line />
+                                              </p>
+                                            </button>
+                                          </div>
+                                          :
+                                          ""
+                                        }
+                                      <div
+                                        class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                        style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                        onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                      >
+                                        <div
+                                          class="inline-flex overflow-hidden"
+                                          style={{ height: "10rem", width: "10rem" }}
+                                        >
+                                          <img
+                                            src={dataFileLogo}
+                                            alt=""
+                                            class="h-full w-full"
+                                            style={{ opacity: "0.5" }}
+                                          />
+                                        </div>
+                                        <div class="flex mt-4">
+                                          <div class="w-5/6">
+                                            <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                              {" "}
+                                              {display_name}{" "}
+                                            </button>
+                                          </div>
+                                          <div class="w-1/6">
+                                            <button class="focus:outline-none">
+                                              <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                <MdFileDownload />
+                                              </div>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      </div>
+                                    )
+                                  }
+                                })
+                              }
                             </div>
-                          )
-                        }
-                        else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
-                          return(
-                            <div
-                              class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                              style={{ maxWidth: "15rem" }}
-                            >
-                              <div
-                                class="inline-flex overflow-hidden"
-                                style={{ height: "10rem", width: "10rem" }}
-                              >
-                                <img
-                                  src={docxLogo}
-                                  alt=""
-                                  class="h-full w-full"
-                                  style={{ opacity: "0.5" }}
-                                />
-                              </div>
-                              <div class="flex mt-4">
-                                <div class="w-5/6">
-                                <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name}</p></a>
-                                </div>
-                                <div class="w-1/6">
-                                  <button class="focus:outline-none">
-                                    <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                      <MdFileDownload />
-                                    </div>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        }
-                        else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
-                          return(
-                            <div
-                              class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                              style={{ maxWidth: "15rem" }}
-                            >
-                              <div
-                                class="inline-flex overflow-hidden"
-                                style={{ height: "10rem", width: "10rem" }}
-                              >
-                                <img
-                                  src={imageLogo}
-                                  alt=""
-                                  class="h-full w-full"
-                                  style={{ opacity: "0.5" }}
-                                />
-                              </div>
-                              <div class="flex mt-4">
-                                <div class="w-5/6">
-                                  <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
-                                </div>
-                                <div class="w-1/6">
-                                  <button class="focus:outline-none">
-                                    <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                      <MdFileDownload />
-                                    </div>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        }
-                        else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
-                          return(
-                            <div
-                              class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                              style={{ maxWidth: "15rem" }}
-                            >
-                              <div
-                                class="inline-flex overflow-hidden"
-                                style={{ height: "10rem", width: "10rem" }}
-                              >
-                                <img
-                                  src={dataFileLogo}
-                                  alt=""
-                                  class="h-full w-full"
-                                  style={{ opacity: "0.5" }}
-                                />
-                              </div>
-                              <div class="flex mt-4">
-                                <div class="w-5/6">
-                                <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
-                                </div>
-                                <div class="w-1/6">
-                                  <button class="focus:outline-none">
-                                    <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                      <MdFileDownload />
-                                    </div>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        }
-                      })
-                    }
+                              
+                          </div>
+                          <div>
+                            <label for="profileImage"> 
+                              <a class="h-12 w-auto px-5 py-2 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg" style={{cursor: "pointer"}}>
+                              <em class="fa fa-upload"></em> Add Documents</a>
+                            </label> 
+                            <input type="file" name="profileImage" 
+                              id="profileImage" style={{display: "none"}} 
+                              multiple
+                              onChange={e => handleFileUpload(e)}
+                              accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                              />
+                          </div>
+                      </div>
+                    </nav>
                   </div>
                   :
                   activeTab == "intro" ?
-                  <div class="mt-5" style={{ height: "25rem", width: "38rem" }}>
+                  <div class="mt-4" style={{ height: "25rem", width: "38rem" }}>
                     <VideoPlayer />
                   </div>
                   :
                   activeTab == "proposal" ?
-                  <div >
+                  <div class="mt-4">
                     <div class="flex w-4/5">
                       <p class="text-2xl my-3" style={{ textAlign: "left" }}>
                         {propsalDetails.title}
@@ -782,7 +1070,8 @@ const ViewCaseDetailsSP = (props) => {
                               return(
                                 <div
                                   class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                                  style={{ maxWidth: "15rem" }}
+                                  style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                  onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
                                 >
                                   <div
                                     class="inline-flex overflow-hidden"
@@ -797,7 +1086,10 @@ const ViewCaseDetailsSP = (props) => {
                                   </div>
                                   <div class="flex mt-4">
                                     <div class="w-5/6">
-                                    <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
+                                      <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
                                     </div>
                                     <div class="w-1/6">
                                       <button class="focus:outline-none">
@@ -814,7 +1106,8 @@ const ViewCaseDetailsSP = (props) => {
                               return(
                                 <div
                                   class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                                  style={{ maxWidth: "15rem" }}
+                                  style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                  onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
                                 >
                                   <div
                                     class="inline-flex overflow-hidden"
@@ -829,7 +1122,10 @@ const ViewCaseDetailsSP = (props) => {
                                   </div>
                                   <div class="flex mt-4">
                                     <div class="w-5/6">
-                                    <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name}</p></a>
+                                      <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
                                     </div>
                                     <div class="w-1/6">
                                       <button class="focus:outline-none">
@@ -846,7 +1142,8 @@ const ViewCaseDetailsSP = (props) => {
                               return(
                                 <div
                                   class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                                  style={{ maxWidth: "15rem" }}
+                                  style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                  onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
                                 >
                                   <div
                                     class="inline-flex overflow-hidden"
@@ -861,7 +1158,10 @@ const ViewCaseDetailsSP = (props) => {
                                   </div>
                                   <div class="flex mt-4">
                                     <div class="w-5/6">
-                                      <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
+                                      <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
                                     </div>
                                     <div class="w-1/6">
                                       <button class="focus:outline-none">
@@ -878,7 +1178,8 @@ const ViewCaseDetailsSP = (props) => {
                               return(
                                 <div
                                   class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                                  style={{ maxWidth: "15rem" }}
+                                  style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                  onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
                                 >
                                   <div
                                     class="inline-flex overflow-hidden"
@@ -893,7 +1194,10 @@ const ViewCaseDetailsSP = (props) => {
                                   </div>
                                   <div class="flex mt-4">
                                     <div class="w-5/6">
-                                    <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
+                                      <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
                                     </div>
                                     <div class="w-1/6">
                                       <button class="focus:outline-none">
@@ -912,7 +1216,7 @@ const ViewCaseDetailsSP = (props) => {
                   </div>
                 :
                   activeTab == "google-drive" ?
-                    <div>
+                    <div class="mt-4">
                       <GoogleDriveRelatedFiles caseTitle={caseDetails.title} userName={userName}/>
                     </div>
                   :
@@ -923,6 +1227,13 @@ const ViewCaseDetailsSP = (props) => {
 
               </div>
             </div>
+            {caseDetails.status == "On-progress" && (
+              <ChatClientSide
+                userId={caseDetails.logged_in_user_id.$oid}
+                username={caseDetails.logged_in_user_name}
+                room={caseDetails._id.$oid}
+              ></ChatClientSide>
+            )}
           </div>
         )}
       </div>

@@ -290,10 +290,6 @@ const NewCreateIntakeForm = (props) => {
           ></FormBuilder>
         )}
       </div>
-      <pre>{JSON.stringify(formBuilderLabel, null, 2)}</pre>
-      <pre>{JSON.stringify(formBuilderInputType, null, 2)}</pre>
-      <pre>{JSON.stringify(editingMode, null, 2)}</pre>
-      <pre>{JSON.stringify(editingFieldIndex, null, 2)}</pre>
     </div>
   );
 };
@@ -336,7 +332,6 @@ export const Select = (props) => {
           return <option value={item}>{item}</option>;
         })}
       </select>
-      <pre>{JSON.stringify(options, null, 2)}</pre>
     </div>
   );
 };

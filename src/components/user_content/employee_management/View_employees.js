@@ -7,30 +7,38 @@ import { Link } from "react-router-dom";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { RemoveEmployeeDispatcher, RemoveEmployeeResponseReset } from "../../actions/employee_management/RemoveEmployeeAction";
+import { EmployeesListStorageDispatcher } from "../../actions/employee_management/EmployeesListStorage";
 
 const ViewEmployees = (props) => {
     const [employees, setEmployees] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
     const dispatch = useDispatch()
     const response = useSelector(state => state.EmployeeRemoveResponse)
+    const response2 = useSelector(state => state.EmployeeListStorageResponse)
 
     useLayoutEffect(() => {
-        const config = {
-            method: 'get',
-            url: '/api/v1/user/employee/list',
-            headers: { 
-                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+        if(_.isEmpty(response2.data)){
+            const config = {
+                method: 'get',
+                url: '/api/v1/user/employee/list',
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  }
               }
-          }
-          axios(config)
-          .then((res) => {
-              console.log(res.data)
-              setEmployees(res.data)
-              setTableLoading(false)
-          })
-          .catch((error) => {
-              console.log(error.response)
-          })
+              axios(config)
+              .then((res) => {
+                  setEmployees(res.data)
+                  setTableLoading(false)
+                  dispatch(EmployeesListStorageDispatcher(res.data))
+              })
+              .catch((error) => {
+                  console.log(error.response)
+              })
+        }
+        else {
+            setEmployees(response2.data)
+            setTableLoading(false)
+        }
       }, [])
   
     useEffect(() => {

@@ -85,7 +85,7 @@ const CCANavbar = () => {
             </div>
             </nav>
             <div class="container max-w-full py-4">
-                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mx-4" style={{minHeight: "52rem"}}>
+                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mx-4" style={{minHeight: "56rem"}}>
                     <CCAContent />
                 </div>
             </div>

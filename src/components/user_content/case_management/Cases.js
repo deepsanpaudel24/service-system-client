@@ -5,34 +5,60 @@ import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import _ from "lodash";
 import { NewCaseRequestResponseReset } from "../../actions/case_management/NewCaseRequestAction";
+import { ClientCaseListStorageDispatcher } from "../../actions/case_management/ClientCasesListStorage";
 
 const ViewCasesClient = (props) => {
     const [cases, setCases] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
+    const [newCaseRequestConfirm, setNewCaseRequestConfirm] = useState(false)
     const dispatch = useDispatch()
-    const response = useSelector(state => state.NewCaseRequestResponse)
+    const response = useSelector(state => state.ClientCaseListResponse)
+    const response2 = useSelector(state => state.NewCaseRequestResponse)
+    const response3 = useSelector(state => state.ProposalAcceptResponse)
     
     useLayoutEffect(() => {
-      const config = {
-          method: 'get',
-          url: '/api/v1/client-cases',
-          headers: { 
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-          }
+        if(!_.isEmpty(response2.data)){
+            setNewCaseRequestConfirm(true)
+            dispatch(NewCaseRequestResponseReset())
         }
-        axios(config)
-        .then((res) => {
-            setCases(res.data)
+        if(_.isEmpty(response.data) || !_.isEmpty(response2.data) || !_.isEmpty(response3.data)){
+
+            const config = {
+                method: 'get',
+                url: '/api/v1/client-cases',
+                headers: { 
+                  'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                }
+              }
+              axios(config)
+              .then((res) => {
+                  setCases(res.data)
+                  setTableLoading(false)
+                  dispatch(ClientCaseListStorageDispatcher(res.data))
+              })
+              .catch((error) => {
+                  setTableLoading(false)
+              })
+        }
+        else {
+            setCases(response.data)
             setTableLoading(false)
-        })
-        .catch((error) => {
-            setTableLoading(false)
-        })
+        }
     }, [])
 
     useEffect(() => {
         
     }, [cases])
+
+    const confirmNewCaseRequest = () => {
+        if(!_.isEmpty(response2.data)){
+           return(
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                <p class="font-bold">New case requested successfully</p>
+            </div>
+           )
+        }
+    }
 
     const handleAdd = () => {
         dispatch(NewCaseRequestResponseReset())
@@ -54,6 +80,14 @@ const ViewCasesClient = (props) => {
                     </div>
                 </div>
                 <div class="py-8">
+                    { 
+                        newCaseRequestConfirm ?
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                            <p class="font-bold">New case requested successfully</p>
+                        </div>
+                        :
+                        ""
+                    }
                     {
                         tableLoading ? 
                             <div class="animate-pulse flex space-x-4">

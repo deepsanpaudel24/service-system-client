@@ -88,7 +88,6 @@ const CreateIntakeForm = () => {
       formFields: formFields,
       formTitle: "form1",
     };
-    // var method = requestMethodDecider;
     dispatch(SaveIntakeFormDispatcher(data, urlvalues[4]));
     setShowSaveChangeButton(false);
   };
@@ -335,7 +334,6 @@ export const Select = (props) => {
           return <option value={item}>{item}</option>;
         })}
       </select>
-      <pre>{JSON.stringify(options, null, 2)}</pre>
     </div>
   );
 };

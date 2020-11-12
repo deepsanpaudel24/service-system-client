@@ -12,30 +12,6 @@ export const FormBuilder = (props) => {
     saveFormBuilder,
   } = props;
 
-  const handleLabelChange = () => {
-    console.log("inside label change form form builder");
-  };
-
-  const handleTypeChange = () => {
-    console.log("inside type change from form builder");
-  };
-
-  const handleSelectOption = () => {
-    console.log("in handel select option");
-  };
-
-  const handleSelectOptionRemove = () => {
-    console.log(" in handle select option Remove");
-  };
-
-  const handleSelectOptionAdd = () => {
-    console.log("in handel Select option add");
-  };
-
-  const handleSaveForm = () => {
-    console.log("inside handel saveform");
-  };
-
   return (
     <div class="w-2/5 mr-6">
       <p class="text-xl text-gray-700">Form Builder</p>
@@ -115,10 +91,9 @@ export const FormBuilder = (props) => {
           style={{ backgroundColor: "#3490ff" }}
           onClick={() => saveFormBuilder()}
         >
-          Save Field
+          Add Field
         </button>
       </div>
-      <pre>{JSON.stringify(options, null, 2)}</pre>
     </div>
   );
 };

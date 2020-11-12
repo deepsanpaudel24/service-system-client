@@ -48,7 +48,7 @@ const ViewCasesSA = (props) => {
                     <div class="w-1/5">
                     </div>
                 </div>
-                <div class="py-8">
+                <div class="py-4">
                     {
                         tableLoading ? 
                             <div class="animate-pulse flex space-x-4">

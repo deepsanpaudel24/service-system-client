@@ -4,29 +4,38 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import _ from "lodash";
 import { AddCustomTaskResponseReset } from "../../actions/custom_task/AddCustomTaskAction";
+import { IntakeFormListStorageDispatcher } from "../../actions/form_generator/IntakeFormListStorage";
 
 const ClientIntakeFormList = (props) => {
   const [IntakeForms, setIntakeForms] = useState([]);
   const [tableLoading, setTableLoading] = useState(true);
   const dispatch = useDispatch();
-  const response = useSelector((state) => state.NewCaseRequestResponse);
+  const response = useSelector((state) => state.IntakeFormListStorageResponse);
+  const response2 = useSelector((state) => state.CreateIntakeFormResponse);
 
   useLayoutEffect(() => {
-    const config = {
-      method: "get",
-      url: "/api/v1/intake-form/list",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
-      },
-    };
-    axios(config)
-      .then((res) => {
-        setIntakeForms(res.data);
-        setTableLoading(false);
-      })
-      .catch((error) => {
-        setTableLoading(false);
-      });
+    if(_.isEmpty(response.data) || !_.isEmpty(response2.data)){
+      const config = {
+        method: "get",
+        url: "/api/v1/intake-form/list",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config)
+        .then((res) => {
+          setIntakeForms(res.data);
+          setTableLoading(false);
+          dispatch(IntakeFormListStorageDispatcher(res.data))
+        })
+        .catch((error) => {
+          setTableLoading(false);
+        });
+    }
+    else {
+      setIntakeForms(response.data);
+      setTableLoading(false);
+    }
   }, []);
 
   useEffect(() => {}, [IntakeForms]);
@@ -46,11 +55,13 @@ const ClientIntakeFormList = (props) => {
             </p>
           </div>
           <div class="w-2/5"></div>
-          <button class="focus:outline-none" onClick={() => handleAdd()}>
-            <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">
-              Add Client Intake-Form
-            </div>
-          </button>
+          <div class="w-1/5">
+            <button class="focus:outline-none" onClick={() => handleAdd()} style={{float: "right"}}>
+              <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">
+                Add Client Intake-Form
+              </div>
+            </button>
+          </div>
         </div>
         <div class="py-8">
           {tableLoading ? (

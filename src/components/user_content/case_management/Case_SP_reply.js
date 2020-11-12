@@ -1,10 +1,10 @@
-import React , {useState} from "react";
+import React , {useState, useLayoutEffect, useEffect} from "react";
 import _ from "lodash";
 import {PulseLoader} from "react-spinners";
 import {useDispatch, useSelector} from "react-redux";
 import { ReplyCaseRequestDispacther } from "../../actions/case_management/ReplyCaseRequestAction";
 
-const ReplyCaseRequest = () => {
+const ReplyCaseRequest = (props) => {
     const [formStep, setFormStep] = useState(1)
     const [title, setTitle] = useState("")
     const [desc, setDesc] = useState("")
@@ -14,8 +14,15 @@ const ReplyCaseRequest = () => {
     const [proposedDeadline, setProposedDeadline] = useState("")
     const [fileToSend, setFileToSend] = useState([]);
     const [formEmptyError, setFormEmptyError] = useState("")
+    const [caseId, setCaseId] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.ReplyCaseRequestResponse)
+
+    useEffect(() => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        setCaseId(urlvalues[4])
+    }, [])
 
     const handleTitleChange = (e) => {
         setFormEmptyError("")
@@ -109,14 +116,6 @@ const ReplyCaseRequest = () => {
           //send the case request to backend.
             var string = document.location.pathname
             var urlvalues = string.toString().split('/')
-            // var data = {
-            //     "title": title,
-            //     "desc": desc,
-            //     "rateType": rateType,
-            //     "rate": rate,
-            //     "averageTimeTaken": avgTimeTaken,
-            //     "spDeadline": proposedDeadline
-            // }
             var caseid = urlvalues[4]
             dispatch(ReplyCaseRequestDispacther(formData, caseid))
         }
@@ -135,11 +134,7 @@ const ReplyCaseRequest = () => {
   
     const confirmNewCaseRequest = () => {
         if(!_.isEmpty(response.data)){
-           return(
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4" role="alert">
-                <p class="font-bold">Proposal sent successfully</p>
-            </div>
-           )
+            props.history.push("/user/case/"+ caseId)
         }
     }
   
@@ -302,7 +297,7 @@ const ReplyCaseRequest = () => {
                                 <div class="mt-6 mb-5" >
                                     <label for="price" class="block text-gray-700 text-sm">Related Files (Optional)</label>
                                     <input 
-                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                        class="rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                         id="budget" 
                                         type="file"
                                         multiple

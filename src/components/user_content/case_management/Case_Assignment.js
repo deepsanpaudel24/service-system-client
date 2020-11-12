@@ -107,7 +107,6 @@ const CaseAssignment = () => {
     return(
         <div>
             <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 overflow-x-auto">
-                {showData()}
                 <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
                     <table class="min-w-full leading-normal">
                         <thead>
@@ -200,6 +199,9 @@ const CaseAssignment = () => {
                             }
                         </tbody>
                     </table>
+                </div>
+                <div class="my-4">
+                    {showData()}
                 </div>
             </div>
         </div>

@@ -1,0 +1,31 @@
+.chat-services{
+      transition: .5s;
+      max-height: 0;
+    }
+    .chat-services.expand{
+      max-height: 20rem;
+      min-height: 20rem;
+    }
+    .message {
+      max-width: 15rem;
+    }
+
+    .chat-modal{
+      transition: .5s;
+      opacity: 0;
+      transform: translateX(30rem);
+    }
+
+    .chat-modal.show{
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    @keyframes animateModal {
+      from{
+        transform: translateX(12rem) opacity(0);
+      }
+      to{
+        transform: translateX(0) opacity(1);
+      }
+    }

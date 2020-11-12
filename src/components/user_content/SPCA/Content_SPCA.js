@@ -8,6 +8,7 @@ import ChangePassword from "../Change_password";
 import ClientIntakeFormList from "../client_intake_form/ClientIntakeFormList";
 import ClientIntakeForm from "../client_intake_form/CreateIntakeForm";
 import NewCreateIntakeForm from "../client_intake_form/NewCreateIntakeForm";
+import SendIntakeForm from "../client_intake_form/SendClientIntakeForm";
 import AddClients from "../client_management/Add_Clients";
 import Clients from "../client_management/Clients";
 import ClientDetails from "../client_management/Client_details";
@@ -56,6 +57,7 @@ const SPCAContent = () => {
                 <Route exact path="/user/intake/form/:id" component={ClientIntakeForm} />
                 <Route exact path="/user/create-intake-form" component={NewCreateIntakeForm} />
                 <Route exact path="/user/intake-form/list" component={ClientIntakeFormList} />
+                <Route exact path="/user/client/intake-form-send/:id" component={SendIntakeForm} />
             </Switch>
         </div>
     )
