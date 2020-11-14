@@ -7,11 +7,13 @@ import { AddEmployeeResponseReset } from "../../actions/employee_management/AddE
 import { Link } from "react-router-dom";
 import EmpAvatar from "../../../images/emp_avatar.jpg";
 import ClientNonCaseIntakeFormDetails from "./Client_NonCase_intake_form";
+import ClientCases from "./Client_case_list";
 
 const ClientDetails = (props) => {
   const [clientDetails, setClientDetails] = useState([]);
-  const [empDetailsLoading, setEmpDetailsLoading] = useState(true);
+  const [clientDetailsLoading, setClientDetailsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("cases")
+  const [numberOfCases, setNumberOfCases] = useState("")
   const dispatch = useDispatch();
   const response = useSelector((state) => state.addEmployeeResponse);
 
@@ -28,11 +30,25 @@ const ClientDetails = (props) => {
     axios(config)
       .then((res) => {
         setClientDetails(res.data);
-        setEmpDetailsLoading(false);
+        setClientDetailsLoading(false);
       })
       .catch((error) => {
 
       });
+
+      const config2 = {
+          method: 'get',
+          url: '/api/v1/sp-client-cases/' + urlvalues[3],
+          headers: { 
+              'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+          }
+          }
+          axios(config2)
+          .then((res) => {
+            setNumberOfCases(res.data.length)
+          })
+          .catch((error) => {
+          })
   }, []);
 
   useEffect(() => {
@@ -62,8 +78,8 @@ const ClientDetails = (props) => {
 
   return (
     <div>
-      <div class="px-4 sm:px-8">
-        {empDetailsLoading ? (
+      <div class="px-6">
+        { clientDetailsLoading ? (
           <div class="animate-pulse flex space-x-4">
             <div class="w-4/5">
               <div class="flex">
@@ -104,7 +120,7 @@ const ClientDetails = (props) => {
                     {_.isEmpty(clientDetails.email) ? "-" : clientDetails.email}
                   </h1>
                   <p class="flex mt-8 text-base text-gray-600">
-                    TOTAL CASES <p class="ml-3 mr-10 text-base text-black">0</p>
+                  TOTAL CASES <p class="ml-3 mr-10 text-base text-black">{numberOfCases}</p>
                     USER SINCE
                     <p class="ml-3 mr-10 text-base text-black">
                       {_.isEmpty(clientDetails.createdDate)
@@ -156,7 +172,7 @@ const ClientDetails = (props) => {
         </div>
         {
           activeTab == "cases" ? 
-          ""
+            <ClientCases props={props} />
           :
           activeTab == "intake-form-tab" ?
           <ClientNonCaseIntakeFormDetails />

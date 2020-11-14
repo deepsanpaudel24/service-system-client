@@ -24,6 +24,7 @@ import ChatClientSide from "../../chat/ChatClientSide";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { CaseDetailsStorageDispatcher } from "../../actions/case_management/CaseDetailsStorage";
 import { ReplyCaseRequestResponseReset } from "../../actions/case_management/ReplyCaseRequestAction";
+import Pagination from "../Pagination";
 
 const ViewCaseDetailsSP = (props) => {
   const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -147,8 +148,9 @@ const ViewCaseDetailsSP = (props) => {
       method: "post",
       url: "/static/allFiles/" + filename,
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
+        "Content-Type": "application/json; application/octet-stream",
       },
+      responseType: "blob",
       data: {
         caseId: urlvalues[3],
       },
@@ -510,7 +512,7 @@ const ViewCaseDetailsSP = (props) => {
                             </p>
                           ) : caseDetails.status == "Contract-Waiting" ? (
                             <p class="ml-3 mr-10 text-base text-blue-600">
-                              PROPOSAL ACCEPTED
+                              CLIENT WAITING CONTRACT PAPER
                             </p>
                           )  : caseDetails.status == "Contract-Sent" ? (
                             <p class="ml-3 mr-10 text-base text-blue-600">
@@ -549,7 +551,7 @@ const ViewCaseDetailsSP = (props) => {
                               </p>
                             ) : caseDetails.status == "Contract-Waiting" ? (
                               <p class="ml-3 mr-10 text-base text-blue-600">
-                                PROPOSAL ACCEPTED
+                                CLIENT WAITING CONTRACT PAPER
                               </p>
                             ) : caseDetails.status == "Contract-Sent" ? (
                               <p class="ml-3 mr-10 text-base text-blue-600">
@@ -595,7 +597,7 @@ const ViewCaseDetailsSP = (props) => {
                         </p>
                       ) : caseDetails.status == "Contract-Waiting" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
-                          PROPOSAL ACCEPTED
+                          CLIENT WAITING CONTRACT PAPER
                         </p>
                       ) : caseDetails.status == "Contract-Sent" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
@@ -650,14 +652,9 @@ const ViewCaseDetailsSP = (props) => {
                               <li class="mr-1">
                                   <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Client's Introduction</button>
                               </li>
-                              {
-                                caseDetails.status == "Proposal-Forwarded" || caseDetails.status == "On-progress" ? 
-                                  <li class="mr-1">
-                                    <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
-                                  </li>
-                                :
-                                ""
-                              }
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
+                              </li>
                               <li class="mr-1">
                                   <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
                               </li>
@@ -779,7 +776,7 @@ const ViewCaseDetailsSP = (props) => {
                                     var display_name = filename.slice(0,12) + " ..."
                                   }
                                   var extension = filename.split(".").slice(-1)[0].toLowerCase()
-                                  var owner = filename.split(".").slice(-2)[0]
+                                  var owner = filename.split(".").slice(-2)[0];
                                   if(extension == "pdf"){
                                     return(
                                       <div class="bg-gray-100  shadow rounded-lg">
@@ -1019,6 +1016,9 @@ const ViewCaseDetailsSP = (props) => {
                   </div>
                   :
                   activeTab == "proposal" ?
+                  _.isEmpty(propsalDetails) ? 
+                  "Propsal has not been sent yet"
+                  :
                   <div class="mt-4">
                     <div class="flex w-4/5">
                       <p class="text-2xl my-3" style={{ textAlign: "left" }}>
@@ -1055,7 +1055,11 @@ const ViewCaseDetailsSP = (props) => {
                       >
                         {propsalDetails.desc}
                       </p>
-                      <div class="flex gap-6 mt-3">
+                      {
+                        _.isEmpty(propsalDetails.files) ? 
+                        ""
+                        :
+                        <div class="flex gap-6 mt-3">
                         {
                           propsalDetails.files.map((item) => {
                             var filename = item.split("/").slice(-1)[0]
@@ -1213,6 +1217,7 @@ const ViewCaseDetailsSP = (props) => {
                           })
                         }
                       </div>
+                      }
                   </div>
                 :
                   activeTab == "google-drive" ?

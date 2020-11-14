@@ -92,6 +92,7 @@ function App() {
             <Route path={"/user/clients"} component={HomePage} />
             <Route path={"/user/client/add"} component={HomePage} />
             <Route path={"/user/client/:id"} component={HomePage} />
+            <Route path={"/user/client/create-case/:id"} component={HomePage} />
 
             <Route path={"/user/tasks"} component={HomePage} />
             <Route path={"/user/create-task"} component={HomePage} />

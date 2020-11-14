@@ -569,7 +569,7 @@ const ProfileSetting = (props) => {
                     </div>
                     :
                     <div class="flex">
-                        <div class="w-4/5">
+                        <div class="w-5/5">
                             <div class="flex"> 
                                 <img style={{height: '7em'}} class="rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80" alt="" />
                                 <div class="ml-5 y-5" style={{marginTop: "1.5em", marginLeft: "2em"}}>

@@ -1,11 +1,11 @@
 import React , {useState, useEffect, useLayoutEffect} from "react";
 import {Link} from "react-router-dom";
-import {PulseLoader} from "react-spinners";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import _ from "lodash";
 import { NewCaseRequestResponseReset } from "../../actions/case_management/NewCaseRequestAction";
 import { ClientCaseListStorageDispatcher } from "../../actions/case_management/ClientCasesListStorage";
+import Pagination from "../Pagination";
 
 const ViewCasesClient = (props) => {
     const [cases, setCases] = useState([])
@@ -49,16 +49,6 @@ const ViewCasesClient = (props) => {
     useEffect(() => {
         
     }, [cases])
-
-    const confirmNewCaseRequest = () => {
-        if(!_.isEmpty(response2.data)){
-           return(
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-                <p class="font-bold">New case requested successfully</p>
-            </div>
-           )
-        }
-    }
 
     const handleAdd = () => {
         dispatch(NewCaseRequestResponseReset())

@@ -195,11 +195,43 @@ const ViewCasesSA = (props) => {
                                                                     <span class="relative">Proposal Forwarded</span>
                                                                 </span>
                                                                 :
+                                                                item.status == "Contract-Waiting" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Waiting Contract Paper</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Contract-Sent" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Contract Paper Sent</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Contract-Replied" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Signed Contract Paper Sent</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "On-progress" ?
                                                                 <span
                                                                     class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
                                                                     <span class="relative">On-progress</span>
+                                                                </span>
+                                                                :
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Completed</span>
                                                                 </span>
                                                             }
                                                         </td>

@@ -12,6 +12,7 @@ import SendIntakeForm from "../client_intake_form/SendClientIntakeForm";
 import AddClients from "../client_management/Add_Clients";
 import Clients from "../client_management/Clients";
 import ClientDetails from "../client_management/Client_details";
+import CreateClientCase from "../client_management/Create_client_case";
 import ContractDetails from "../contract_management/Contract_Details";
 import CreateTask from "../custom_tasks/Add_tasks";
 import Tasks from "../custom_tasks/Tasks";
@@ -49,6 +50,7 @@ const SPCAContent = () => {
                 <Route exact path="/user/clients" component={Clients} />
                 <Route exact path="/user/client/add" component={AddClients} />
                 <Route exact path="/user/client/:id" component={ClientDetails} />
+                <Route exact path="/user/client/create-case/:id" component={CreateClientCase} />
 
                 <Route exact path="/user/tasks" component={Tasks} />
                 <Route exact path="/user/create-task" component={CreateTask} />

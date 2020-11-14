@@ -43,6 +43,7 @@ import ClientListStorageReducer from './ClientListStorageReducer';
 import CustomTaskListStorageReducer from './CustomTaskListStorageReducer';
 import IntakeFormListStorageReducer from './IntakeFormListStorageReducer';
 import ConfirmContractReducer from './ConfirmContractReducer';
+import CreateClientCaseReducer from './Create_client_case_reducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -89,7 +90,8 @@ const rootReducer =  combineReducers({
     ClientListStorageResponse: ClientListStorageReducer,
     CustomTaskListStorageResponse: CustomTaskListStorageReducer,
     IntakeFormListStorageResponse: IntakeFormListStorageReducer,
-    ConfirmContractResponse: ConfirmContractReducer
+    ConfirmContractResponse: ConfirmContractReducer,
+    CreateClientCaseResponse: CreateClientCaseReducer
 })
 
 export default rootReducer

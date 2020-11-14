@@ -298,7 +298,6 @@ const SendIntakeForm = (props) => {
             )}
             <div class="my-4">
                 {showData()}
-                      <pre>{JSON.stringify(formAssignment, null, 2)}</pre>
             </div>
             </div>
         </div>

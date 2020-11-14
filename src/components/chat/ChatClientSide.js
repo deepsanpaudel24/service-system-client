@@ -237,8 +237,8 @@ const ChatClientSide = (props) => {
 
   /* RETURN METHOD OF COMPONENT*/
   return (
-    <div class="fixed bottom-0 right-0 flex flex-col items-end ml-6 w-full">
-      <div class="chat-modal mr-5 flex flex-col mb-5 shadow-lg sm:w-1/3 md:w-1/4 lg:w-1/5">
+    <div class="fixed bottom-0 right-0 flex flex-col items-end ml-6">
+      <div class="chat-modal mr-5 flex flex-col mb-5 shadow-lg sm:w-1/3 md:w-1/4 lg:w-1/5" style={{minWidth: "23rem"}}>
         {/* <!-- admin profile --> */}
         <div class="flex justify-between items-center text-black p-2 bg-white border shadow-lg mr-5 w-full">
           <div class="flex items-center">
@@ -263,6 +263,7 @@ const ChatClientSide = (props) => {
           <DisplayChatMessages
             allMessages={allMessages}
             currentUserId={userId}
+            caseId={room}
           />
         </div>
         <div>
