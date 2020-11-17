@@ -17,14 +17,14 @@ const CaseAssignment = () => {
         var urlvalues = string.toString().split('/')
         const config = {
             method: 'get',
-            url: '/api/v1/user/employee/list',
+            url: '/api/v1/user/employee/list/1',
             headers: { 
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
         }
         axios(config)
         .then((res) => {
-            setEmployees(res.data)
+            setEmployees(res.data['employees'])
         })
         .catch((error) => {
             console.log(error.response)

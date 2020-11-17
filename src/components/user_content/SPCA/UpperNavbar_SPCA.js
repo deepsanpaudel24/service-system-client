@@ -56,7 +56,7 @@ const SPCANavbar = () => {
             setSendFirstNotification(false)
         }
         else {
-            const interval = setInterval(checkNotification, 9000);
+            const interval = setInterval(checkNotification, 60000);
             return () => clearInterval(interval);
         }
       }, [sendFirstNotification]);
@@ -242,7 +242,7 @@ const SPCANavbar = () => {
                             </div>
                             {
                                 showOptions ? 
-                                <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg">
+                                <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg" style={{"zIndex": "1"}}>
                                     <div class="rounded-md bg-white shadow-xs">
                                         <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                                             <Link to="/user/profile-setting" onClick={() => handleShowOptions()} class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" role="menuitem">Profile</Link>

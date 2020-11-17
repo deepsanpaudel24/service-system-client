@@ -1,49 +1,292 @@
 import React , {useState, useEffect, useLayoutEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
-import _ from "lodash";
+import _, { filter } from "lodash";
 import { AddEmployeeResponseReset } from "../../actions/employee_management/AddEmployeeAction";
 import { Link } from "react-router-dom";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { RemoveEmployeeDispatcher, RemoveEmployeeResponseReset } from "../../actions/employee_management/RemoveEmployeeAction";
-import { EmployeesListStorageDispatcher } from "../../actions/employee_management/EmployeesListStorage";
+import { EmployeesListStorageDispatcher, EmployeesListStorageResponseReset } from "../../actions/employee_management/EmployeesListStorage";
+import Pagination from "../Pagination";
+import {VscClose} from "react-icons/vsc";
 
 const ViewEmployees = (props) => {
     const [employees, setEmployees] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
+    // For sorting 
+    const [sortingKey, setSortingKey] = useState(null)
+    const [sortingValue, setSortingValue] = useState(null)
+    // states for pagination
+    const [totalRecords, setTotalRecords] = useState(0)
+    const [page, setPage] = useState(1)
+    // states for search 
+    const [searchKeyword, setSearchKeyword] = useState("")
+    // states for filters
+    const [filters, setFilters] = useState([])
+    const [activeVerfiedFilter, setActiveVerifiedFilter] = useState(false)
+    const [activeUnverfiedFilter, setActiveUnverifiedFilter] = useState(false)
+
     const dispatch = useDispatch()
     const response = useSelector(state => state.EmployeeRemoveResponse)
     const response2 = useSelector(state => state.EmployeeListStorageResponse)
 
     useLayoutEffect(() => {
-        if(_.isEmpty(response2.data)){
-            const config = {
-                method: 'get',
-                url: '/api/v1/user/employee/list',
-                headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                  }
+        const config = {
+            method: 'get',
+            url: '/api/v1/user/employee/list/'+ page,
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
-              axios(config)
-              .then((res) => {
-                  setEmployees(res.data)
-                  setTableLoading(false)
-                  dispatch(EmployeesListStorageDispatcher(res.data))
-              })
-              .catch((error) => {
-                  console.log(error.response)
-              })
+          }
+        if(response2.data.hasOwnProperty(1)){
+            console.log("from redux and if", response2.total_records)
+            var empList = response2.data[1]
+            setEmployees(empList)
+            setTableLoading(false)
+            setTotalRecords(response2.total_records)
         }
         else {
-            setEmployees(response2.data)
-            setTableLoading(false)
+            axios(config)
+            .then((res) => {
+                    setEmployees(res.data['employees'])
+                    setTableLoading(false)
+                    setTotalRecords(res.data['total_records'])
+                    var page = res.data['page']
+                    dispatch(EmployeesListStorageDispatcher({[page]: res.data['employees']}, res.data['total_records']))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
         }
       }, [])
   
     useEffect(() => {
         
     }, [employees])
+
+    const SortingRequest = (value) => {
+        // send reset dispatch request to redux
+        dispatch(EmployeesListStorageResponseReset())
+        setPage(1)
+        setTableLoading(true)
+        var defaultPage = 1
+        const config = {
+            method: 'post',
+            url: '/api/v1/user/employee/list/'+ defaultPage,
+            data: {
+                "keyword": searchKeyword,
+                "filters": filters,
+                "sorting": value
+            }
+        }
+        axios(config)
+        .then((res) => {
+            setEmployees(res.data['employees'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var reduxResponse = []
+            var page = res.data['page']
+            reduxResponse[page]= res.data['employees']
+            dispatch(EmployeesListStorageDispatcher(reduxResponse))
+        })
+        .catch((error) => {
+            console.log("response error of search", error.response)
+        })
+    }
+
+    // For sorting
+    const handleSorting = (value) => {
+        // check if sorting has value
+        if (sortingKey == value){
+            if(sortingValue == 1){
+                // create var beacuse set state is async event
+                var data = {
+                    "sortingKey": value,
+                    "sortingValue": -1
+                }
+                SortingRequest(data)
+                // Desending
+                setSortingKey(data['sortingKey'])
+                setSortingValue(data['sortingValue'])
+            }
+            else{
+                //neutral
+                // create var beacuse set state is async event
+                var data = {
+                    "sortingKey": "_id",
+                    "sortingValue": -1
+                }
+                SortingRequest(data)
+                // Assending
+                setSortingKey(data['sortingKey'])
+                setSortingValue(data['sortingValue'])
+            }
+        }
+        else {
+            // create var beacuse set state is async event
+            var data = {
+                "sortingKey": value,
+                "sortingValue": 1
+            }
+            SortingRequest(data)
+            // Assending
+            setSortingKey(data['sortingKey'])
+            setSortingValue(data['sortingValue'])
+        }
+    }
+
+    
+    // For pagination Component
+    const handlePageChange = (value) => {
+        setPage(value)
+        const config = {
+            method: 'post',
+            url: '/api/v1/user/employee/list/'+ value,
+            data: {
+                "keyword": searchKeyword,
+                "filters": filters,
+                "sorting": {
+                    "sortingKey": sortingKey,
+                    "sortingValue": sortingValue
+                }
+            }
+        }
+        if(response2.data.hasOwnProperty(value)){
+            var empList = response2.data[value]
+            setEmployees(empList)
+        }
+        else {
+            axios(config)
+            .then((res) => {
+                setEmployees(res.data['employees'])
+                setTableLoading(false)
+                setTotalRecords(res.data['total_records'])
+                var reduxResponse = response2.data
+                var page = res.data['page']
+                reduxResponse[page]= res.data['employees']
+                dispatch(EmployeesListStorageDispatcher(reduxResponse))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+    }
+
+    // For search bar action 
+    const handleSearch = (e) => {
+        // send reset dispatch request to redux
+        dispatch(EmployeesListStorageResponseReset())
+        setPage(1)
+        setSearchKeyword(e.target.value)
+        setTableLoading(true)
+        var defaultPage = 1
+        setSortingKey("")
+        setSortingValue(null)
+        const config = {
+            method: 'post',
+            url: '/api/v1/user/employee/list/'+ defaultPage,
+            data: {
+                "keyword": e.target.value,
+                "filters": filters,
+                "sorting": {
+                    "sortingKey": "",
+                    "sortingValue": ""
+                }
+            }
+        }
+        axios(config)
+        .then((res) => {
+            setEmployees(res.data['employees'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var reduxResponse = []
+            var page = res.data['page']
+            reduxResponse[page]= res.data['employees']
+            dispatch(EmployeesListStorageDispatcher(reduxResponse))
+        })
+        .catch((error) => {
+            console.log("response error of search", error.response)
+        })
+    }
+
+    // For filters 
+    // have a funtion that makes the axios request and retrieve the filtered data 
+    const handleFilter = (data) => {
+        // send reset dispatch request to redux
+        dispatch(EmployeesListStorageResponseReset())
+        setPage(1)
+        setTableLoading(true)
+        setSortingKey("")
+        setSortingValue(null)
+        var defaultPage = 1
+        const config = {
+            method: 'post',
+            url: '/api/v1/user/employee/list/'+ defaultPage,
+            data: {
+                "keyword": searchKeyword,
+                "filters": data,
+                "sorting": {
+                    "sortingKey": "",
+                    "sortingValue": ""
+                }
+            }
+        }
+        axios(config)
+        .then((res) => {
+            setEmployees(res.data['employees'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var reduxResponse = []
+            var page = res.data['page']
+            reduxResponse[page]= res.data['employees']
+            dispatch(EmployeesListStorageDispatcher(reduxResponse))
+        })
+        .catch((error) => {
+            console.log("response error of search", error.response)
+        })
+    }
+
+    //for the filter "verified"
+    const handleVerfiedFilter = () => {
+        var filters_value = filters
+        // this making the filter inactive if it is active now
+        // or making the filter active if it is inactive now
+        if(activeVerfiedFilter) {
+            setActiveVerifiedFilter(false)
+            var result = filters_value.filter(item => item.is_verified == false);
+            handleFilter( result )
+            setFilters( result )
+        }
+        else {
+            setActiveVerifiedFilter(true)
+            filters_value.push({"is_verified": true })
+            handleFilter( filters_value )
+            setFilters( filters_value )
+        }
+    }
+
+    //for the filter "Unverified"
+    const handleUnverfiedFilter = () => {
+        var filters_value = filters
+        // this making the filter inactive if it is active now
+        // or making the filter active if it is inactive now
+        if(activeUnverfiedFilter) {
+            setActiveUnverifiedFilter(false)
+            var result = filters_value.filter(item => item.is_verified == true);
+            handleFilter( result )
+            setFilters( result )
+        }
+        else {
+            setActiveUnverifiedFilter(true)
+            filters_value.push({"is_verified": false })
+            handleFilter( filters_value )
+            setFilters( filters_value )
+        }
+    }
+
+
+    // *********************************************************************** //
 
     const handleConfirmDelete = (id) => {
         // dispatch action to delete the item with the id parameter
@@ -67,7 +310,7 @@ const ViewEmployees = (props) => {
                 method: 'get',
                 url: '/api/v1/user/employee/list',
                 headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    'Authorization': 'Bearer' + localStorage.getItem('access_token')
                   }
               }
             axios(config)
@@ -144,6 +387,7 @@ const ViewEmployees = (props) => {
     return (
         <div>
             <div class=" px-4 sm:px-8">
+                {console.log("redux value ", response2.data)}
                 <div class="flex">
                     <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Employees</p></div>
                     <div class="w-3/5"></div>
@@ -153,7 +397,39 @@ const ViewEmployees = (props) => {
                         </button>
                     </div>
                 </div>
-                <div class="py-8">
+                <nav>
+                    <div class="">
+                        <div class="relative flex items-center justify-between h-16">
+                            <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                                <div
+                                    class="flex text-xs inline-flex items-center leading-sm mt-4 mr-4 bg-white border text-blue-700 rounded-full cursor-pointer"  
+                                    onClick={() => handleVerfiedFilter()}
+                                >
+                                    <div class={`rounded-full text-sm px-3 py-1 ${activeVerfiedFilter ? "bg-blue-500 text-white": ""}`}>
+                                        Verified
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex text-xs inline-flex items-center leading-sm mt-4 mr-4 bg-white border text-blue-700 rounded-full cursor-pointer"  
+                                    onClick={() => handleUnverfiedFilter()}
+                                >
+                                    <div class={`rounded-full text-sm px-3 py-1 ${activeUnverfiedFilter ? "bg-blue-500 text-white": ""}`}>
+                                        Unverfied
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                                <input 
+                                    placeholder="Search" 
+                                    type="text" 
+                                    class="shadow appearance-none border rounded w-full px-3 py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    onChange={(e) => handleSearch(e)}    
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <div class="py-3">
                     {showServerError()}
                     {confirmRemovedEmployee()}
                     {
@@ -166,15 +442,21 @@ const ViewEmployees = (props) => {
                                                 <thead>
                                                     <tr>
                                                         <th
-                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                                            onClick={() => handleSorting("email")}
+                                                        >
                                                             Email
                                                         </th>
                                                         <th
-                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                                            onClick={() => handleSorting("total_cases")}
+                                                        >
                                                             Total Cases
                                                         </th>
                                                         <th
-                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                                            onClick={() => handleSorting("createdDate")}
+                                                        >
                                                             User Since
                                                         </th>
                                                         <th
@@ -206,15 +488,21 @@ const ViewEmployees = (props) => {
                                     <thead>
                                         <tr>
                                             <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                                onClick={() => handleSorting("email")}
+                                            >
                                                 Email
                                             </th>
                                             <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                                onClick={() => handleSorting("total_cases")}
+                                            >
                                                 Total Cases
                                             </th>
                                             <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                                onClick={() => handleSorting("user_since")}
+                                            >
                                                 User Since
                                             </th>
                                             <th
@@ -297,6 +585,9 @@ const ViewEmployees = (props) => {
                                         }
                                     </tbody>
                                 </table>
+                            </div>
+                            <div>
+                                <Pagination pageChanger={handlePageChange} totalRows={totalRecords} activePage={page}/>
                             </div>
                         </div>
                     }

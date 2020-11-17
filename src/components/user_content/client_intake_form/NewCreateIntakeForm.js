@@ -49,9 +49,7 @@ const NewCreateIntakeForm = (props) => {
 
   const handleDelete = (index) => {
     var newFormFields = [...formFields];
-    console.log(newFormFields, "while copying");
     newFormFields.splice(index, 1);
-    console.log(newFormFields, "after slicing");
     setFormFields(newFormFields);
     setShowSaveChangeButton(true); // show save changes button on form displaying side
   };

@@ -11,6 +11,7 @@ import { HiChatAlt2 } from "react-icons/hi";
 const ChatClientSide = (props) => {
   //functionality related variables
   const { userId, username, room } = props;
+  const [showMoreCount, setShowMoreCount] = useState(null);
   const [msgInfo, setMsgInfo] = useState({
     message: "",
     allfilesMessage: [],
@@ -60,6 +61,30 @@ const ChatClientSide = (props) => {
         chatModal.classList.remove("show");
       }, 500);
     }
+  };
+
+  const handelShowMoreMessages = () => {
+    let value = showMoreCount + 1;
+    setShowMoreCount(value);
+
+    const config = {
+      method: "post",
+      url: "/api/v1/chat-more-message/" + room,
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+      },
+      data: {
+        count: value,
+      },
+    };
+    axios(config)
+      .then((res) => {
+        console.log([...allMessages, ...res.data]);
+        setAllMessages([...res.data, ...allMessages]);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
   };
 
   // establish socket connection
@@ -260,6 +285,9 @@ const ChatClientSide = (props) => {
         </div>
         {/* <!-- chats --> */}
         <div class="flex flex-col bg-white px-2 chat-services overflow-auto">
+          <button onClick={() => handelShowMoreMessages()}>
+            Show more messages...
+          </button>
           <DisplayChatMessages
             allMessages={allMessages}
             currentUserId={userId}
