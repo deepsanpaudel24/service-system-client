@@ -292,22 +292,26 @@ const Login = (props) => {
                                             </div>
                                     }
                                 </div>
-                                {/* <div class="md:flex md:items-center my-6">
-                                    <div class="md:w-1/3"></div>
-                                    <label class="md:w-2/3 block">
-                                    <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
-                                    <span class="text-sm">
-                                        Remember me
-                                    </span>
-                                    </label>
-                                </div>
-                                <div class="flex justify-between my-6" style={{ justifyContent: "center"}} >
-                                    <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/user/forgot-password">
-                                        Forgot Password?
-                                    </a>
-                                </div> */}
-
-                                <div class="flex mx-3 my-5">
+                                <nav>
+                                    <div class="max-w-7xl mx-1 my-10" style={{marginLeft: "0.4rem"}}>
+                                        <div class="relative flex items-center justify-between">
+                                            <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                                                <label class="md:w-2/3 block">
+                                                    <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
+                                                    <span class="text-sm">
+                                                        Remember me
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                                                <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/user/forgot-password">
+                                                    Forgot Password?
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </nav>
+                                {/* <div class="flex min-w-full my-5">
                                     <div class="w-6/12">
                                         <label class="md:w-2/3 block">
                                             <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
@@ -322,8 +326,7 @@ const Login = (props) => {
                                             Forgot Password?
                                         </a>
                                     </div>
-                                </div>
-
+                                </div> */}
                                 <div class="flex justify-between my-4" style={{ justifyContent: "center"}} >
                                     {showData()}
                                 </div>

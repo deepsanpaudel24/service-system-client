@@ -49,9 +49,7 @@ const NewCreateIntakeForm = (props) => {
 
   const handleDelete = (index) => {
     var newFormFields = [...formFields];
-    console.log(newFormFields, "while copying");
     newFormFields.splice(index, 1);
-    console.log(newFormFields, "after slicing");
     setFormFields(newFormFields);
     setShowSaveChangeButton(true); // show save changes button on form displaying side
   };
@@ -290,10 +288,6 @@ const NewCreateIntakeForm = (props) => {
           ></FormBuilder>
         )}
       </div>
-      <pre>{JSON.stringify(formBuilderLabel, null, 2)}</pre>
-      <pre>{JSON.stringify(formBuilderInputType, null, 2)}</pre>
-      <pre>{JSON.stringify(editingMode, null, 2)}</pre>
-      <pre>{JSON.stringify(editingFieldIndex, null, 2)}</pre>
     </div>
   );
 };
@@ -336,7 +330,6 @@ export const Select = (props) => {
           return <option value={item}>{item}</option>;
         })}
       </select>
-      <pre>{JSON.stringify(options, null, 2)}</pre>
     </div>
   );
 };

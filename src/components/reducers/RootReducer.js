@@ -35,6 +35,15 @@ import ProfileDetailsReducer from './Account_profileDetailsReducer';
 import UploadContractPaperReducer from './UploadContractPaperReducer';
 import ContractDetailsStorageReducer from './Contract_DetailsStorageReducer';
 import CreateIntakeFormReducer from './CreateIntakeFormReducer';
+import ClientCaseListReducer from './ClientCaseListReducer';
+import CaseDetailsStorageReducer from './CaseDetailsStorageReducer';
+import EmployeeListStorageReducer from './EmployeesListStorageReducer';
+import SerivceListStorageReducer from './ServicesListStorageReducer';
+import ClientListStorageReducer from './ClientListStorageReducer';
+import CustomTaskListStorageReducer from './CustomTaskListStorageReducer';
+import IntakeFormListStorageReducer from './IntakeFormListStorageReducer';
+import ConfirmContractReducer from './ConfirmContractReducer';
+import CreateClientCaseReducer from './Create_client_case_reducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -73,7 +82,16 @@ const rootReducer =  combineReducers({
     CaseAssignmentResponse: CaseAssignmentReducer,
     UploadContractPaperResponse: UploadContractPaperReducer,
     ContractDetailsStorageResponse: ContractDetailsStorageReducer,
-    CreateIntakeFormResponse: CreateIntakeFormReducer
+    CreateIntakeFormResponse: CreateIntakeFormReducer,
+    ClientCaseListResponse: ClientCaseListReducer,
+    CaseDetailsStorageReponse: CaseDetailsStorageReducer,
+    EmployeeListStorageResponse: EmployeeListStorageReducer,
+    SerivceListStorageResponse: SerivceListStorageReducer,
+    ClientListStorageResponse: ClientListStorageReducer,
+    CustomTaskListStorageResponse: CustomTaskListStorageReducer,
+    IntakeFormListStorageResponse: IntakeFormListStorageReducer,
+    ConfirmContractResponse: ConfirmContractReducer,
+    CreateClientCaseResponse: CreateClientCaseReducer
 })
 
 export default rootReducer

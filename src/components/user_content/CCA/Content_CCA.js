@@ -18,6 +18,7 @@ const CCAContent = () => {
     return(
         <div>
             <Switch>
+                <Route exact path='/user/home' component={ClientFillForm} />
                 <Route exact path='/user/change-password' component={ChangePassword} />
                 <Route exact path='/user/employees' component={ViewEmployees} />
                 <Route exact path='/user/add-employee' component={AddEmployee} />

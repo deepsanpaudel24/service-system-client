@@ -7,8 +7,10 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 
 const ClientFillForm = () => {
   const [formFields, setFormFields] = useState([]);
+  const [formFilled, setFormFilled] = useState(false)
   const [formId, setFormId] = useState("")
   const [formValues, setFormValues] = useState({});
+  const [pulseLoading, setPulseLoading] = useState(false)
   useLayoutEffect(() => {
     const config = {
       method: "get",
@@ -36,6 +38,7 @@ const ClientFillForm = () => {
   };
   const handleFormSubmit = () => {
     // _id, formValues, formId, FilledDate, clientId
+    setPulseLoading(true)
     var data = {
       'formValues': formValues
     }
@@ -49,66 +52,93 @@ const ClientFillForm = () => {
     }
     axios(config)
     .then((res) => {
-      console.log(res.data)
+      setPulseLoading(false)
+      setFormFilled(true)
     })
     .catch((error) => {
-      console.log(error.response)
+      setPulseLoading(false)
     })
+  };
+
+  const showData = () => {
+    if (pulseLoading) {
+      return (
+        <div class="">
+          <PulseLoader size={10} color={"#6DADE3"} loading={true} />
+        </div>
+      );
+    }
+    return (
+      <button
+        class="bg-blue-600 text-white px-3 py-2 mb-2 foucs:outline-none"
+        onClick={() => handleFormSubmit()}
+      >
+        Send Form
+      </button>
+    );
   };
 
   return (
     <div class="mb-4">
-      <p class="text-3xl mt-3 mb-6">Client Intake Form</p>
-      <div class="flex ">
-        {/* Form Display div */}
-        <div class="w-2/5">
-          <div class="border-dashed border-2 border-gray-300  px-5 py-3">
-            {/* Displaying formfields that are first time fetched form database */}
-              {formFields.map((field, index) => {
-                return (
-                  <div>
-                    <div class="mt-3 mb-3">
-                      <div class="relative flex items-center justify-between">
-                        <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                          <label class="block text-gray-700 text-sm">
-                            {field.label}
-                          </label>
+      {
+        !formFilled ? 
+        <div>
+          {
+            !_.isEmpty(formFields) ?
+            <div>
+              <p class="text-3xl mt-3 mb-6">Fill up the form</p>
+            <div class="flex ">
+              {/* Form Display div */}
+              <div class="w-2/5">
+                <div class="border-dashed border-2 border-gray-300  px-5 py-3">
+                  {/* Displaying formfields that are first time fetched form database */}
+                    {formFields.map((field, index) => {
+                      return (
+                        <div>
+                          <div class="mt-3 mb-3">
+                            <div class="relative flex items-center justify-between">
+                              <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                                <label class="block text-gray-700 text-sm">
+                                  {field.label}
+                                </label>
+                              </div>
+                            </div>
+                            {field.type == "textarea" ? (
+                              <Textarea
+                                field={field}
+                                inputTypeValueChange={handelInputTypeValueChange}
+                              ></Textarea>
+                            ) : field.type == "select" ? (
+                              <Select
+                                field={field}
+                                options={field.options}
+                                inputTypeValueChange={handelInputTypeValueChange}
+                              ></Select>
+                            ) : (
+                              <AnyField
+                                field={field}
+                                inputTypeValueChange={handelInputTypeValueChange}
+                              ></AnyField>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      {field.type == "textarea" ? (
-                        <Textarea
-                          field={field}
-                          inputTypeValueChange={handelInputTypeValueChange}
-                        ></Textarea>
-                      ) : field.type == "select" ? (
-                        <Select
-                          field={field}
-                          options={field.options}
-                          inputTypeValueChange={handelInputTypeValueChange}
-                        ></Select>
-                      ) : (
-                        <AnyField
-                          field={field}
-                          inputTypeValueChange={handelInputTypeValueChange}
-                        ></AnyField>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                      );
+                    })}
 
-              {/* End of formfields map */}
-              <button
-                type="submit"
-                class="mt-4 mb-3 w-full border-dashed border-2 border-gray-300 hover:bg-gray-100 flex text-gray-500 font-bold py-2 px-4 rounded focus:outline-none"
-                onClick={() => handleFormSubmit()}
-              >
-                Submit
-              </button>
-          </div>
+                    {/* End of formfields map */}
+                    {showData()}
+                </div>
+              </div>
+            </div>
+
+            </div>
+            :
+            ""
+          }
         </div>
-      </div>
-      <pre>{JSON.stringify(formValues, null, 2)}</pre>
+        :
+        "Form submitted sucessfully, Thank you!"
+      }
     </div>
   );
 };

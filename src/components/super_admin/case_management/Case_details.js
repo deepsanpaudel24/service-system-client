@@ -228,10 +228,31 @@ const ViewCaseDetailsSA = (props) => {
                                             )}
                                             </p>
                                         )}
+                                        <div class="flex items-center">
+                                            <div class="text-sm ">
+                                                <p>
+                                                Tags: &nbsp;&nbsp;
+                                                {caseTags.map((item, index) => {
+                                                    return (
+                                                    <span
+                                                        key={index}
+                                                        class="relative inline-block px-3 py-1 my-4 mx-2 font-semibold text-gray-900 leading-tight"
+                                                    >
+                                                        <span
+                                                        aria-hidden
+                                                        class="absolute inset-0 bg-gray-300 opacity-50"
+                                                        ></span>
+                                                        <span class="relative">{item}</span>
+                                                    </span>
+                                                    );
+                                                })}
+                                                </p>
+                                            </div>
+                                        </div>
                                         {
                                             caseDetails.status == "Requested" ?
                                             <div>
-                                                <div class="flex items-center mt-5">
+                                                <div class="flex items-center mt-8 mt-3">
                                                     <div class="text-sm">
                                                         <p class="text-xl text-gray-900 leading-none mb-2">
                                                             Matching service providers

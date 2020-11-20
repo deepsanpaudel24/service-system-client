@@ -1,4 +1,5 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import Timer from "react-compound-timer";
 import LogoutUser from "../../actions/UserLogoutAction";
@@ -7,6 +8,8 @@ import _ from "lodash";
 import SPCAContent from "./Content_SPCA";
 import { TimerRunningTimeDispatcher } from "../../actions/Timer_management/TimerRunningTimeAction";
 import { AddTimerDispatcher } from "../../actions/TimerAction";
+import { NotificationChangeStatusDispacther } from "../../actions/notifications/Notification_change_status_action";
+import { MdNotificationsNone } from 'react-icons/md';
 
 const SPCANavbar = () => {
     const [showOptions, setShowOptions] = useState(false)
@@ -15,9 +18,65 @@ const SPCANavbar = () => {
     const [timerStartingTime, setTimerStartingTime] = useState("")
     const [timerCaseId, setTimerCaseId] = useState("")
     const [billable, setBillable] = useState(false)
+
+    // For notification modules
+    const [showNotifications, setShowNotifications] = useState(false)
+    const [notification, setNotification] = useState([]);
+    const [sendFirstNotification, setSendFirstNotification] = useState(true)
+    const [numberOfNotifications, setNumberOfNotifications] = useState(0);
+
     const dispatch = useDispatch()
     const logoutResponse = useSelector(state => state.logoutUserResponse)
     const timerResponse = useSelector(state => state.TimerActionResponse)
+
+    const config = {
+        method: "get",
+        url: "/api/v1/notifications",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+        }
+      };
+
+    useEffect(() => {
+        const checkNotification = async () => {
+            try {
+                const resp = await axios(config);
+                setNotification(resp.data);
+                setNumberOfNotifications(resp.data.length)
+                return resp;
+            } 
+            catch (error) {
+                return error;
+            }
+        };
+
+        if(sendFirstNotification){
+            checkNotification()
+            setSendFirstNotification(false)
+        }
+        else {
+            const interval = setInterval(checkNotification, 60000);
+            return () => clearInterval(interval);
+        }
+      }, [sendFirstNotification]);
+    
+    const handleShowNotifications = () => {
+        if(showNotifications){
+            setShowNotifications(false)
+        }
+        else {
+            setShowOptions(false)
+            setShowNotifications(true)
+        }
+    }
+
+    const handleNotificationClick = (notification_id) => {
+        setShowNotifications(false)
+        console.log(notification_id, "notification id")
+        dispatch(NotificationChangeStatusDispacther(notification_id))
+    }
+
 
 
     const handleLogout = () => {
@@ -63,6 +122,7 @@ const SPCANavbar = () => {
         //dispatch action to send the timer details to backend server
         dispatch(AddTimerDispatcher(data))
     }
+
 
     return(
         <div>
@@ -121,11 +181,59 @@ const SPCANavbar = () => {
                                 </React.Fragment>
                             )}
                         </Timer>
-                        <button style={{marginRight: "2rem"}} class="p-1 border-2 border-transparent text-gray-400 rounded-full hover:text-white focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out" aria-label="Notifications">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                        </button>
+                        <div class="ml-3 relative">
+                            {
+                                numberOfNotifications == 0 ? 
+                                    <button onClick={() => handleShowNotifications()} class="relative text-white focus:outline-none mr-4 mt-1">
+                                        <MdNotificationsNone style={{fontSize: "1.7rem", marginRight: "0.5rem", marginTop: "0.5rem"}}/>
+                                    </button>
+                                :
+                                <button onClick={() => handleShowNotifications()} class="relative text-white focus:outline-none mr-3 mt-3">
+                                    <MdNotificationsNone style={{fontSize: "1.8rem", marginRight: "0.5rem", marginTop: "0.5rem"}}/>
+                                    {
+                                        numberOfNotifications == 0 ? 
+                                        ""
+                                        :
+                                        <div class="static mb-3">
+                                            <div class="absolute top-0 right-0">
+                                                <span class="badge bg-red-800 text-center text-white text-sm" style={{fontSize: "0.7rem"}}>
+                                                    {numberOfNotifications}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    }
+                                </button>
+                            }
+                            {
+                                showNotifications ?
+                                    <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg" style={{width: "20rem"}}>
+                                        <div class="rounded-md bg-white shadow-xs">
+                                            <div class="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                                {
+                                                    _.isEmpty(notification)  ?
+                                                    <span class="flex items-center px-4 py-3 border-b hover:bg-gray-100 ">
+                                                        <p class="text-gray-600 text-sm mx-2">
+                                                        <span class="font-bold" href="#">No new notifications</span>
+                                                        </p>
+                                                    </span>
+                                                    :
+                                                    notification.map((item, index) => {
+                                                        return(
+                                                            <Link to={item.link} class="flex items-center px-4 py-3 border-b hover:bg-gray-100 " onClick={() => handleNotificationClick(item._id.$oid)}>
+                                                                    <p class="text-gray-600 text-sm mx-2">
+                                                                    <span class="font-bold" href="#">{item.title}</span>
+                                                                    </p>
+                                                            </Link>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                :
+                                ""
+                            } 
+                        </div>
                         <div class="ml-3 relative">
                             <div class="text-white">
                                 <button onClick={() => handleShowOptions()} class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-white transition duration-150 ease-in-out" id="user-menu" aria-label="User menu" aria-haspopup="true">
@@ -134,7 +242,7 @@ const SPCANavbar = () => {
                             </div>
                             {
                                 showOptions ? 
-                                <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg">
+                                <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg" style={{"zIndex": "1"}}>
                                     <div class="rounded-md bg-white shadow-xs">
                                         <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                                             <Link to="/user/profile-setting" onClick={() => handleShowOptions()} class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" role="menuitem">Profile</Link>

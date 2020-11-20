@@ -4,29 +4,37 @@ import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import _ from "lodash";
 import { AddCustomTaskResponseReset } from "../../actions/custom_task/AddCustomTaskAction";
+import { CustomTaskListStorageDispatcher } from "../../actions/custom_task/CustomTaskListStorage";
 
 const Tasks = (props) => {
     const [tasks, setTasks] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
     const dispatch = useDispatch()
-    const response = useSelector(state => state.NewCaseRequestResponse)
+    const response = useSelector(state => state.CustomTaskListStorageResponse)
     
     useLayoutEffect(() => {
-      const config = {
-          method: 'get',
-          url: '/api/v1/tasks',
-          headers: { 
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-          }
+        if(_.isEmpty(response.data)){
+            const config = {
+                method: 'get',
+                url: '/api/v1/tasks',
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                }
+            }
+            axios(config)
+            .then((res) => {
+                setTasks(res.data)
+                setTableLoading(false)
+                dispatch(CustomTaskListStorageDispatcher(res.data))
+            })
+            .catch((error) => {
+                setTableLoading(false)
+            })
         }
-        axios(config)
-        .then((res) => {
-            setTasks(res.data)
+        else {
+            setTasks(response.data)
             setTableLoading(false)
-        })
-        .catch((error) => {
-            setTableLoading(false)
-        })
+        }
     }, [])
 
     useEffect(() => {

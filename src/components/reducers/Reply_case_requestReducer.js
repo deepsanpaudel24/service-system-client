@@ -1,4 +1,4 @@
-import { REPLY_CASE_REQUEST_LOADING, REPLY_CASE_REQUEST_FAIL, REPLY_CASE_REQUEST_SERVER_FAIL , REPLY_CASE_REQUEST_SUCCESS} from "../actions/case_management/ReplyCaseRequestAction";
+import { REPLY_CASE_REQUEST_LOADING, REPLY_CASE_REQUEST_FAIL, REPLY_CASE_REQUEST_SERVER_FAIL , REPLY_CASE_REQUEST_SUCCESS, REPLY_CASE_REQUEST_RESPONSE_RESET} from "../actions/case_management/ReplyCaseRequestAction";
 
 const DefaultState = {
     loading: false,
@@ -34,6 +34,16 @@ const ReplyCaseRequestReducer = (state = DefaultState, action) => {
                 ...state,
                 loading: false,
                 serverErrorMsg: action.serverErrorMsg
+            }
+        case REPLY_CASE_REQUEST_RESPONSE_RESET:
+            return {
+                ...state,
+                loading: false,
+                data: [],
+                errorMsg: "",
+                serverErrorMsg: "",
+                emailConfirmationMessage: ""
+                
             }
         default:
             return state

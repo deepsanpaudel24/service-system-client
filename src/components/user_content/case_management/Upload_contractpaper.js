@@ -1,16 +1,25 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {PulseLoader} from "react-spinners";
 import _ from "lodash";
 import {useDispatch, useSelector} from "react-redux";
 import {UploadContractPaperAction} from "../../actions/case_management/UploadContractPaperAction";
+import { VscClose } from "react-icons/vsc";
 
-const UploadContractPaper = () => {
+const UploadContractPaper = (props) => {
     const [fileToSend, setFileToSend] = useState([]);
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
+    const [caseId, setCaseId] = useState("")
     const [formEmptyError, setFormEmptyError] = useState("")
+    const [fileNameToShow, setFileNameToShow] = useState([])
     const dispatch = useDispatch()
     const response = useSelector(state => state.UploadContractPaperResponse)
+
+    useEffect(() => {
+        var string = document.location.pathname;
+        var urlvalues = string.toString().split("/");
+        setCaseId(urlvalues[5])
+    }, [])
 
     // allowed file types
     const fileTypes = [
@@ -48,7 +57,32 @@ const UploadContractPaper = () => {
             }
         }
         setFileToSend(validateFilesList)
+        // loop through files
+        var files = e.target.files
+        var filesNameList = [] 
+        for (var i = 0; i < files.length; i++) {
+        // get item
+        var file = files.item(i);
+        filesNameList.push(file.name)
+        }
+        setFileNameToShow(filesNameList)
     }
+
+    const handleRemoveChatFile = (name, index) => {
+        var filteredFileList = []
+        var fileList = fileToSend
+        var NewFileNameList = fileNameToShow
+    
+        for (var i = 0; i < fileList.length; i++) {
+          var file = fileList[i]
+          if(file.name !== name){
+            filteredFileList.push(file)
+          } 
+        }
+        NewFileNameList.splice(index, 1)
+        setFileToSend(filteredFileList)
+        setFileNameToShow(NewFileNameList)
+      }
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value)
@@ -76,6 +110,12 @@ const UploadContractPaper = () => {
             formData.append("title", title)
             formData.append("desc", desc)
             dispatch(UploadContractPaperAction(formData, urlvalues[5]))
+        }
+    }
+
+    const confirmContractUploaded = () => {
+        if(!_.isEmpty(response.data)){
+            props.history.push("/user/case/" + caseId)
         }
     }
 
@@ -108,6 +148,7 @@ const UploadContractPaper = () => {
     }
     return(
         <div class="flex mb-4">
+            {confirmContractUploaded()}
             <div class="w-3/5 ml-5">
                 <form>
                     <p class="text-3xl my-3" >Send Contract Paper</p>
@@ -146,6 +187,23 @@ const UploadContractPaper = () => {
                                     onChange={e => handleFileUpload(e)}
                                     accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                 />
+                                {
+                                    !_.isEmpty(fileNameToShow) ? 
+                                        fileNameToShow.map((item, index) => {
+                                            return(
+                                                <div class="flex mx-3 my-3">
+                                                    <div class="w-3/12">
+                                                        <p>{item}</p>
+                                                    </div>
+                                                    <div class="w-1/12">
+                                                        <p class="text-red-400 mx-6 text-lg" onClick={() => handleRemoveChatFile(item, index)}><VscClose /></p>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })
+                                    :
+                                    ""
+                                }
                             </div>
                             <div class="flex justify-start my-5">
                                 {showData()}

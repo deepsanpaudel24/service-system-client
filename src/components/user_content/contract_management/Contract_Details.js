@@ -11,6 +11,7 @@ import dataFileLogo from "../../../images/dataFile-Icon.png";
 import imageLogo from "../../../images/image-Icon.png";
 import { MdFileDownload } from "react-icons/md";
 import folderEmptyIcon from "../../../images/folder_empty.png";
+import { ConfirmContractDispatcher } from "../../actions/case_management/ConfirmContractAction";
 
 const ContractDetails = (props) => {
     const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -91,6 +92,7 @@ const ContractDetails = (props) => {
         .then((res) => {
             setContractConfirm(true)
             setButtonLoading(false)
+            dispatch(ConfirmContractDispatcher(res.data))
             return(props.history.push("/user/case/" + urlvalues[3]))
         })
         .catch((error) => {

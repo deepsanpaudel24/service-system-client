@@ -7,6 +7,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.20.0",
+    "downloadjs": "^1.4.7",
     "http-proxy-middleware": "^1.0.5",
     "i18next": "^19.7.0",
     "i18next-browser-languagedetector": "^6.0.1",
@@ -31,6 +32,7 @@
     "react-switch": "^5.0.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "socket.io-client": "^2.3.0",
     "validator": "^13.1.17",
     "video-react": "^0.14.1"
   },

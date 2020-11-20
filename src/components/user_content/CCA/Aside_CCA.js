@@ -47,7 +47,6 @@ const CCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
             </MenuItem>
             <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
             <MenuItem icon={<FaUsers />}><Link to="/user/employees">Employees</Link></MenuItem>
-            <MenuItem icon={<FaUsers />}><Link to="/user/fill-form">Fill Form</Link></MenuItem>
           </Menu>
         </SidebarContent>
 

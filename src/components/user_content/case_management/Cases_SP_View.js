@@ -1,29 +1,42 @@
 import React , {useState, useEffect, useLayoutEffect} from "react";
 import {Link} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
 import {PulseLoader} from "react-spinners";
 import axios from "axios";
 import _ from "lodash";
+import { ClientCaseListStorageDispatcher } from "../../actions/case_management/ClientCasesListStorage";
+import Pagination from "../Pagination";
 
 const ViewCasesSP = (props) => {
     const [cases, setCases] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
-    
+    const dispatch = useDispatch()
+    const response = useSelector(state => state.ClientCaseListResponse)
+    const response2 = useSelector(state => state.UploadContractPaperResponse)
+    const response3 = useSelector(state => state.ConfirmContractResponse)
     useLayoutEffect(() => {
-      const config = {
-          method: 'get',
-          url: '/api/v1/cases-sp',
-          headers: { 
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-          }
+        if(_.isEmpty(response.data) || !_.isEmpty(response2.data) || !_.isEmpty(response3.data)){
+            const config = {
+                method: 'get',
+                url: '/api/v1/cases-sp',
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+            }
+            }
+            axios(config)
+            .then((res) => {
+                setCases(res.data)
+                setTableLoading(false)
+                dispatch(ClientCaseListStorageDispatcher(res.data))
+            })
+            .catch((error) => {
+                setTableLoading(false)
+            })
         }
-        axios(config)
-        .then((res) => {
-            setCases(res.data)
+        else {
+            setCases(response.data)
             setTableLoading(false)
-        })
-        .catch((error) => {
-            setTableLoading(false)
-        })
+        }
     }, [])
 
     useEffect(() => {
@@ -195,7 +208,7 @@ const ViewCasesSP = (props) => {
                                                                     class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Proposal Accepted</span>
+                                                                    <span class="relative">Client waiting contract paper</span>
                                                                 </span>
                                                                 :
                                                                 item.status == "Contract-Sent" ?

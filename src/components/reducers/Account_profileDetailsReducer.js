@@ -1,4 +1,4 @@
-import { PROFILE_SETTING_FAIL, PROFILE_SETTING_SUCCESS} from "../actions/ProfileDetailsAction"
+import { PROFILE_SETTING_FAIL, PROFILE_SETTING_SUCCESS, PROFILE_SETTING_RESPONSE_RESET} from "../actions/ProfileDetailsAction"
 
 const DefaultState = {
     loading: false,
@@ -21,6 +21,14 @@ const ProfileDetailsReducer = (state = DefaultState, action) => {
                 loading: false,
                 data: action.payload,
                 errorMsg: ""
+            }
+        case PROFILE_SETTING_RESPONSE_RESET:
+            return {
+                ...state,
+                loading: false,
+                data: [],
+                errorMsg: "",
+                serverErrorMsg: ""
             }
         default:
             return state

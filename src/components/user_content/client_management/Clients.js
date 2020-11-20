@@ -5,29 +5,38 @@ import _ from "lodash";
 import { Link } from "react-router-dom";
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { AddClientResponseReset } from "../../actions/client_management/AddClientAction";
+import { ClientListStorageDispatcher } from "../../actions/client_management/ClientListStorage";
 
 const Clients = (props) => {
     const [clients, setClients] = useState([])
-    const [tableLoading, setTableLoading] = useState(false)
+    const [tableLoading, setTableLoading] = useState(true)
     const dispatch = useDispatch()
+    const response = useSelector(state => state.ClientListStorageResponse)
 
     // gets authorized client
     useLayoutEffect(() => {
-        const config = {
-            method: 'get',
-            url: '/api/v1/clients',
-            headers: { 
-                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+        if(_.isEmpty(response.data)){
+            const config = {
+                method: 'get',
+                url: '/api/v1/clients',
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  }
               }
-          }
-          axios(config)
-          .then((res) => {
-              setClients(res.data)
-              setTableLoading(false)
-          })
-          .catch((error) => {
-              console.log(error.response)
-          })
+              axios(config)
+              .then((res) => {
+                  setClients(res.data)
+                  setTableLoading(false)
+                  dispatch(ClientListStorageDispatcher(res.data))
+              })
+              .catch((error) => {
+                  console.log(error.response)
+              })
+        }
+        else {
+            setClients(response.data)
+            setTableLoading(false)
+        }
       }, [])
   
     useEffect(() => {
@@ -70,11 +79,11 @@ const Clients = (props) => {
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Rate
+                                                            Cases
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Average Time Taken
+                                                            User Since
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">

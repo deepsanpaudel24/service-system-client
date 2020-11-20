@@ -4,6 +4,7 @@ export const REPLY_CASE_REQUEST_LOADING = 'REPLY_CASE_REQUEST_LOADING'
 export const REPLY_CASE_REQUEST_FAIL =   'REPLY_CASE_REQUEST_FAIL'
 export const REPLY_CASE_REQUEST_SERVER_FAIL =   'REPLY_EMPLOYEE_SERVER_FAIL'
 export const REPLY_CASE_REQUEST_SUCCESS = 'REPLY_CASE_REQUEST_SUCCESS'
+export const REPLY_CASE_REQUEST_RESPONSE_RESET = 'REPLY_CASE_REQUEST_RESPONSE_RESET'
 
 export const ReplyCaseRequestDispacther = (data, caseid) => async dispatch => {
     try {
@@ -39,4 +40,10 @@ export const ReplyCaseRequestDispacther = (data, caseid) => async dispatch => {
             type: "REPLY_CASE_REQUEST_FAIL"
         })
     }
+}
+
+export const ReplyCaseRequestResponseReset = () => async dispatch => {
+    dispatch({
+        type: "REPLY_CASE_REQUEST_RESPONSE_RESET"
+    })
 }

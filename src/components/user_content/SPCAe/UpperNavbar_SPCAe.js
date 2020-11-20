@@ -4,43 +4,67 @@ import LogoutUser from "../../actions/UserLogoutAction";
 import { useDispatch, useSelector } from 'react-redux';
 import _ from "lodash";
 import axios from "axios";
+import { NotificationChangeStatusDispacther } from "../../actions/notifications/Notification_change_status_action";
 import { MdNotificationsNone } from 'react-icons/md';
 import SPCAeContent from "./Content_SPCAe";
 
 const SPCAeNavbar = () => {
     const [showOptions, setShowOptions] = useState(false)
+    // For notification modules
     const [showNotifications, setShowNotifications] = useState(false)
     const [notification, setNotification] = useState([]);
+    const [sendFirstNotification, setSendFirstNotification] = useState(true)
     const [numberOfNotifications, setNumberOfNotifications] = useState(0);
     const dispatch = useDispatch()
     const logoutResponse = useSelector(state => state.logoutUserResponse)
 
     const config = {
         method: "get",
-        url: "api/v1/notifications",
+        url: "/api/v1/notifications",
         headers: {
           "Content-Type": "application/json",
           'Authorization': 'Bearer ' + localStorage.getItem('access_token')
         }
       };
-    
+
     useEffect(() => {
-        const checkNotificaton = async () => {
+        const checkNotification = async () => {
             try {
                 const resp = await axios(config);
-                console.log(resp.data)
                 setNotification(resp.data);
                 setNumberOfNotifications(resp.data.length)
                 return resp;
             } 
             catch (error) {
-                console.log(error.response)
                 return error;
             }
         };
-        const interval = setInterval(checkNotificaton, 3000);
-        return () => clearInterval(interval);
-      }, []);    
+
+        if(sendFirstNotification){
+            checkNotification()
+            setSendFirstNotification(false)
+        }
+        else {
+            const interval = setInterval(checkNotification, 9000);
+            return () => clearInterval(interval);
+        }
+      }, [sendFirstNotification]);
+    
+    const handleShowNotifications = () => {
+        if(showNotifications){
+            setShowNotifications(false)
+        }
+        else {
+            setShowOptions(false)
+            setShowNotifications(true)
+        }
+    }
+
+    const handleNotificationClick = (notification_id) => {
+        setShowNotifications(false)
+        console.log(notification_id, "notification id")
+        dispatch(NotificationChangeStatusDispacther(notification_id))
+    }    
 
     const handleLogout = () => {
         dispatch(LogoutUser())
@@ -61,16 +85,6 @@ const SPCAeNavbar = () => {
         else {
             setShowNotifications(false)
             setShowOptions(true)
-        }
-    }
-
-    const handleShowNotifications = () => {
-        if(showNotifications){
-            setShowNotifications(false)
-        }
-        else {
-            setShowOptions(false)
-            setShowNotifications(true)
         }
     }
 
@@ -100,7 +114,7 @@ const SPCAeNavbar = () => {
                         <div class="ml-3 relative">
                             {
                                 numberOfNotifications == 0 ? 
-                                    <button onClick={() => handleShowNotifications()} class="relative text-white focus:outline-none mr-3 mt-1">
+                                    <button onClick={() => handleShowNotifications()} class="relative text-white focus:outline-none mr-4 mt-1">
                                         <MdNotificationsNone style={{fontSize: "1.7rem", marginRight: "0.5rem", marginTop: "0.5rem"}}/>
                                     </button>
                                 :
@@ -124,15 +138,22 @@ const SPCAeNavbar = () => {
                                 showNotifications ?
                                     <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg" style={{width: "20rem"}}>
                                         <div class="rounded-md bg-white shadow-xs">
-                                            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                            <div class="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                                                 {
+                                                    _.isEmpty(notification)  ?
+                                                    <span class="flex items-center px-4 py-3 border-b hover:bg-gray-100 ">
+                                                        <p class="text-gray-600 text-sm mx-2">
+                                                        <span class="font-bold" href="#">No new notifications</span>
+                                                        </p>
+                                                    </span>
+                                                    :
                                                     notification.map((item, index) => {
                                                         return(
-                                                            <a href="#" class="flex items-center px-4 py-3 border-b hover:bg-gray-100 ">
-                                                                <p class="text-gray-600 text-sm mx-2">
-                                                                <span class="font-bold" href="#">{item.title}</span> .  2m
-                                                                </p>
-                                                            </a>
+                                                            <Link to={item.link} class="flex items-center px-4 py-3 border-b hover:bg-gray-100 " onClick={() => handleNotificationClick(item._id.$oid)}>
+                                                                    <p class="text-gray-600 text-sm mx-2">
+                                                                    <span class="font-bold" href="#">{item.title}</span>
+                                                                    </p>
+                                                            </Link>
                                                         )
                                                     })
                                                 }
@@ -151,7 +172,7 @@ const SPCAeNavbar = () => {
                             </div>
                             {
                                 showOptions ? 
-                                <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg">
+                                <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg" style={{"zIndex": "1"}}>
                                     <div class="rounded-md bg-white shadow-xs">
                                         <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                                             <a href="#" class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" role="menuitem">Profile</a>
