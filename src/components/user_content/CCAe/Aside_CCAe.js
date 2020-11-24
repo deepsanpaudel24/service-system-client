@@ -33,7 +33,7 @@ const CCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
               whiteSpace: 'nowrap',
             }}
           >
-            Sidebar Title
+            SERVICE SYSTEM
           </div>
         </SidebarHeader>
 
@@ -89,15 +89,6 @@ const CCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
               padding: '20px 24px',
             }}
           >
-            <a
-              href="https://github.com/azouaoui-med/react-pro-sidebar"
-              target="_blank"
-              className="sidebar-btn"
-              rel="noopener noreferrer"
-            >
-              <FaGithub />
-              <span>View Sources</span>
-            </a>
           </div>
         </SidebarFooter>
       </ProSidebar>

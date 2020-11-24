@@ -1,7 +1,7 @@
 import React from "react"
 import {Link} from "react-router-dom"
 import LandingIcon from "../../images/landingpage.png"
-import { withTranslation } from 'react-i18next'
+import { withTranslation } from 'react-i18next';
 
 const Landing = ({t}) => {
     return (

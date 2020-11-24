@@ -2,6 +2,17 @@
     "Intro": "Introduction",
     "service_platform": "Service System Platform",
     "Menu":"Menu",
-    "Sign Up":"Sign Up",
-    "Sign In":"Sign In"
+    "sign_up":"Sign Up",
+    "Sign_in":"Sign In",
+    "email":"Email",
+    "password": "Password",
+    "password_hint": "Hint: You are required to use a sufficiently strong password. Password must be more than 7 characters, atleast one special character and numbers and letter in Upper case.",
+    "confirm_password": "Confirm Password",
+    "already_have_account": "Already have account?",
+    "dont_have_account": "Don't have account?",
+    "remember_me":"Remember me",
+    "forgot_password":"Forgot Password",
+    "forgot_password_hint":"Fill up your email to get the link to recover your account.",
+    "setup_password":"Setup Password",
+    "copyright": "2020 service system. All rights reserved."
 }

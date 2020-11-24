@@ -1,4 +1,4 @@
-import { CUSTOM_TASK_LIST_STORAGE_FAIL, CUSTOM_TASK_LIST_STORAGE_SUCCESS} from "../actions/custom_task/CustomTaskListStorage"
+import { CUSTOM_TASK_LIST_STORAGE_FAIL, CUSTOM_TASK_LIST_STORAGE_SUCCESS, CUSTOM_TASK_LSIT_STORAGE_RESPONSE_RESET} from "../actions/custom_task/CustomTaskListStorage"
 
 const DefaultState = {
     loading: false,
@@ -21,6 +21,14 @@ const CustomTaskListStorageReducer = (state = DefaultState, action) => {
                 loading: false,
                 data: action.payload,
                 errorMsg: ""
+            }
+        case CUSTOM_TASK_LSIT_STORAGE_RESPONSE_RESET:
+            return {
+                ...state,
+                loading: false,
+                data:[],
+                errorMsg: "",
+                serverErrorMsg: ""
             }
         default:
             return state

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Pagination = (props) => {
     const { pageChanger, totalRows, activePage } = props
-    const numberofPages = Math.ceil(totalRows/2)
+    const numberofPages = Math.ceil(totalRows/10)
     var pages = []
     for (var i = 1; i <= numberofPages; i++) {
         pages.push(i)

@@ -72,7 +72,7 @@ const Login = (props) => {
     }
     
     const handleEmailChange = e => {
-        setEmail(e.target.value)
+        setEmail(e.target.value.trim())
         //setShowEmailBatch(false)
         setShowResetPasswordConfirm(false)
         if(validator.isEmail(email)){
@@ -81,7 +81,7 @@ const Login = (props) => {
     }
 
     const handlePassword = e => {
-        setPassword(e.target.value)
+        setPassword(e.target.value.trim())
         setPasswordError("")
         //setShowEmailBatch(false)
         setShowResetPasswordConfirm(false)
@@ -93,7 +93,8 @@ const Login = (props) => {
         setShowResetPasswordConfirm(false)
     }
 
-    const HandleLoginUser = () => {
+    const HandleLoginUser = (e) => {
+        e.preventDefault()
         if(email == ""){
             setEmailError("Please enter your email.")
         }
@@ -201,8 +202,7 @@ const Login = (props) => {
         return (
             <button 
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline" 
-                type="button" 
-                onClick={() => HandleLoginUser()}
+                type="submit" 
             >
                 Sign In
             </button>
@@ -219,7 +219,7 @@ const Login = (props) => {
                         <NavAccount />
                     </div>
                     <div class="container mx-auto w-full max-w-md py-4 mt-3">
-                        <form>
+                        <form onSubmit={HandleLoginUser}>
                             <div class="bg-white align-bottom shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
                                 {
                                     showEmailBatch == true ? 
@@ -311,22 +311,6 @@ const Login = (props) => {
                                         </div>
                                     </div>
                                 </nav>
-                                {/* <div class="flex min-w-full my-5">
-                                    <div class="w-6/12">
-                                        <label class="md:w-2/3 block">
-                                            <input class="mr-2 leading-tight" type="checkbox" checked onChange= { e => handleRememberMeChange(e)}/>
-                                            <span class="text-sm">
-                                                Remember me
-                                            </span>
-                                        </label>
-                                    </div>
-                                    <div class="w-2/12"></div>
-                                    <div class="w-4/12" style={{ justifyContent: "right"}}>
-                                        <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/user/forgot-password">
-                                            Forgot Password?
-                                        </a>
-                                    </div>
-                                </div> */}
                                 <div class="flex justify-between my-4" style={{ justifyContent: "center"}} >
                                     {showData()}
                                 </div>

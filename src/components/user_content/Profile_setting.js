@@ -11,13 +11,15 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import CreatableSelect from 'react-select/creatable';
 import {PulseLoader} from "react-spinners";
+import VideoPlayer from "./video_player/VideoPlayer";
+import { MdFileUpload } from "react-icons/md";
 
 const ProfileSetting = (props) => {
     // declaring a global variables
     var scToSend = ""
     var datePreferencesToSend = ""
     var currencyPreferencesToSend = ""
-    
+    const [fileNameToShow, setFileNameToShow] = useState([])  
     const [showNameField, setShowNameField] = useState(false)
     const [name, setName] = useState("")
     const [showAddressField, setShowAddressField] = useState(false)
@@ -41,6 +43,9 @@ const ProfileSetting = (props) => {
     const [haveGoogleCredentials, setHaveGoogleCredentials] = useState(false)
     const [profileDetails, setProfileDetails] = useState([])
     const [activeTab, setActiveTab] = useState("basic_info")
+
+    const [showVideoForm, setShowVideoForm] = useState(true)
+    const [showIntroForm, setShowIntroForm] = useState(true)
 
     const dispatch = useDispatch()
     const response = useSelector(state => state.ProfileDetailsResponse)
@@ -75,6 +80,12 @@ const ProfileSetting = (props) => {
                 setCurrencyPreferences(res.data['currency_preferences'])
                 setDatePreferences(res.data['date_preferences'])
                 setProfileDetailsLoading(false)
+                if(res.data.hasOwnProperty('intro_video')){
+                    setShowVideoForm(false)
+                }
+                if(res.data.hasOwnProperty('intro_text')){
+                    setShowIntroForm(false)
+                }
             })
             .catch((error) => {
                 
@@ -91,6 +102,12 @@ const ProfileSetting = (props) => {
             setCurrencyPreferences(response.data['currency_preferences'])
             setDatePreferences(response.data['date_preferences'])
             setProfileDetailsLoading(false)
+            if(response.data.hasOwnProperty('intro_video')){
+                setShowVideoForm(false)
+            }
+            if(response.data.hasOwnProperty('intro_text')){
+                setShowIntroForm(false)
+            }
         }
         // To check if the user has linked google account 
         var config2 = {
@@ -112,6 +129,22 @@ const ProfileSetting = (props) => {
     useEffect(() => {
         console.log("Profile details", response.data)
     }, [profileDetails])
+
+    const handleRemoveChatFile = (name, index) => {
+        var filteredFileList = []
+        var fileList = fileToSend
+        var NewFileNameList = fileNameToShow
+    
+        for (var i = 0; i < fileList.length; i++) {
+          var file = fileList[i]
+          if(file.name !== name){
+            filteredFileList.push(file)
+          } 
+        }
+        NewFileNameList.splice(index, 1)
+        setFileToSend(filteredFileList)
+        setFileNameToShow(NewFileNameList)
+      }
 
     // To open google consent for user authorization 
     const handleLinkGoogleAccount = () => {
@@ -372,6 +405,14 @@ const ProfileSetting = (props) => {
         setCurrencyPreferences(currencyPreferencesToSend)
     }
 
+    const OpenVideoUploader = () => {
+        setShowVideoForm(true)
+    }
+
+    const OpenTextUploader = () => {
+        setShowIntroForm(true)
+    }
+
     const OpenModalDatePreferences = (type) => {
         confirmAlert({
             customUI: ({ onClose }) => {
@@ -477,14 +518,6 @@ const ProfileSetting = (props) => {
         "video/ogg",
         "video/webm",
         "video/quicktime",
-        "image/jpg",
-        "image/jpeg",
-        "image/png",
-        "text/plain",
-        "text/csv",
-        "application/msword",
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
     //Validate files
@@ -503,6 +536,15 @@ const ProfileSetting = (props) => {
             }
         }
         setFileToSend(validateFilesList)
+        // loop through files
+        var files = e.target.files
+        var filesNameList = [] 
+        for (var i = 0; i < files.length; i++) {
+        // get item
+        var file = files.item(i);
+        filesNameList.push(file.name)
+        }
+        setFileNameToShow(filesNameList)
     }
 
     const handleIntroTextChange = (e) => {
@@ -517,6 +559,44 @@ const ProfileSetting = (props) => {
             }
         formData.append("intro_text", IntroText)
         dispatch(UpdateProfileIntroduction(formData))
+        setShowAlert(true)
+        const config = {
+            method: 'get',
+            url: '/api/v1/user/profile-details',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
+        }
+        axios(config)
+        .then((res) => {
+            var data = res.data
+            dispatch(ProfileSettingDispatcher(data))
+            setProfileDetails(res.data)
+            setName(res.data['name'])
+            setAddress(res.data['address'])
+            setContact(res.data['phone_number'])
+            setRegistrationNumber(res.data['registration_number'])
+            setPersonalNumber(res.data['personal_number'])
+            setServiceCategories(res.data['service_categories']) 
+            var array = []
+            res.data['service_categories'].map((item) => 
+                array.push({"label": item, "value": item})
+            )
+            setServiceCategoriesDefaultValue(array)
+            setCurrencyPreferences(res.data['currency_preferences'])
+            setDatePreferences(res.data['date_preferences'])
+            setProfileDetailsLoading(false)
+            if(res.data.hasOwnProperty('intro_video')){
+                setShowVideoForm(false)
+            }
+            if(res.data.hasOwnProperty('intro_text')){
+                setShowIntroForm(false)
+            }
+        })
+        .catch((error) => {
+            
+        })
     }
 
     const showData = () => {
@@ -901,40 +981,113 @@ const ProfileSetting = (props) => {
                             :
                             <div class="flex mb-4">
                                 <div class="w-3/5 ml-5">
-                                    <form>
                                         <div class="mt-2 mb-3" >
-                                            <label class="block text-gray-700 text-sm mb-1" for="password">
-                                                Introduction Video
-                                            </label>
+                                        {
+                                            !showVideoForm ? 
+                                            <span>
+                                                <div class="flex items-center">
+                                                    <div class="w-2/5">
+                                                        <label class="block text-gray-700 text-sm" for="password">
+                                                            Introduction Video
+                                                        </label>
+                                                    </div>
+                                                    <div class="w-3/5">
+                                                        <button class="focus:outline-none ml-3 mb-5" onClick={() => OpenVideoUploader()}>
+                                                            <p class="text-blue-400 mx-6"><FaEdit /></p>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <VideoPlayer source={profileDetails['intro_video']} />
+                                            </span>
+                                            :
                                             <div>
-                                                <input 
-                                                    class="py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                                    id="budget" 
+                                                <label class="block text-gray-700 text-sm mb-1" for="password">
+                                                    Introduction Video
+                                                </label>
+                                                <label for="allfilesMessage" style={{ cursor: "pointer" }}>
+                                                    <a>
+                                                        <em class="fa fa-upload"></em>{" "}
+                                                        <span class="bg-gray-200 border border-gray-100 hover:bg-grey text-grey-darkest py-2 px-4 rounded inline-flex items-center">
+                                                            <p class="text-lg"><MdFileUpload /></p>
+                                                            <span> &nbsp;Attach Files</span>
+                                                        </span>
+                                                    </a>
+                                                </label>
+                                                <input
                                                     type="file"
-                                                    multiple
+                                                    name="allfilesMessage"
+                                                    id="allfilesMessage"
+                                                    style={{ display: "none" }}
                                                     onChange={e => handleFileUpload(e)}
-                                                    accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                                    multiple
+                                                    accept="video/mp4,video/x-m4v,video/*"    
                                                 />
+                                                {
+                                                    !_.isEmpty(fileNameToShow) ? 
+                                                        fileNameToShow.map((item, index) => {
+                                                            return(
+                                                                <div class="flex mx-3 my-5">
+                                                                    <div class="w-3/12">
+                                                                        <p>{item}</p>
+                                                                    </div>
+                                                                    <div class="w-1/12">
+                                                                        <p class="text-red-400 mx-6 text-lg" onClick={() => handleRemoveChatFile(item, index)}><VscClose /></p>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    :
+                                                    ""
+                                                }
                                             </div>
+                                        }
                                         </div>
+
                                         <div class="mt-2 mb-3" >
-                                            <label class="block text-gray-700 text-sm mb-2" for="password">
-                                                Introduction Text
-                                            </label>
-                                            <div>
-                                                <textarea 
-                                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                                    id="title" 
-                                                    type="text"
-                                                    style={{minHeight: "12em"}}
-                                                    onChange= {(e) => handleIntroTextChange(e)}
-                                                />
+                                            {
+                                                !showIntroForm ? 
+                                                <span>
+                                                    <div class="flex items-center">
+                                                        <div class="w-2/5">
+                                                            <label class="block text-gray-700 text-sm" for="password">
+                                                                Introduction Description
+                                                            </label>
+                                                        </div>
+                                                        <div class="w-3/5">
+                                                            <button class="focus:outline-none ml-3 mb-5" onClick={() => OpenTextUploader()}>
+                                                                <p class="text-blue-400 mx-6"><FaEdit /></p>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <p>{profileDetails['intro_text']}</p>
+                                                    </div>
+                                                </span>
+                                                :
+                                                <span>
+                                                    <label class="block text-gray-700 text-sm mb-2" for="password">
+                                                        Introduction Text
+                                                    </label>
+                                                    <div>
+                                                        <textarea 
+                                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                            id="title" 
+                                                            type="text"
+                                                            style={{minHeight: "12em"}}
+                                                            onChange= {(e) => handleIntroTextChange(e)}
+                                                        />
+                                                    </div>
+                                                </span>
+                                            }
+                                        </div>
+                                        {
+                                            showIntroForm || showVideoForm ?
+                                            <div class="flex justify-start my-5" >
+                                                {showData()}
                                             </div>
-                                        </div>
-                                        <div class="flex justify-start my-5" >
-                                            {showData()}
-                                        </div>
-                                    </form>
+                                            :
+                                            ""
+                                        }
                                 </div>
                             </div>
                         }

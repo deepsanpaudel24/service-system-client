@@ -7,8 +7,9 @@ import validator from "validator";
 import PasswordStrengthBar from "react-password-strength-bar";
 import {PulseLoader} from "react-spinners";
 import { SendEmailConfirmationDispatcher } from "../actions/SendEmailConfirmationAction";
+import { withTranslation } from 'react-i18next';
 
-const Register = (props) => {
+const Register = ({t}, props) => {
     //create state
     const[email, setEmail] = useState("")
     const[password, setPassword] = useState("")
@@ -21,21 +22,21 @@ const Register = (props) => {
     const response = useSelector(state => state.resgiterResponse)
 
     const handleEmailChange = e => {
-        setEmail(e.target.value)
+        setEmail(e.target.value.trim())
         if(validator.isEmail(email)){
             setEmailError("")
         }
     }
 
     const handlePasswordChange = e => {
-        setPassword(e.target.value)
+        setPassword(e.target.value.trim())
         if(!password.length < 7){
             setPasswordError("")
         }
     }
 
     const handleConfirmPassword = e => {
-        setConfirmPassword(e.target.value)
+        setConfirmPassword(e.target.value.trim())
         setConfirmPasswordValid("")
     }
 
@@ -47,7 +48,8 @@ const Register = (props) => {
 
     const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
 
-    const dataValidator = () => {
+    const dataValidator = (e) => {
+        e.preventDefault()
         if(email == ""){
             setEmailError("Please enter your email.")
         }
@@ -106,10 +108,9 @@ const Register = (props) => {
         return (
             <button 
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline" 
-                type="button" 
-                onClick={() => dataValidator()}
+                type="submit" 
             >
-                Sign up
+                {t("sign_up")}
             </button>
         )
 
@@ -120,14 +121,14 @@ const Register = (props) => {
                 <NavAccount />
             </div>
             <div class="container mx-auto w-full max-w-sm py-4">
-                <form>
+                <form onSubmit={dataValidator}>
                     <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
                         {showServerError()}
                         {showMessage()}
-                        <p class="text-3xl my-3" style={{textAlign: "center"}}>Sign Up</p>
+                        <p class="text-3xl my-3" style={{textAlign: "center"}}>{t("sign_up")}</p>
                         <div class="mb-6">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                                Email
+                                {t("email")}
                             </label>
                             {
                                 emailError == "" ?
@@ -155,12 +156,12 @@ const Register = (props) => {
                         </div>
                         <div class="mb-6">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                                Password
+                                {t("password")}
                             </label>
                             {
                                 password == "" && passwordError == "" ?
                                     <div>
-                                        <p class="text-gray-500 text-xs italic">Hint: You are required to use a sufficiently strong password. Password must be more than 7 characters, atleast one special character and numbers and letter in Upper case.</p>
+                                        <p class="text-gray-500 text-xs italic">{t("password_hint")}</p>
                                         <input 
                                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
                                             id="password" 
@@ -172,7 +173,7 @@ const Register = (props) => {
                                 :
                                     passwordError == "" ?
                                         <div>
-                                            <p class="text-gray-500 text-xs italic">Hint: You are required to use a sufficiently strong password. Password must be more than 7 characters, atleast one special character and numbers and letter in Upper case.</p>
+                                            <p class="text-gray-500 text-xs italic">{t("password_hint")}</p>
                                             <input 
                                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
                                                 id="password" 
@@ -184,7 +185,7 @@ const Register = (props) => {
                                         </div>
                                         :
                                         <div>
-                                            <p class="text-gray-500 text-xs italic">Hint: You are required to use a sufficiently strong password. Password must be more than 7 characters, atleast one special character and numbers and letter in Upper case.</p>
+                                            <p class="text-gray-500 text-xs italic">{t("password_hint")}</p>
                                             <input 
                                                 class="shadow appearance-none border border-orange-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
                                                 id="password" 
@@ -200,7 +201,7 @@ const Register = (props) => {
                         </div>
                         <div class="mb-6">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                                Confirm Password
+                                {t("confirm_password")}
                             </label>
                             {
                                 confirmPasswordValid == "" ?
@@ -231,17 +232,17 @@ const Register = (props) => {
                         </div>
                         <div class="flex justify-between my-4" style={{ justifyContent: "center"}}>
                             <a class="inline-block align-baseline text-sm text-blue-500 hover:text-blue-800" href="/user/login">
-                                Already have account?
+                                {t("already_have_account")}
                             </a> 
                         </div>
                     </div>
                 </form>
                 <p class="text-center text-gray-500 text-xs">
-                    &copy;2020 service system. All rights reserved.
+                    &copy;{t("copyright")}
                 </p>
             </div>
         </div>
     )
 }
 
-export default Register
+export default withTranslation() (Register)

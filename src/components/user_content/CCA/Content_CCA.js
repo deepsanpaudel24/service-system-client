@@ -13,12 +13,14 @@ import AddEmployee from "../employee_management/Add_employee";
 import EmployeeDetails from "../employee_management/Employee_details";
 import EmployeeRoles from "../employee_management/Roles_employee";
 import ViewEmployees from "../employee_management/View_employees";
+import ProfileSetting from "../Profile_setting";
 
 const CCAContent = () => {
     return(
         <div>
             <Switch>
                 <Route exact path='/user/home' component={ClientFillForm} />
+                <Route exact path='/user/profile-setting' component={ProfileSetting} />
                 <Route exact path='/user/change-password' component={ChangePassword} />
                 <Route exact path='/user/employees' component={ViewEmployees} />
                 <Route exact path='/user/add-employee' component={AddEmployee} />

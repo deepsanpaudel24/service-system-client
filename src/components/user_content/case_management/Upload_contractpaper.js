@@ -4,6 +4,7 @@ import _ from "lodash";
 import {useDispatch, useSelector} from "react-redux";
 import {UploadContractPaperAction} from "../../actions/case_management/UploadContractPaperAction";
 import { VscClose } from "react-icons/vsc";
+import { MdFileUpload } from "react-icons/md";
 
 const UploadContractPaper = (props) => {
     const [fileToSend, setFileToSend] = useState([]);
@@ -23,14 +24,6 @@ const UploadContractPaper = (props) => {
 
     // allowed file types
     const fileTypes = [
-        "video/3gpp",
-        "video/3gpp2",
-        "video/3gp2",
-        "video/mpeg",
-        "video/mp4",
-        "video/ogg",
-        "video/webm",
-        "video/quicktime",
         "image/jpg",
         "image/jpeg",
         "image/png",
@@ -179,14 +172,24 @@ const UploadContractPaper = (props) => {
                             </div>
                             <div class="mt-6 mb-5" >
                                 <label for="price" class="block text-gray-700 text-sm">Contract paper</label>
-                                <input 
-                                    class="appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none" 
-                                    id="contract_paper" 
-                                    type="file"
-                                    multiple
-                                    onChange={e => handleFileUpload(e)}
-                                    accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                />
+                                <label for="allfilesMessage" style={{ cursor: "pointer" }}>
+                                        <a>
+                                            <em class="fa fa-upload"></em>{" "}
+                                            <span class="bg-gray-200 border border-gray-100 hover:bg-grey text-grey-darkest py-2 px-4 rounded inline-flex items-center">
+                                                <p class="text-lg"><MdFileUpload /></p>
+                                                <span> &nbsp;Attach Files</span>
+                                            </span>
+                                        </a>
+                                    </label>
+                                    <input
+                                        type="file"
+                                        name="allfilesMessage"
+                                        id="allfilesMessage"
+                                        style={{ display: "none" }}
+                                        onChange={e => handleFileUpload(e)}
+                                        multiple
+                                        accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                    />
                                 {
                                     !_.isEmpty(fileNameToShow) ? 
                                         fileNameToShow.map((item, index) => {

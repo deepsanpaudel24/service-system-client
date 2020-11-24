@@ -25,6 +25,7 @@ import axios from 'axios';
 import ClientPasswordSetup from './account/Client_password_setup';
 import ProfileSetupPreferences from './account/Profile_setup_preferences';
 import SocketTest from './SocketTest';
+import PeoplePasswordSetup from './account/People_password_setup';
 
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
@@ -58,6 +59,7 @@ function App() {
             <Route path={"/sadmin/people/add"} component={SAHomePage} />
             <Route path={"/sadmin/people/:id"} component={SAHomePage} />
             <Route path={"/sadmin/proposals/:id"} component={SAHomePage} />
+            <Route path={"/user/people/password-setup/:token"} component={PeoplePasswordSetup} />
 
             <Route path={"/user/setup/profile/basic"} component={ProfileSetupBasic} />
             <Route path={"/user/setup/profile/details"} component={ProfileSetupDetailed} />

@@ -1,4 +1,4 @@
-import { INTAKE_FORM_LIST_STORAGE_FAIL, INTAKE_FORM_LIST_STORAGE_SUCCESS} from "../actions/form_generator/IntakeFormListStorage"
+import { INTAKE_FORM_LIST_STORAGE_FAIL, INTAKE_FORM_LIST_STORAGE_SUCCESS, INTAKE_FORM_LIST_STORAGE_RESPONSE_RESET} from "../actions/form_generator/IntakeFormListStorage"
 
 const DefaultState = {
     loading: false,
@@ -21,6 +21,14 @@ const IntakeFormListStorageReducer = (state = DefaultState, action) => {
                 loading: false,
                 data: action.payload,
                 errorMsg: ""
+            }
+        case INTAKE_FORM_LIST_STORAGE_RESPONSE_RESET:
+            return {
+                ...state,
+                loading: false,
+                data: [],
+                errorMsg: "",
+                serverErrorMsg: ""
             }
         default:
             return state

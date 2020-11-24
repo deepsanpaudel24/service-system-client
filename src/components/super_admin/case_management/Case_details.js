@@ -12,6 +12,7 @@ const ViewCaseDetailsSA = (props) => {
     const [forwardedSPIdList, setForwardedSPIdList] = useState([])
     const [pageLoading, setPageLoaoding] = useState(true)
     const [serviceProviders, setserviceProviders] = useState([])
+    const [showAlert, setShowAlert] = useState(false)
     const [propsals, setPropsals] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.ForwardCaseRequestResponse)
@@ -75,6 +76,49 @@ const ViewCaseDetailsSA = (props) => {
             )
         }
     }
+
+    const handleUndo = (spId) => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        const config = {
+            method: 'put',
+            url: '/api/v1/case-undo/' + urlvalues[3],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              },
+            data: {
+                'service_providers': spId
+            }
+        }
+        axios(config)
+        .then((res) => {
+            //console.log(res.data)
+            setShowAlert(true)
+            const config5 = {
+                method: 'get',
+                url: '/api/v1/case/' + urlvalues[3],
+                headers: { 
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                  }
+            }
+            axios(config5)
+            .then((res) => {
+                setserviceProviders(res.data['matchingServiceProviders'])
+                setCaseDetails(res.data['case_details'])
+                var tagslist = res.data['case_details']['caseTags'].toString().split(',')
+                setCaseTags(tagslist)
+                setForwardedSPIdList(res.data['forwardedSP_list'])
+                setPageLoaoding(false)
+            })
+            .catch((error) => {
+                setPageLoaoding(false)
+            })
+
+        })
+        .catch((error) => {
+            setPageLoaoding(false)
+        })
+    }
   
     const confirmCaseForwarded = () => {
         if(!_.isEmpty(response.data)){
@@ -136,6 +180,14 @@ const ViewCaseDetailsSA = (props) => {
     return (
         <div>
             <div class="px-4 sm:px-8">
+                {
+                    showAlert ? 
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                        <p class="font-bold">Service Provider removed from forwarded list</p>
+                    </div>
+                    :
+                    ""
+                }
                 {
                     pageLoading ? 
                         <div class="flex h-screen">
@@ -228,6 +280,17 @@ const ViewCaseDetailsSA = (props) => {
                                             )}
                                             </p>
                                         )}
+                                        {
+                                            caseDetails.hasOwnProperty('serviceProvidername') ? 
+                                            <p class="flex my-5 text-sm text-gray-600" style={{marginTop: "2em"}}>
+                                            SERVICE PROVIDER{" "}
+                                            <p class="ml-3 mr-10 text-sm text-black">
+                                                {caseDetails.serviceProvidername}
+                                            </p>
+                                            </p>
+                                            :
+                                            ""
+                                        }
                                         <div class="flex items-center">
                                             <div class="text-sm ">
                                                 <p>
@@ -278,6 +341,8 @@ const ViewCaseDetailsSA = (props) => {
                                                                                 </div>
                                                                                 <hr class="border-gray-400" />
                                                                                 <p class="text-gray-700 text-sm my-3">Address: {item.address}</p>
+                                                                                <p class="text-gray-700 text-sm my-3">Forwarded cases: {item.no_forwarded_cases}</p>
+                                                                                <p class="text-gray-700 text-sm my-3">On-progress cases: {item.no_forwarded_cases}</p>
                                                                                 <p class="text-gray-700 text-sm my-3">
                                                                                     Tags: {item.service_categories.join(', ')}
                                                                                 </p>
@@ -332,21 +397,27 @@ const ViewCaseDetailsSA = (props) => {
                                                                     </div>
                                                                     <div class="ml-3">
                                                                         <Link to={`/sadmin/people/`}>
-                                                                            <p class="text-blue-700 whitespace-no-wrap">
+                                                                            <p class="text-blue-700 text-lg whitespace-no-wrap">
                                                                                 {item.email}
                                                                             </p>
                                                                         </Link>
-                                                                        <p class="text-gray-700 text-xs whitespace-no-wrap">
+                                                                        <p class="my-2 text-gray-700 text-sm whitespace-no-wrap">
                                                                             {item.name}
                                                                         </p>
-                                                                        <p class="text-gray-700 text-xs whitespace-no-wrap">
+                                                                        <p class="my-2 text-gray-700 text-sm whitespace-no-wrap">
                                                                             {item.address}
                                                                         </p>
-                                                                        <button
-                                                                            class="text-xs font-medium bg-red-100 py-1 px-2 rounded text-red-400 align-middle focus:outline-none"
-                                                                        >
-                                                                            Undo
-                                                                        </button>
+                                                                        { 
+                                                                            caseDetails.status == "Forwarded" || caseDetails.status == "Requested" ? 
+                                                                            <button
+                                                                                onClick={() => handleUndo(item._id.$oid)}
+                                                                                class="text-sm font-medium bg-red-500 py-1 px-2 rounded text-white align-middle focus:outline-none"
+                                                                            >
+                                                                                Undo
+                                                                            </button>
+                                                                            :
+                                                                            ""
+                                                                        }
                                                                     </div>
                                                                 </div>
                                                             </div>

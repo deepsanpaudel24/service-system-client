@@ -17,6 +17,7 @@ import ChatClientSide from "../../chat/ChatClientSide";
 
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import ViewCasesProposalClient from "./Case_propsals_client";
 
 const ViewCaseDetailsClient = (props) => {
   const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/");
@@ -115,6 +116,9 @@ const ViewCaseDetailsClient = (props) => {
 
   const activateDocsTab = () => {
     setActiveTab("documents");
+  };
+  const activateProposalTab = () => {
+    setActiveTab("proposals");
   };
 
   const handleViewContract = () => {
@@ -433,12 +437,23 @@ const ViewCaseDetailsClient = (props) => {
                       )}
                     </p>
                   )}
+                  {
+                        caseDetails.hasOwnProperty('serviceProvidername') ? 
+                        <p class="flex mt-5 text-sm text-gray-600" style={{marginTop: "2em"}}>
+                          SERVICE PROVIDER{" "}
+                          <p class="ml-3 mr-10 text-sm text-black">
+                            {caseDetails.serviceProvidername}
+                          </p>
+                        </p>
+                        :
+                        ""
+                      }
                   <p
-                    class="text-gray-700 text-base mt-3 tracking-wide"
+                    class="text-gray-700 text-base tracking-wide"
                     style={{
-                      marginTop: "3rem",
+                      marginTop: "1rem",
                       textAlign: "justify",
-                      "text-justify": "inter-word",
+                      textJustify: "inter-word",
                     }}
                   >
                     {caseDetails.desc}
@@ -465,22 +480,6 @@ const ViewCaseDetailsClient = (props) => {
                     </p>
                   </div>
                 </div>
-                { 
-                caseDetails.hasOwnProperty('type') ?
-                ""
-                :
-                caseDetails.status == "Requested" ||
-                caseDetails.status == "Forwarded" ? (
-                  ""
-                ) : (
-                  <div class="text-lg my-3">
-                    <p class="text-blue-600 leading-none">
-                      <Link to={`/user/case/proposals/${caseDetails._id.$oid}`}>
-                        View Proposals for this case
-                      </Link>
-                    </p>
-                  </div>
-                )}
                 <div class="pt-8 pb-5">
                   {activeTab == "documents" ? (
                     <ul class="flex border-b">
@@ -492,6 +491,9 @@ const ViewCaseDetailsClient = (props) => {
                           Case Documents
                         </button>
                       </li>
+                      <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateProposalTab()}>Proposals</button>
+                      </li>
                     </ul>
                   ) : (
                     <ul class="flex border-b">
@@ -501,6 +503,14 @@ const ViewCaseDetailsClient = (props) => {
                           onClick={() => activateDocsTab()}
                         >
                           Case Documents
+                        </button>
+                      </li>
+                      <li class="-mb-px mr-1">
+                        <button
+                          class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none"
+                          onClick={() => activateProposalTab()}
+                        >
+                          Proposals
                         </button>
                       </li>
                     </ul>
@@ -838,8 +848,8 @@ const ViewCaseDetailsClient = (props) => {
                     </nav>
                   </div>
                 ) : (
-                  <div class="mt-5" style={{ height: "25rem", width: "38rem" }}>
-                    <VideoPlayer />
+                  <div>
+                    <ViewCasesProposalClient />
                   </div>
                 )}
               </div>

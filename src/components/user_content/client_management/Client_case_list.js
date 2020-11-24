@@ -83,11 +83,11 @@ const ClientCases = (props) => {
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Fee
+                                                            Status
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Status
+                                                            Case Tags
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -123,11 +123,11 @@ const ClientCases = (props) => {
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Fee
+                                                Status
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Status
+                                                Case Tags
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -144,19 +144,16 @@ const ClientCases = (props) => {
                                             cases.map((item, index) => {
                                                 return(
                                                     <tr>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '14em'}}>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '15em', minWidth: '22em'}}>
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
-                                                                    <p class="text-gray-900">
-                                                                        {item.title}
+                                                                    <p class="text-blue-700 ">
+                                                                    <Link to={`/user/case/${item._id.$oid}`}>{item.title}</Link>
                                                                     </p>
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            {item.fee ? <p>${item.fee}</p>: <p>-</p>}
-                                                        </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '12em'}}>
                                                             {
                                                                 item.status == "Requested" ?
                                                                 <span
@@ -213,6 +210,26 @@ const ClientCases = (props) => {
                                                                     <span class="relative">On-progress</span>
                                                                 </span>
                                                             }
+                                                        </td>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                            <div class="flex"> 
+                                                                {item.caseTags.map((item, index) => 
+                                                                    index > 1 ? 
+                                                                        "" 
+                                                                        :
+                                                                        <span
+                                                                            key={index}
+                                                                            class="relative inline-block px-3 py-1 my-1 mx-1 font-semibold text-gray-900 leading-tight"
+                                                                        >
+                                                                            <span
+                                                                            aria-hidden
+                                                                            class="absolute inset-0 bg-gray-300 opacity-50"
+                                                                            ></span>
+                                                                            <span class="relative">{item}</span>
+                                                                        </span>
+                                                                    )
+                                                                }
+                                                            </div>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900">

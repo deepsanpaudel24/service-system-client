@@ -4,51 +4,318 @@ import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import _ from "lodash";
 import { NewCaseRequestResponseReset } from "../../actions/case_management/NewCaseRequestAction";
-import { ClientCaseListStorageDispatcher } from "../../actions/case_management/ClientCasesListStorage";
+import { ClientCaseListStorageDispatcher, ClientCaseListStorageResponseReset } from "../../actions/case_management/ClientCasesListStorage";
 import Pagination from "../Pagination";
 
 const ViewCasesClient = (props) => {
     const [cases, setCases] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
     const [newCaseRequestConfirm, setNewCaseRequestConfirm] = useState(false)
+
+    // For sorting 
+    const [sortingKey, setSortingKey] = useState(null)
+    const [sortingValue, setSortingValue] = useState(null)
+    // states for pagination
+    const [totalRecords, setTotalRecords] = useState(0)
+    const [page, setPage] = useState(1)
+    // states for search 
+    const [searchKeyword, setSearchKeyword] = useState("")
+    // states for filters
+    const [filters, setFilters] = useState([])
+    const [activeRequestedFilter, setActiveRequestedFilter] = useState(false)
+    const [activeOnprogressFilter, setActiveOnprogressFilter] = useState(false)
+    const [activeCompletedFilter, setActiveCompletedFilter] = useState(false)
+
     const dispatch = useDispatch()
     const response = useSelector(state => state.ClientCaseListResponse)
     const response2 = useSelector(state => state.NewCaseRequestResponse)
     const response3 = useSelector(state => state.ProposalAcceptResponse)
     
     useLayoutEffect(() => {
-        if(!_.isEmpty(response2.data)){
-            setNewCaseRequestConfirm(true)
-            dispatch(NewCaseRequestResponseReset())
-        }
-        if(_.isEmpty(response.data) || !_.isEmpty(response2.data) || !_.isEmpty(response3.data)){
-
-            const config = {
-                method: 'get',
-                url: '/api/v1/client-cases',
-                headers: { 
-                  'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                }
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        const config = {
+            method: 'get',
+            url: '/api/v1/client-cases/'+ page,
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
-              axios(config)
-              .then((res) => {
-                  setCases(res.data)
-                  setTableLoading(false)
-                  dispatch(ClientCaseListStorageDispatcher(res.data))
-              })
-              .catch((error) => {
-                  setTableLoading(false)
-              })
+          }
+        if(response.data.hasOwnProperty(1)){
+            console.log("Value of redux ", response.data)
+            var casesList = response.data[1]
+            setCases(casesList)
+            setTableLoading(false)
+            setTotalRecords(response.data['total_records'])
         }
         else {
-            setCases(response.data)
-            setTableLoading(false)
+            axios(config)
+            .then((res) => {
+                    setCases(res.data['cases'])
+                    setTableLoading(false)
+                    setTotalRecords(res.data['total_records'])
+                    var page = res.data['page']
+                    dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
         }
-    }, [])
-
+      }, [])
+  
     useEffect(() => {
         
     }, [cases])
+
+    // For pagination Component
+    const handlePageChange = (value) => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        setPage(value)
+        const config = {
+            method: 'post',
+            url: '/api/v1/client-cases/' + value,
+            data: {
+                "keyword": searchKeyword,
+                "filters": filters,
+                "sorting": {
+                    "sortingKey": sortingKey,
+                    "sortingValue": sortingValue
+                }
+            }
+        }
+        if(response.data.hasOwnProperty(value)){
+            var casesList = response.data[value]
+            setCases(casesList)
+        }
+        else {
+            axios(config)
+            .then((res) => {
+                setCases(res.data['cases'])
+                setTableLoading(false)
+                setTotalRecords(res.data['total_records'])
+                var reduxResponse = response.data
+                var page = res.data['page']
+                reduxResponse[page]= res.data['cases']
+                reduxResponse['total_records'] = res.data['total_records']
+                dispatch(ClientCaseListStorageDispatcher(reduxResponse))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+    }
+
+    const SortingRequest = (value) => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        // send reset dispatch request to redux
+        dispatch(ClientCaseListStorageResponseReset())
+        setPage(1)
+        setTableLoading(true)
+        var defaultPage = 1
+        const config = {
+            method: 'post',
+            url: '/api/v1/client-cases/' + defaultPage,
+            data: {
+                "keyword": searchKeyword,
+                "filters": filters,
+                "sorting": value
+            }
+        }
+        axios(config)
+        .then((res) => {
+            setCases(res.data['cases'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var reduxResponse = []
+            var page = res.data['page']
+            reduxResponse[page]= res.data['cases']
+            reduxResponse['total_records'] = res.data['total_records']
+            dispatch(ClientCaseListStorageDispatcher(reduxResponse))
+        })
+        .catch((error) => {
+            console.log("response error of search", error.response)
+        })
+    }
+
+    // For sorting
+    const handleSorting = (value) => {
+        // check if sorting has value
+        if (sortingKey == value){
+            if(sortingValue == 1){
+                // create var beacuse set state is async event
+                var data = {
+                    "sortingKey": value,
+                    "sortingValue": -1
+                }
+                SortingRequest(data)
+                // Desending
+                setSortingKey(data['sortingKey'])
+                setSortingValue(data['sortingValue'])
+            }
+            else{
+                //neutral
+                // create var beacuse set state is async event
+                var data = {
+                    "sortingKey": "_id",
+                    "sortingValue": -1
+                }
+                SortingRequest(data)
+                // Assending
+                setSortingKey(data['sortingKey'])
+                setSortingValue(data['sortingValue'])
+            }
+        }
+        else {
+            // create var beacuse set state is async event
+            var data = {
+                "sortingKey": value,
+                "sortingValue": 1
+            }
+            SortingRequest(data)
+            // Assending
+            setSortingKey(data['sortingKey'])
+            setSortingValue(data['sortingValue'])
+        }
+    }
+
+    // For search bar action 
+    const handleSearch = (e) => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        // send reset dispatch request to redux
+        dispatch(ClientCaseListStorageResponseReset())
+        setPage(1)
+        setSearchKeyword(e.target.value)
+        setTableLoading(true)
+        var defaultPage = 1
+        setSortingKey("")
+        setSortingValue(null)
+        const config = {
+            method: 'post',
+            url: '/api/v1/client-cases/' + defaultPage,
+            data: {
+                "keyword": e.target.value,
+                "filters": filters,
+                "sorting": {
+                    "sortingKey": "",
+                    "sortingValue": ""
+                }
+            }
+        }
+        axios(config)
+        .then((res) => {
+            setCases(res.data['cases'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var reduxResponse = []
+            var page = res.data['page']
+            reduxResponse[page]= res.data['cases']
+            reduxResponse['total_records'] = res.data['total_records']
+            dispatch(ClientCaseListStorageDispatcher(reduxResponse))
+        })
+        .catch((error) => {
+            console.log("response error of search", error.response)
+        })
+    }
+
+    // For filters 
+    // have a funtion that makes the axios request and retrieve the filtered data 
+    const handleFilter = (data) => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        // send reset dispatch request to redux
+        dispatch(ClientCaseListStorageResponseReset())
+        setPage(1)
+        setTableLoading(true)
+        setSortingKey("")
+        setSortingValue(null)
+        var defaultPage = 1
+        const config = {
+            method: 'post',
+            url: '/api/v1/client-cases/' + defaultPage,
+            data: {
+                "keyword": searchKeyword,
+                "filters": data,
+                "sorting": {
+                    "sortingKey": "",
+                    "sortingValue": ""
+                }
+            }
+        }
+        axios(config)
+        .then((res) => {
+            setCases(res.data['cases'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var reduxResponse = []
+            var page = res.data['page']
+            reduxResponse[page]= res.data['cases']
+            reduxResponse['total_records'] = res.data['total_records']
+            dispatch(ClientCaseListStorageDispatcher(reduxResponse))
+        })
+        .catch((error) => {
+            console.log("response error of search", error.response)
+        })
+    }
+
+    //for the filter "Requested"
+    const handleRequestedFilter = () => {
+        var filters_value = filters
+        // this making the filter inactive if it is active now
+        // or making the filter active if it is inactive now
+        if(activeRequestedFilter) {
+            setActiveRequestedFilter(false)
+            var result = filters_value.filter(item => item.status !== "Forwarded");
+            handleFilter( result )
+            setFilters( result )
+        }
+        else {
+            setActiveRequestedFilter(true)
+            filters_value.push({"status": "Forwarded" })
+            handleFilter( filters_value )
+            setFilters( filters_value )
+        }
+    }
+
+    //for the filter "On-progress"
+    const handleOnprogressFilter = () => {
+        var filters_value = filters
+        // this making the filter inactive if it is active now
+        // or making the filter active if it is inactive now
+        if(activeOnprogressFilter) {
+            setActiveOnprogressFilter(false)
+            var result = filters_value.filter(item => item.status !== "On-progress");
+            handleFilter( result )
+            setFilters( result )
+        }
+        else {
+            setActiveOnprogressFilter(true)
+            filters_value.push({"status": "On-progress" })
+            handleFilter( filters_value )
+            setFilters( filters_value )
+        }
+    }
+
+    //for the filter "Completed"
+    const handleCompletedFilter = () => {
+        var filters_value = filters
+        // this making the filter inactive if it is active now
+        // or making the filter active if it is inactive now
+        if(activeCompletedFilter) {
+            setActiveCompletedFilter(false)
+            var result = filters_value.filter(item => item.status !== "Completed");
+            handleFilter( result )
+            setFilters( result )
+        }
+        else {
+            setActiveCompletedFilter(true)
+            filters_value.push({"status": "Completed" })
+            handleFilter( filters_value )
+            setFilters( filters_value )
+        }
+    }
 
     const handleAdd = () => {
         dispatch(NewCaseRequestResponseReset())
@@ -69,7 +336,47 @@ const ViewCasesClient = (props) => {
                         </button>
                     </div>
                 </div>
-                <div class="py-8">
+                <nav>
+                    <div class="">
+                        <div class="relative flex items-center justify-between h-16">
+                            <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                                <div
+                                    class="flex text-xs inline-flex items-center leading-sm mt-4 mr-4 bg-white border text-blue-700 rounded-full cursor-pointer"  
+                                    onClick={() => handleRequestedFilter()}
+                                >
+                                    <div class={`rounded-full text-sm px-3 py-1 ${activeRequestedFilter ? "bg-blue-500 text-white": ""}`}>
+                                        Forwarded
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex text-xs inline-flex items-center leading-sm mt-4 mr-4 bg-white border text-blue-700 rounded-full cursor-pointer"  
+                                    onClick={() => handleOnprogressFilter()}
+                                >
+                                    <div class={`rounded-full text-sm px-3 py-1 ${activeOnprogressFilter ? "bg-blue-500 text-white": ""}`}>
+                                        On-Progress
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex text-xs inline-flex items-center leading-sm mt-4 mr-4 bg-white border text-blue-700 rounded-full cursor-pointer"  
+                                    onClick={() => handleCompletedFilter()}
+                                >
+                                    <div class={`rounded-full text-sm px-3 py-1 ${activeCompletedFilter ? "bg-blue-500 text-white": ""}`}>
+                                        Completed
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                                <input 
+                                    placeholder="Search" 
+                                    type="text" 
+                                    class="shadow appearance-none border rounded w-full px-3 py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    onChange={(e) => handleSearch(e)}    
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <div class="py-4">
                     { 
                         newCaseRequestConfirm ?
                         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
@@ -93,11 +400,11 @@ const ViewCasesClient = (props) => {
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Fee
+                                                            Status
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Status
+                                                            Case Tags
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -128,18 +435,21 @@ const ViewCasesClient = (props) => {
                                     <thead>
                                         <tr>
                                             <th
+                                                onClick={() => handleSorting("title")}
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Title
                                             </th>
                                             <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Fee
-                                            </th>
-                                            <th
+                                                onClick={() => handleSorting("status")}
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Status
                                             </th>
                                             <th
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                Case Tags
+                                            </th>
+                                            <th
+                                                onClick={() => handleSorting("requestedDate")}
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Requested On
                                             </th>
@@ -154,19 +464,16 @@ const ViewCasesClient = (props) => {
                                             cases.map((item, index) => {
                                                 return(
                                                     <tr>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '14em'}}>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '15em', minWidth: '22em'}}>
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
-                                                                    <p class="text-gray-900">
-                                                                        {item.title}
+                                                                    <p class="text-blue-700">
+                                                                        <Link to={`/user/case/${item._id.$oid}`}>{item.title}</Link>
                                                                     </p>
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            {item.fee ? <p>${item.fee}</p>: <p>-</p>}
-                                                        </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '12em'}}>
                                                             {
                                                                 item.status == "Requested" ?
                                                                 <span
@@ -225,6 +532,26 @@ const ViewCasesClient = (props) => {
                                                             }
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                            <div class="flex"> 
+                                                                {item.caseTags.map((item, index) => 
+                                                                    index > 1 ? 
+                                                                        "" 
+                                                                        :
+                                                                        <span
+                                                                            key={index}
+                                                                            class="relative inline-block px-3 py-1 my-1 mx-1 font-semibold text-gray-900 leading-tight"
+                                                                        >
+                                                                            <span
+                                                                            aria-hidden
+                                                                            class="absolute inset-0 bg-gray-300 opacity-50"
+                                                                            ></span>
+                                                                            <span class="relative">{item}</span>
+                                                                        </span>
+                                                                    )
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900">
                                                                 {item.requestedDate}
                                                             </p>
@@ -240,6 +567,9 @@ const ViewCasesClient = (props) => {
                                         }
                                     </tbody>
                                 </table>
+                            </div>
+                            <div>
+                                <Pagination pageChanger={handlePageChange} totalRows={totalRecords} activePage={page}/>
                             </div>
                         </div>
                     }

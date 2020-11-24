@@ -1,4 +1,4 @@
-import { SERVICES_LIST_STORAGE_FAIL, SERVICES_LIST_STORAGE_SUCCESS} from "../actions/service_management/ServicesListStorage"
+import { SERVICES_LIST_STORAGE_FAIL, SERVICES_LIST_STORAGE_SUCCESS, SERVICES_LIST_STORAGE_RESPONSE_RESET} from "../actions/service_management/ServicesListStorage"
 
 const DefaultState = {
     loading: false,
@@ -21,6 +21,14 @@ const SerivceListStorageReducer = (state = DefaultState, action) => {
                 loading: false,
                 data: action.payload,
                 errorMsg: ""
+            }
+        case SERVICES_LIST_STORAGE_RESPONSE_RESET:
+            return {
+                ...state,
+                loading: false,
+                data: [],
+                errorMsg: "",
+                serverErrorMsg: ""
             }
         default:
             return state

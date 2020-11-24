@@ -7,6 +7,7 @@ import luhn from "luhn";
 import {PulseLoader} from "react-spinners";
 import BasicInformationIcon from "../../images/profile_setup_basic_information-1.png";
 import { UpdateUserBasicProfile, UpdateUserDetailedProfile } from "../actions/UserProfileSetupAction";
+import { MdFileUpload } from "react-icons/md";
 
 const ProfileSetupPreferences = (props) => {
     const [currencyPreferences, setCurrencyPreferences] = useState("ymd")
@@ -62,14 +63,7 @@ const ProfileSetupPreferences = (props) => {
         "video/ogg",
         "video/webm",
         "video/quicktime",
-        "image/jpg",
-        "image/jpeg",
-        "image/png",
-        "text/plain",
-        "text/csv",
-        "application/msword",
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        
     ];
 
     //Validate files
@@ -137,10 +131,11 @@ const ProfileSetupPreferences = (props) => {
         for (let file of fileToSend) {
                 formData.append(file.name, file);
             }
+        formData.append("intro_text", introDesc)
         if(formData.length !== 0 ){
             const config = {
                 method: 'put',
-                url: '/api/v1/user/update/intro',
+                url: '/api/v1/user/profile-introduction',
                 headers: { 
                     'Content-Type': 'multipart/form-data',
                     'Authorization': 'Bearer ' + localStorage.getItem('access_token')
@@ -268,13 +263,23 @@ const ProfileSetupPreferences = (props) => {
                                                 {
                                                     introType == "file" ? 
                                                     <div>
-                                                        <input 
-                                                            class="appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                                            id="budget" 
+                                                        <label for="allfilesMessage" style={{ cursor: "pointer" }}>
+                                                            <a>
+                                                                <em class="fa fa-upload"></em>{" "}
+                                                                <span class="bg-gray-200 border border-gray-100 hover:bg-grey text-grey-darkest py-2 px-4 rounded inline-flex items-center">
+                                                                    <p class="text-lg"><MdFileUpload /></p>
+                                                                    <span> &nbsp;Attach Files</span>
+                                                                </span>
+                                                            </a>
+                                                        </label>
+                                                        <input
                                                             type="file"
-                                                            multiple
+                                                            name="allfilesMessage"
+                                                            id="allfilesMessage"
+                                                            style={{ display: "none" }}
                                                             onChange={e => handleFileUpload(e)}
-                                                            accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                                            multiple
+                                                            accept="video/mp4,video/x-m4v,video/*"    
                                                         />
                                                         <button class="text-sm text-blue-500 mx-4 focus:outline-none" style={{marginBottom: "4rem"}} onClick={() => handleTextIntroType()}> Write a text? </button>
                                                     </div>

@@ -10,6 +10,7 @@ import docxLogo from "../../../images/docx-Icon.png";
 import dataFileLogo from "../../../images/dataFile-Icon.png";
 import imageLogo from "../../../images/image-Icon.png";
 import { MdFileDownload } from "react-icons/md";
+import download from "downloadjs";
 
 const ViewProposalDetailsClient = (props) => {
     const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -42,6 +43,32 @@ const ViewProposalDetailsClient = (props) => {
     useEffect(() => {
         
     }, [proposalDetails])
+
+    const handleFileOpen = (filename) => {
+        var string = document.location.pathname;
+        var urlvalues = string.toString().split("/");
+        let config = {
+          method: "post",
+          url: "/static/allFiles/" + filename,
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json; application/octet-stream",
+          },
+          responseType: "blob",
+          data: {
+            caseId: proposalDetails.caseId.$oid,
+          },
+        };
+        axios(config)
+          .then((resp) => {
+            const resp_file_name = resp.headers["content-disposition"].split(
+              "filename="
+            )[1];
+            const content = resp.headers["content-type"];
+            download(resp.data, resp_file_name, content);
+          })
+          .catch((error) => {});
+      };
 
     const handleAccept = () => {
         //send the value true for accepted attribute
@@ -179,7 +206,7 @@ const ViewProposalDetailsClient = (props) => {
                                         )}
                                     </p>
                                     <p
-                                        class="text-gray-700 text-base mt-3"
+                                        class="text-gray-700 text-base mt-3 tracking-wide"
                                         style={{ marginTop: "3rem", "textAlign": "justify", "text-justify": "inter-word" }}
                                     >
                                         {proposalDetails.desc}
@@ -191,148 +218,169 @@ const ViewProposalDetailsClient = (props) => {
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="flex gap-6 mt-3 mb-6">
-                                        {
-                                        proposalDetails.files.map((item) => {
-                                            var filename = item.split("/").slice(-1)[0]
-                                            if(filename.length < 12){
-                                            var display_name = filename
-                                            }
-                                            else {
-                                            var display_name = filename.slice(0,12) + " ..."
-                                            }
-                                            var extension = filename.split(".").slice(-1)[0].toLowerCase()
-                                            if(extension == "pdf"){
-                                            return(
-                                                <div
-                                                class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                                                style={{ maxWidth: "15rem" }}
-                                                >
-                                                <div
-                                                    class="inline-flex overflow-hidden"
-                                                    style={{ height: "10rem", width: "10rem" }}
-                                                >
-                                                    <img
-                                                    src={pdfLogo}
-                                                    alt=""
-                                                    class="h-full w-full"
-                                                    style={{ opacity: "0.5" }}
-                                                    />
-                                                </div>
-                                                <div class="flex mt-4">
-                                                    <div class="w-5/6">
-                                                    <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
-                                                    </div>
-                                                    <div class="w-1/6">
-                                                    <button class="focus:outline-none">
-                                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                                        <MdFileDownload />
-                                                        </div>
-                                                    </button>
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            )
-                                            }
-                                            else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
-                                            return(
-                                                <div
-                                                class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                                                style={{ maxWidth: "15rem" }}
-                                                >
-                                                <div
-                                                    class="inline-flex overflow-hidden"
-                                                    style={{ height: "10rem", width: "10rem" }}
-                                                >
-                                                    <img
-                                                    src={docxLogo}
-                                                    alt=""
-                                                    class="h-full w-full"
-                                                    style={{ opacity: "0.5" }}
-                                                    />
-                                                </div>
-                                                <div class="flex mt-4">
-                                                    <div class="w-5/6">
-                                                    <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name}</p></a>
-                                                    </div>
-                                                    <div class="w-1/6">
-                                                    <button class="focus:outline-none">
-                                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                                        <MdFileDownload />
-                                                        </div>
-                                                    </button>
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            )
-                                            }
-                                            else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
-                                            return(
-                                                <div
-                                                class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                                                style={{ maxWidth: "15rem" }}
-                                                >
-                                                <div
-                                                    class="inline-flex overflow-hidden"
-                                                    style={{ height: "10rem", width: "10rem" }}
-                                                >
-                                                    <img
-                                                    src={imageLogo}
-                                                    alt=""
-                                                    class="h-full w-full"
-                                                    style={{ opacity: "0.5" }}
-                                                    />
-                                                </div>
-                                                <div class="flex mt-4">
-                                                    <div class="w-5/6">
-                                                    <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
-                                                    </div>
-                                                    <div class="w-1/6">
-                                                    <button class="focus:outline-none">
-                                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                                        <MdFileDownload />
-                                                        </div>
-                                                    </button>
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            )
-                                            }
-                                            else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
-                                            return(
-                                                <div
-                                                class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
-                                                style={{ maxWidth: "15rem" }}
-                                                >
-                                                <div
-                                                    class="inline-flex overflow-hidden"
-                                                    style={{ height: "10rem", width: "10rem" }}
-                                                >
-                                                    <img
-                                                    src={dataFileLogo}
-                                                    alt=""
-                                                    class="h-full w-full"
-                                                    style={{ opacity: "0.5" }}
-                                                    />
-                                                </div>
-                                                <div class="flex mt-4">
-                                                    <div class="w-5/6">
-                                                    <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
-                                                    </div>
-                                                    <div class="w-1/6">
-                                                    <button class="focus:outline-none">
-                                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                                        <MdFileDownload />
-                                                        </div>
-                                                    </button>
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            )
-                                            }
-                                        })
-                                        }
+                                    {
+                        _.isEmpty(proposalDetails.files) ? 
+                        ""
+                        :
+                        <div class="flex gap-6 mt-3">
+                        {
+                          proposalDetails.files.map((item) => {
+                            var filename = item.split("/").slice(-1)[0]
+                            if(filename.length < 12){
+                              var display_name = filename
+                            }
+                            else {
+                              var display_name = filename.slice(0,12) + " ..."
+                            }
+                            var extension = filename.split(".").slice(-1)[0].toLowerCase()
+                            if(extension == "pdf"){
+                              return(
+                                <div
+                                  class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
+                                  style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                  onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                >
+                                  <div
+                                    class="inline-flex overflow-hidden"
+                                    style={{ height: "10rem", width: "10rem" }}
+                                  >
+                                    <img
+                                      src={pdfLogo}
+                                      alt=""
+                                      class="h-full w-full"
+                                      style={{ opacity: "0.5" }}
+                                    />
+                                  </div>
+                                  <div class="flex mt-4">
+                                    <div class="w-5/6">
+                                      <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
                                     </div>
+                                    <div class="w-1/6">
+                                      <button class="focus:outline-none">
+                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                          <MdFileDownload />
+                                        </div>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            }
+                            else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
+                              return(
+                                <div
+                                  class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
+                                  style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                  onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                >
+                                  <div
+                                    class="inline-flex overflow-hidden"
+                                    style={{ height: "10rem", width: "10rem" }}
+                                  >
+                                    <img
+                                      src={docxLogo}
+                                      alt=""
+                                      class="h-full w-full"
+                                      style={{ opacity: "0.5" }}
+                                    />
+                                  </div>
+                                  <div class="flex mt-4">
+                                    <div class="w-5/6">
+                                      <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
+                                    </div>
+                                    <div class="w-1/6">
+                                      <button class="focus:outline-none">
+                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                          <MdFileDownload />
+                                        </div>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            }
+                            else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
+                              return(
+                                <div
+                                  class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
+                                  style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                  onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                >
+                                  <div
+                                    class="inline-flex overflow-hidden"
+                                    style={{ height: "10rem", width: "10rem" }}
+                                  >
+                                    <img
+                                      src={imageLogo}
+                                      alt=""
+                                      class="h-full w-full"
+                                      style={{ opacity: "0.5" }}
+                                    />
+                                  </div>
+                                  <div class="flex mt-4">
+                                    <div class="w-5/6">
+                                      <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
+                                    </div>
+                                    <div class="w-1/6">
+                                      <button class="focus:outline-none">
+                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                          <MdFileDownload />
+                                        </div>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            }
+                            else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
+                              return(
+                                <div
+                                  class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
+                                  style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                  onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                >
+                                  <div
+                                    class="inline-flex overflow-hidden"
+                                    style={{ height: "10rem", width: "10rem" }}
+                                  >
+                                    <img
+                                      src={dataFileLogo}
+                                      alt=""
+                                      class="h-full w-full"
+                                      style={{ opacity: "0.5" }}
+                                    />
+                                  </div>
+                                  <div class="flex mt-4">
+                                    <div class="w-5/6">
+                                      <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
+                                    </div>
+                                    <div class="w-1/6">
+                                      <button class="focus:outline-none">
+                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                          <MdFileDownload />
+                                        </div>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            }
+                          })
+                        }
+                      </div>
+                      }
                                     <div class="my-3">
                                         {
                                             proposalDetails.accepted == true || proposalDetails.accepted == false ? 

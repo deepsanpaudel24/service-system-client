@@ -5,6 +5,9 @@ import axios from "axios";
 import _ from "lodash";
 import { PulseLoader } from "react-spinners";
 import ClientDetails from "../client_management/Client_details";
+import Pagination from "../Pagination";
+import { IntakeFormListStorageDispatcher, IntakeFormListStorageResponseReset } from "../../actions/form_generator/IntakeFormListStorage";
+
 
 const SendIntakeForm = (props) => {
   const [IntakeForms, setIntakeForms] = useState([]);
@@ -18,8 +21,21 @@ const SendIntakeForm = (props) => {
   const [firstTime, setFirstTime] = useState(true)
   const [enableForm, setEnableForm] = useState("")
   const [disabledForms, setDisabledForms] = useState([])
+
+  // For sorting 
+  const [sortingKey, setSortingKey] = useState(null)
+  const [sortingValue, setSortingValue] = useState(null)
+  // states for pagination
+  const [totalRecords, setTotalRecords] = useState(0)
+  const [page, setPage] = useState(1)
+  // states for search 
+  const [searchKeyword, setSearchKeyword] = useState("")
+  // states for filters
+  const [filters, setFilters] = useState([])
+
   const dispatch = useDispatch();
   const response = useSelector((state) => state.NewCaseRequestResponse);
+  const response2 = useSelector((state) => state.IntakeFormListStorageResponse);
 
   useLayoutEffect(() => {
     var string = document.location.pathname;
@@ -46,22 +62,173 @@ const SendIntakeForm = (props) => {
 
     const config2 = {
       method: "get",
-      url: "/api/v1/intake-form/list",
+      url: '/api/v1/intake-form/list/'+ page,
       headers: {
         Authorization: "Bearer " + localStorage.getItem("access_token"),
       },
     };
     axios(config2)
-      .then((res) => {
-        setIntakeForms(res.data);
-        setTableLoading(false);
-      })
-      .catch((error) => {
-        setTableLoading(false);
-      });
+    .then((res) => {
+            setIntakeForms(res.data['forms'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var page = res.data['page']
+            dispatch(IntakeFormListStorageDispatcher({[page]: res.data['forms'], 'total_records': res.data['total_records']}))
+    })
+    .catch((error) => {
+        console.log(error.response)
+    })
   }, []);
 
   useEffect(() => {}, [clientDetails]);
+
+  const SortingRequest = (value) => {
+    // send reset dispatch request to redux
+    dispatch(IntakeFormListStorageResponseReset())
+    setPage(1)
+    setTableLoading(true)
+    var defaultPage = 1
+    const config = {
+        method: 'post',
+        url: '/api/v1/intake-form/list/'+ defaultPage,
+        data: {
+            "keyword": searchKeyword,
+            "filters": filters,
+            "sorting": value
+        }
+    }
+    axios(config)
+    .then((res) => {
+        setIntakeForms(res.data['forms'])
+        setTableLoading(false)
+        setTotalRecords(res.data['total_records'])
+        var reduxResponse = []
+        var page = res.data['page']
+        reduxResponse[page]= res.data['forms']
+        reduxResponse['total_records'] = res.data['total_records']
+        dispatch(IntakeFormListStorageDispatcher(reduxResponse))
+    })
+    .catch((error) => {
+        console.log("response error of search", error.response)
+    })
+}
+
+// For sorting
+const handleSorting = (value) => {
+    // check if sorting has value
+    if (sortingKey == value){
+        if(sortingValue == 1){
+            // create var beacuse set state is async event
+            var data = {
+                "sortingKey": value,
+                "sortingValue": -1
+            }
+            SortingRequest(data)
+            // Desending
+            setSortingKey(data['sortingKey'])
+            setSortingValue(data['sortingValue'])
+        }
+        else{
+            //neutral
+            // create var beacuse set state is async event
+            var data = {
+                "sortingKey": "_id",
+                "sortingValue": -1
+            }
+            SortingRequest(data)
+            // Assending
+            setSortingKey(data['sortingKey'])
+            setSortingValue(data['sortingValue'])
+        }
+    }
+    else {
+        // create var beacuse set state is async event
+        var data = {
+            "sortingKey": value,
+            "sortingValue": 1
+        }
+        SortingRequest(data)
+        // Assending
+        setSortingKey(data['sortingKey'])
+        setSortingValue(data['sortingValue'])
+    }
+}
+
+
+// For pagination Component
+const handlePageChange = (value) => {
+    setPage(value)
+    const config = {
+        method: 'post',
+        url: '/api/v1/intake-form/list/'+ value,
+        data: {
+            "keyword": searchKeyword,
+            "filters": filters,
+            "sorting": {
+                "sortingKey": sortingKey,
+                "sortingValue": sortingValue
+            }
+        }
+    }
+    if(response2.data.hasOwnProperty(value)){
+        var formList = response2.data[value]
+        setIntakeForms(formList)
+    }
+    else {
+        axios(config)
+        .then((res) => {
+            setIntakeForms(res.data['forms'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var reduxResponse = response2.data
+            var page = res.data['page']
+            reduxResponse[page]= res.data['forms']
+            reduxResponse['total_records'] = res.data['total_records']
+            dispatch(IntakeFormListStorageDispatcher(reduxResponse))
+        })
+        .catch((error) => {
+            console.log(error.response)
+        })
+    }
+}
+
+// For search bar action 
+const handleSearch = (e) => {
+    // send reset dispatch request to redux
+    dispatch(IntakeFormListStorageResponseReset())
+    setPage(1)
+    setSearchKeyword(e.target.value)
+    setTableLoading(true)
+    var defaultPage = 1
+    setSortingKey("")
+    setSortingValue(null)
+    const config = {
+        method: 'post',
+        url: '/api/v1/intake-form/list/'+ defaultPage,
+        data: {
+            "keyword": e.target.value,
+            "filters": filters,
+            "sorting": {
+                "sortingKey": "",
+                "sortingValue": ""
+            }
+        }
+    }
+    axios(config)
+    .then((res) => {
+        setIntakeForms(res.data['forms'])
+        setTableLoading(false)
+        setTotalRecords(res.data['total_records'])
+        var reduxResponse = []
+        var page = res.data['page']
+        reduxResponse[page]= res.data['forms']
+        reduxResponse['total_records'] = res.data['total_records']
+        dispatch(IntakeFormListStorageDispatcher(reduxResponse))
+    })
+    .catch((error) => {
+        console.log("response error of search", error.response)
+    })
+}
 
   const confirmIntakeFormSent = () => {
     if (isIntakeFormSent) {
@@ -152,7 +319,24 @@ const SendIntakeForm = (props) => {
           <div class="w-1/5" >
           </div>
         </div>
-        <div class="py-8">
+        <nav>
+            <div class="">
+                <div class="relative flex items-center justify-between h-16">
+                    <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                        
+                    </div>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                        <input 
+                            placeholder="Search" 
+                            type="text" 
+                            class="shadow appearance-none border rounded w-full px-3 py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            onChange={(e) => handleSearch(e)}    
+                        />
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="py-4">
             {confirmIntakeFormSent()}
             {tableLoading ? (
                 <div class="animate-pulse flex space-x-4">
@@ -190,10 +374,10 @@ const SendIntakeForm = (props) => {
                     <table class="min-w-full leading-normal">
                     <thead>
                         <tr>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th onClick={() => handleSorting("title")} class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Title
                         </th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th onClick={() => handleSorting("createdDate")} class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Created On
                         </th>
                         <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -293,6 +477,9 @@ const SendIntakeForm = (props) => {
                         })}
                     </tbody>
                     </table>
+                </div>
+                <div>
+                    <Pagination pageChanger={handlePageChange} totalRows={totalRecords} activePage={page}/>
                 </div>
                 </div>
             )}

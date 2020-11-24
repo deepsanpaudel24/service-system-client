@@ -40,11 +40,10 @@ const ViewEmployees = (props) => {
               }
           }
         if(response2.data.hasOwnProperty(1)){
-            console.log("from redux and if", response2.total_records)
             var empList = response2.data[1]
             setEmployees(empList)
             setTableLoading(false)
-            setTotalRecords(response2.total_records)
+            setTotalRecords(response2.data['total_records'])
         }
         else {
             axios(config)
@@ -53,7 +52,7 @@ const ViewEmployees = (props) => {
                     setTableLoading(false)
                     setTotalRecords(res.data['total_records'])
                     var page = res.data['page']
-                    dispatch(EmployeesListStorageDispatcher({[page]: res.data['employees']}, res.data['total_records']))
+                    dispatch(EmployeesListStorageDispatcher({[page]: res.data['employees'], 'total_records': res.data['total_records']}))
             })
             .catch((error) => {
                 console.log(error.response)
@@ -65,7 +64,7 @@ const ViewEmployees = (props) => {
         
     }, [employees])
 
-    const SortingRequest = (data) => {
+    const SortingRequest = (value) => {
         // send reset dispatch request to redux
         dispatch(EmployeesListStorageResponseReset())
         setPage(1)
@@ -77,12 +76,19 @@ const ViewEmployees = (props) => {
             data: {
                 "keyword": searchKeyword,
                 "filters": filters,
-                "sorting": data
+                "sorting": value
             }
         }
         axios(config)
         .then((res) => {
-            console.log("response from sorting", res.data)
+            setEmployees(res.data['employees'])
+            setTableLoading(false)
+            setTotalRecords(res.data['total_records'])
+            var reduxResponse = []
+            var page = res.data['page']
+            reduxResponse[page]= res.data['employees']
+            reduxResponse['total_records'] = res.data['total_records']
+            dispatch(EmployeesListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
             console.log("response error of search", error.response)
@@ -93,14 +99,28 @@ const ViewEmployees = (props) => {
     const handleSorting = (value) => {
         // check if sorting has value
         if (sortingKey == value){
-            if(sortingKey == 1){
-                //descending
-                setSortingValue(-1)
+            if(sortingValue == 1){
+                // create var beacuse set state is async event
+                var data = {
+                    "sortingKey": value,
+                    "sortingValue": -1
+                }
+                SortingRequest(data)
+                // Desending
+                setSortingKey(data['sortingKey'])
+                setSortingValue(data['sortingValue'])
             }
             else{
                 //neutral
-                setSortingKey("-1")
-                setSortingKey("_id")
+                // create var beacuse set state is async event
+                var data = {
+                    "sortingKey": "_id",
+                    "sortingValue": -1
+                }
+                SortingRequest(data)
+                // Assending
+                setSortingKey(data['sortingKey'])
+                setSortingValue(data['sortingValue'])
             }
         }
         else {
@@ -125,7 +145,11 @@ const ViewEmployees = (props) => {
             url: '/api/v1/user/employee/list/'+ value,
             data: {
                 "keyword": searchKeyword,
-                "filters": filters
+                "filters": filters,
+                "sorting": {
+                    "sortingKey": sortingKey,
+                    "sortingValue": sortingValue
+                }
             }
         }
         if(response2.data.hasOwnProperty(value)){
@@ -141,6 +165,7 @@ const ViewEmployees = (props) => {
                 var reduxResponse = response2.data
                 var page = res.data['page']
                 reduxResponse[page]= res.data['employees']
+                reduxResponse['total_records'] = res.data['total_records']
                 dispatch(EmployeesListStorageDispatcher(reduxResponse))
             })
             .catch((error) => {
@@ -157,12 +182,18 @@ const ViewEmployees = (props) => {
         setSearchKeyword(e.target.value)
         setTableLoading(true)
         var defaultPage = 1
+        setSortingKey("")
+        setSortingValue(null)
         const config = {
             method: 'post',
             url: '/api/v1/user/employee/list/'+ defaultPage,
             data: {
                 "keyword": e.target.value,
-                "filters": filters
+                "filters": filters,
+                "sorting": {
+                    "sortingKey": "",
+                    "sortingValue": ""
+                }
             }
         }
         axios(config)
@@ -173,6 +204,7 @@ const ViewEmployees = (props) => {
             var reduxResponse = []
             var page = res.data['page']
             reduxResponse[page]= res.data['employees']
+            reduxResponse['total_records'] = res.data['total_records']
             dispatch(EmployeesListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
@@ -187,13 +219,19 @@ const ViewEmployees = (props) => {
         dispatch(EmployeesListStorageResponseReset())
         setPage(1)
         setTableLoading(true)
+        setSortingKey("")
+        setSortingValue(null)
         var defaultPage = 1
         const config = {
             method: 'post',
             url: '/api/v1/user/employee/list/'+ defaultPage,
             data: {
                 "keyword": searchKeyword,
-                "filters": data
+                "filters": data,
+                "sorting": {
+                    "sortingKey": "",
+                    "sortingValue": ""
+                }
             }
         }
         axios(config)
@@ -204,6 +242,7 @@ const ViewEmployees = (props) => {
             var reduxResponse = []
             var page = res.data['page']
             reduxResponse[page]= res.data['employees']
+            reduxResponse['total_records'] = res.data['total_records']
             dispatch(EmployeesListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
@@ -419,7 +458,7 @@ const ViewEmployees = (props) => {
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                                            onClick={() => handleSorting("user_since")}
+                                                            onClick={() => handleSorting("createdDate")}
                                                         >
                                                             User Since
                                                         </th>
@@ -452,15 +491,21 @@ const ViewEmployees = (props) => {
                                     <thead>
                                         <tr>
                                             <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                                onClick={() => handleSorting("email")}
+                                            >
                                                 Email
                                             </th>
                                             <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                onClick={() => handleSorting("cases")}
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                            >
                                                 Total Cases
                                             </th>
                                             <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                                onClick={() => handleSorting("user_since")}
+                                            >
                                                 User Since
                                             </th>
                                             <th
@@ -481,14 +526,14 @@ const ViewEmployees = (props) => {
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <div class="flex items-center">
                                                                 <div class="flex-shrink-0 w-10 h-10">
-                                                                    <Link to={`/user/employee/${item._id.$oid}`}>
+                                                                    <Link to={`/sadmin/employee/${item._id.$oid}`}>
                                                                         <img class="w-full h-full rounded-full"
                                                                             src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
                                                                             alt="" />
                                                                     </Link>
                                                                 </div>
                                                                 <div class="ml-3">
-                                                                    <Link to={`/user/employee/${item._id.$oid}`}>
+                                                                    <Link to={`/sadmin/employee/${item._id.$oid}`}>
                                                                         {
                                                                             item.hasOwnProperty("name") ?
                                                                                 <p class="text-blue-700 whitespace-no-wrap">
@@ -505,7 +550,7 @@ const ViewEmployees = (props) => {
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900 whitespace-no-wrap">
-                                                                0
+                                                                {item.no_cases}
                                                             </p>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -533,7 +578,7 @@ const ViewEmployees = (props) => {
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-blue-700 whitespace-no-wrap">
-                                                                <Link to={`/user/employee/${item._id.$oid}`}>Details | </Link>
+                                                                <Link to={`/sadmin/employee/${item._id.$oid}`}>Details | </Link>
                                                                 <button class="focus:outline-none" onClick={() => DeletePopUp(item.email, item._id.$oid)}>Delete</button>
                                                             </p>
                                                         </td>

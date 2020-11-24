@@ -12,6 +12,7 @@ import imageLogo from "../../../images/image-Icon.png";
 import { MdFileDownload } from "react-icons/md";
 import folderEmptyIcon from "../../../images/folder_empty.png";
 import { VscClose } from "react-icons/vsc";
+import { MdFileUpload } from "react-icons/md";
 
 const ContractDetailsClient = (props) => {
     const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -72,14 +73,6 @@ const ContractDetailsClient = (props) => {
 
     // allowed file types
     const fileTypes = [
-        "video/3gpp",
-        "video/3gpp2",
-        "video/3gp2",
-        "video/mpeg",
-        "video/mp4",
-        "video/ogg",
-        "video/webm",
-        "video/quicktime",
         "image/jpg",
         "image/jpeg",
         "image/png",
@@ -220,7 +213,7 @@ const ContractDetailsClient = (props) => {
                                         </p>
                                     </p>
                                     <p
-                                        class="text-gray-700 text-base mt-3"
+                                        class="text-gray-700 text-base mt-3 tracking-wide"
                                         style={{ marginTop: "3rem", "textAlign": "justify", "text-justify": "inter-word" }}
                                     >
                                         {paperDetails['desc']}
@@ -409,15 +402,27 @@ const ContractDetailsClient = (props) => {
                                                 />
                                             </div>
                                             :
-                                            <div>
-                                                <input 
-                                                    class="rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                                    id="budget" 
-                                                    type="file"
-                                                    multiple
-                                                    onChange={e => handleFileUpload(e)}
-                                                    accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                                />
+                                            <div class="flex">
+                                                <div>
+                                                    <label for="allfilesMessage" style={{ cursor: "pointer" }}>
+                                                        <a>
+                                                            <em class="fa fa-upload"></em>{" "}
+                                                            <span class="bg-gray-200 border border-gray-100 hover:bg-grey text-grey-darkest py-2 px-4 rounded inline-flex items-center">
+                                                                <p class="text-lg"><MdFileUpload /></p>
+                                                                <span> &nbsp;Attach Files</span>
+                                                            </span>
+                                                        </a>
+                                                    </label>
+                                                    <input
+                                                        type="file"
+                                                        name="allfilesMessage"
+                                                        id="allfilesMessage"
+                                                        style={{ display: "none" }}
+                                                        onChange={e => handleFileUpload(e)}
+                                                        multiple
+                                                        accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                                    />
+                                                </div>
                                                 <button 
                                                     class="hover:bg-blue-500 text-white font-bold py-2 px-4 mx-2 rounded focus:outline-none focus:shadow-outline" 
                                                     type="button" 

@@ -40,11 +40,10 @@ const ViewEmployees = (props) => {
               }
           }
         if(response2.data.hasOwnProperty(1)){
-            console.log("from redux and if", response2.total_records)
             var empList = response2.data[1]
             setEmployees(empList)
             setTableLoading(false)
-            setTotalRecords(response2.total_records)
+            setTotalRecords(response2.data['total_records'])
         }
         else {
             axios(config)
@@ -53,7 +52,7 @@ const ViewEmployees = (props) => {
                     setTableLoading(false)
                     setTotalRecords(res.data['total_records'])
                     var page = res.data['page']
-                    dispatch(EmployeesListStorageDispatcher({[page]: res.data['employees']}, res.data['total_records']))
+                    dispatch(EmployeesListStorageDispatcher({[page]: res.data['employees'], 'total_records': res.data['total_records']}))
             })
             .catch((error) => {
                 console.log(error.response)
@@ -88,6 +87,7 @@ const ViewEmployees = (props) => {
             var reduxResponse = []
             var page = res.data['page']
             reduxResponse[page]= res.data['employees']
+            reduxResponse['total_records'] = res.data['total_records']
             dispatch(EmployeesListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
@@ -165,6 +165,7 @@ const ViewEmployees = (props) => {
                 var reduxResponse = response2.data
                 var page = res.data['page']
                 reduxResponse[page]= res.data['employees']
+                reduxResponse['total_records'] = res.data['total_records']
                 dispatch(EmployeesListStorageDispatcher(reduxResponse))
             })
             .catch((error) => {
@@ -203,6 +204,7 @@ const ViewEmployees = (props) => {
             var reduxResponse = []
             var page = res.data['page']
             reduxResponse[page]= res.data['employees']
+            reduxResponse['total_records'] = res.data['total_records']
             dispatch(EmployeesListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
@@ -240,6 +242,7 @@ const ViewEmployees = (props) => {
             var reduxResponse = []
             var page = res.data['page']
             reduxResponse[page]= res.data['employees']
+            reduxResponse['total_records'] = res.data['total_records']
             dispatch(EmployeesListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
@@ -494,8 +497,8 @@ const ViewEmployees = (props) => {
                                                 Email
                                             </th>
                                             <th
+                                                onClick={() => handleSorting("cases")}
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                                onClick={() => handleSorting("total_cases")}
                                             >
                                                 Total Cases
                                             </th>
@@ -547,7 +550,7 @@ const ViewEmployees = (props) => {
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900 whitespace-no-wrap">
-                                                                0
+                                                                {item.no_cases}
                                                             </p>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">

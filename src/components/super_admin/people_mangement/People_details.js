@@ -5,12 +5,24 @@ import _ from "lodash";
 import { Link } from "react-router-dom";
 import EmpAvatar from "../../../images/emp_avatar.jpg";
 import { AddPeopleResponseReset } from "../../actions/people_mangement/AddPeople";
+import PeopleCases from "./People_cases";
+import {FaEdit} from "react-icons/fa";
+import {VscClose} from "react-icons/vsc";
+import { UpdateCommission } from "../../actions/people_mangement/SetCommissionRateAction";
+import ChildAccounts from "./Child_accounts";
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const PeopleDetails = (props) => {
     const [peopleDetails, setPeopleDetails] = useState([])
     const [peopleDetailsLoading, setPeopleDetailsLoading] = useState(true)
     const [services, setServices] = useState([])
     const [activeTab, setActiveTab] = useState("cases")
+    const [showCommissionField, setShowCommissionField] = useState(false)
+    const [commission, setCommission] = useState("")
+    const [showAlert, setShowAlert] = useState(false)
+    const [showExpiryAlert, setShowExpiryAlert] = useState(false)
+    const [expiryDate, SetExpiryDate] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.addEmployeeResponse)
 
@@ -29,6 +41,7 @@ const PeopleDetails = (props) => {
         .then((res) => {
             setPeopleDetails(res.data)
             setPeopleDetailsLoading(false)
+            setCommission(res.data['commission'])
         })
         .catch((error) => {
             console.log(error.response)
@@ -51,7 +64,8 @@ const PeopleDetails = (props) => {
       }, [])
   
     useEffect(() => {
-        
+        SetExpiryDate(peopleDetails.expiryDate)
+        setCommission(peopleDetails.commission)
     }, [peopleDetails])
 
     const activeCasetab = () => {
@@ -62,18 +76,137 @@ const PeopleDetails = (props) => {
         setActiveTab("services")
     }
 
-    const handleAdd = () => {
-        dispatch(AddPeopleResponseReset())
+    const activeEmployeestab = () => {
+        setActiveTab("employees")
+    }
+
+    /********************************************************************/
+    // Function for Commission field  
+    const handleShowCommissionField = (value) => {
+        if(value) {
+            setShowCommissionField(true)
+        }
+        else{
+            setShowCommissionField(false)
+        }
+    }
+    const handleCommission = (e) => {
+        setCommission(e.target.value)
+        setShowAlert(false)
+    }
+    const SubmitCommission = (e) => {
+        e.preventDefault();
         var string = document.location.pathname
         var urlvalues = string.toString().split('/')
-        return (
-          props.history.push("/sadmin/employee/roles/"+ urlvalues[3])
-        )
-      }
+        var data = {
+            "commission": commission
+        }
+        dispatch(UpdateCommission(data, urlvalues[3]))
+        setShowCommissionField(false)
+        setShowExpiryAlert(false)
+        setShowAlert(true)
+    }
+
+    /********************************************************************/
+
+    var expiry_date; 
+    // for the Accont expiry date
+    const handleAccountExpiry = (e) => {
+        // storing the value in the variable since the modal box cannot update the state 
+        expiry_date = e.target.value
+    }
+
+    const SubmitAccountExpiry = () => {
+        var string = document.location.pathname
+        var urlvalues = string.toString().split('/')
+        var data = {
+            "expiry_date": expiry_date
+        }
+        const config = {
+            method: 'put',
+            url: '/api/v1/peoples/account-expiry/' + urlvalues[3],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              },
+            data: data
+          }
+        axios(config)
+        .then((res) => {
+            // give the confirmation
+            setShowAlert(false)
+            setShowExpiryAlert(true)
+            SetExpiryDate(expiry_date)
+        })
+        .catch((error) => {
+            // give the user the failure message 
+        })
+    }
+
+    // Modal box action listener
+    const OpenModal = (type) => {
+        confirmAlert({
+            customUI: ({ onClose }) => {
+              return (
+                <div className="bg-white shadow border rounded px-4 py-4 mx-auto max-w-lg" style={{minHeight: "15rem",  minWidth: "30rem"}}>
+                    <h1 class="text-3xl text-blue-600 px-4">Edit the Account expiry date</h1>
+                    <hr class="border-gray-300 my-4" />
+                    <div class= "px-4">
+                        <label class="block text-black text-md mb-2" for="name">
+                            Account Expiry Date:
+                        </label>
+                        <input 
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="budget" 
+                            type="date"
+                            defaultValue={peopleDetails.expiryDate}
+                            onChange={(e) => handleAccountExpiry(e)}
+                        />
+                    </div>
+                    <div class="flex justify-end mx-3 my-4">
+                        <button 
+                            onClick={onClose} 
+                            class="focus:outline-none inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-gray-600 hover:text-black hover:bg-gray-200 mt-4 lg:mt-0"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                SubmitAccountExpiry();
+                                onClose();
+                            }}
+                            class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-red-700 border-red-700 hover:border-transparent hover:text-white hover:bg-red-700 mt-4 lg:mt-0"
+                        >
+                            Update it!
+                        </button>
+                    </div>
+                </div>
+              )
+            },
+            title: 'Confirm to submit'
+        })
+    }
+
+    //************************************************************************************************ */
 
     return (
         <div>
             <div class="px-4 sm:px-8">
+            {
+                showAlert ? 
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                    <p class="font-bold">Commission Rate Updated successfully</p>
+                </div>
+                :
+                ""
+            }
+            {
+                showExpiryAlert ? 
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                    <p class="font-bold">Account expiry date updated successfully</p>
+                </div>
+                :
+                ""
+            }
                 {
                     peopleDetailsLoading ? 
                     <div class="animate-pulse flex space-x-4">
@@ -83,9 +216,9 @@ const PeopleDetails = (props) => {
                             </div>
                         </div>
                         <div class="w-1/5 flex justify-end">
-                            <button class="focus:outline-none" onClick={() => handleAdd()}>
+                            {/* <button class="focus:outline-none" onClick={() => handleAdd()}>
                                 <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Manage Roles</div>
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                     :
@@ -99,30 +232,104 @@ const PeopleDetails = (props) => {
                                     </h1>
                                     <h1 class="text-1xl my-1">{_.isEmpty(peopleDetails.email)? "-": peopleDetails.email}</h1>
                                     <p class="flex mt-8 text-base text-gray-600">
-                                        TOTAL CASES <p class="ml-3 mr-10 text-base text-black">3</p>
-                                        USER SINCE<p class="ml-3 mr-10 text-base text-black">{_.isEmpty(peopleDetails.createdDate)? "-": peopleDetails.createdDate}</p>
-                                        STATUS {peopleDetails.is_verified ? <p class="ml-3 text-base text-green-600">ACTIVE</p> : <p class="ml-3 text-base text-red-600">UNVERIFIED</p>} 
+                                        USER SINCE <p class="ml-3 mr-10 text-base text-black">{_.isEmpty(peopleDetails.createdDate)? "-": peopleDetails.createdDate}</p>
+                                        EXPIRES ON <p class="ml-3 text-base text-black">
+                                                        { _.isEmpty(expiryDate) ? "-": expiryDate }
+                                                    </p>
+                                                    <button class="focus:outline-none ml-3 mr-10 " onClick={() => OpenModal()}>
+                                                        <p class="text-blue-400 mx-6"><FaEdit /></p>
+                                                    </button>
+                                        COMMISSION
+                                        {
+                                            showCommissionField ? 
+                                            <form onSubmit={SubmitCommission}>
+                                                <input 
+                                                    class="shadow appearance-none border rounded ml-6 w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                    id="label" 
+                                                    type="text"
+                                                    defaultValue={commission}
+                                                    onChange={(e) => handleCommission(e)}
+                                                />
+                                            </form>
+                                            :
+                                            peopleDetails.hasOwnProperty('commission')  ?
+                                            <p class="ml-6 text-base text-black">{commission} %</p> 
+                                            :
+                                            <p class="ml-6 text-base text-black">NOT SET</p> 
+                                        }
+                                        {
+                                            showCommissionField ? 
+                                            <button class="focus:outline-none" onClick={() => handleShowCommissionField(false)}>
+                                                <p class="text-red-400 mx-6 text-lg"><VscClose /></p>
+                                            </button>
+                                            :
+                                            <button class="focus:outline-none ml-3 mr-10 " onClick={() => handleShowCommissionField(true)}>
+                                                <p class="text-blue-400 mx-6"><FaEdit /></p>
+                                            </button>
+                                        }
                                     </p>
                                 </div>
                             </div>
                         </div>
                         <div class="w-1/5 flex justify-end">
-                            <button class="focus:outline-none" onClick={() => handleAdd()}>
+                            {/* <button class="focus:outline-none" onClick={() => handleAdd()}>
                                 <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Manage Roles</div>
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 }
                 <div class="pt-8 pb-5">
                     {
                         peopleDetails.user_type == "SPCA" || peopleDetails.user_type == "SPS" ?
-                            activeTab == "cases" ? 
+                            peopleDetails.user_type == "SPCA" ?
+                                activeTab == "cases" ? 
+                                    <ul class="flex border-b">
+                                        <li class="-mb-px mr-1">
+                                            <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeCasetab()}>Cases</button>
+                                        </li>
+                                        <li class="mr-1">
+                                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeServicetab()}>Services</button>
+                                        </li>
+                                        <li class="mr-1">
+                                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeEmployeestab()}>Employees</button>
+                                        </li>
+                                    </ul>
+                                :
+                                activeTab == "services" ? 
+                                    <ul class="flex border-b">
+                                        <li class="mr-1">
+                                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeCasetab()}>Cases</button>
+                                        </li>
+                                        <li class="-mb-px mr-1">
+                                            <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeServicetab()}>Services</button>
+                                        </li>
+                                        <li class="mr-1">
+                                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeEmployeestab()}>Employees</button>
+                                        </li>
+                                    </ul>
+                                :
+                                    <ul class="flex border-b">
+                                        <li class="mr-1">
+                                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeCasetab()}>Cases</button>
+                                        </li>
+                                        <li class="mr-1">
+                                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeServicetab()}>Services</button>
+                                        </li>
+                                        <li class="-mb-px mr-1">
+                                            <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeEmployeestab()}>Employees</button>
+                                        </li>
+                                    </ul>
+                                :
+                            ""
+                        :
+                        peopleDetails.user_type == "CCA" ?
+                            activeTab == "cases" ?
                                 <ul class="flex border-b">
                                     <li class="-mb-px mr-1">
                                         <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeCasetab()}>Cases</button>
                                     </li>
                                     <li class="mr-1">
-                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeServicetab()}>Services</button>
+                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeEmployeestab()}>Employees</button>
                                     </li>
                                 </ul>
                             :
@@ -131,15 +338,15 @@ const PeopleDetails = (props) => {
                                         <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeCasetab()}>Cases</button>
                                     </li>
                                     <li class="-mb-px mr-1">
-                                        <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeServicetab()}>Services</button>
+                                        <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeEmployeestab()}>Employees</button>
                                     </li>
-                                </ul>
+                                </ul> 
                         :
-                            <ul class="flex border-b">
-                                <li class="-mb-px mr-1">
-                                    <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeCasetab()}>Cases</button>
-                                </li>
-                            </ul>
+                        <ul class="flex border-b">
+                            <li class="-mb-px mr-1">
+                                <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeCasetab()}>Cases</button>
+                            </li>
+                        </ul>
                     }
                 </div>
                 {
@@ -198,97 +405,15 @@ const PeopleDetails = (props) => {
                                 </div>
                             </div>
                         :
-                        <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 overflow-x-auto">
-                            <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
-                                <table class="min-w-full leading-normal">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Cases
-                                            </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Client
-                                            </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Status
-                                            </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Role
-                                            </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Assigned on
-                                            </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Time spent
-                                            </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
-                                                <div class="flex items-center">
-                                                    <div class="ml-3">
-                                                        <Link to="/user/employee/details">
-                                                            <p class="text-blue-700 whitespace-no-wrap">
-                                                                Case title here
-                                                            </p>
-                                                        </Link>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                <p class="text-gray-900 whitespace-no-wrap">
-                                                    Hari prasad
-                                                </p>
-                                            </td>
-                                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                <p class="text-gray-900 whitespace-no-wrap">
-                                                    ongoing
-                                                </p>
-                                            </td>
-                                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                <span
-                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                    <span aria-hidden
-                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                    <span class="relative">Collaborator</span>
-                                                </span>
-                                            </td>
-                                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                <p class="text-gray-900 whitespace-no-wrap">
-                                                    2020-09-10
-                                                </p>
-                                            </td>
-                                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                <p class="text-gray-900 whitespace-no-wrap">
-                                                    3 hrs 23 mins
-                                                </p>
-                                            </td>
-                                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                <p class="text-blue-700 whitespace-no-wrap">
-                                                    <a href="#">Details | </a>
-                                                    <button class="focus:outline-none" >Delete</button>
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <PeopleCases />
                         }
                     </div>
                     // cases div closes here
                     :
+                    activeTab == "employees" ?
+                        <ChildAccounts />
+                    :
+
                     // Services div opens here
                     <div>
                     {
@@ -346,7 +471,7 @@ const PeopleDetails = (props) => {
                                         <tr>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Titile
+                                                Title
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -364,10 +489,6 @@ const PeopleDetails = (props) => {
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Created on
                                             </th>
-                                            <th
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Commission Rate
-                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -378,11 +499,9 @@ const PeopleDetails = (props) => {
                                                         <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
-                                                                    <Link to="/user/employee/details">
-                                                                        <p class="text-blue-700 whitespace-no-wrap">
+                                                                        <p class="text-gray-900 whitespace-no-wrap">
                                                                             {item.title}
                                                                         </p>
-                                                                    </Link>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -393,26 +512,30 @@ const PeopleDetails = (props) => {
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900 whitespace-no-wrap">
-                                                                40 Hours
+                                                                {item.averageTimeTaken} hours
                                                             </p>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            <span
-                                                                class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                                <span aria-hidden
-                                                                    class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                                <span class="relative">Active</span>
-                                                            </span>
+                                                            {
+                                                                item.status == "Active" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Active</span>
+                                                                </span>
+                                                                :
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Inactive</span>
+                                                                </span>
+                                                            }
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900 whitespace-no-wrap">
-                                                                2020-09-10
-                                                            </p>
-                                                        </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            <p class="text-blue-700 whitespace-no-wrap">
-                                                                <a href="#">5% | </a>
-                                                                <button class="focus:outline-none" >Edit</button>
+                                                                {item.createdDate}
                                                             </p>
                                                         </td>
                                                     </tr>

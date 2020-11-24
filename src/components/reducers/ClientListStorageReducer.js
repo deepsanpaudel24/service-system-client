@@ -1,4 +1,4 @@
-import { CLIENT_LIST_STORAGE_FAIL, CLIENT_LIST_STORAGE_SUCCESS} from "../actions/client_management/ClientListStorage"
+import { CLIENT_LIST_STORAGE_FAIL, CLIENT_LIST_STORAGE_SUCCESS, CLIENT_LIST_STORAGE_RESPONSE_RESET} from "../actions/client_management/ClientListStorage"
 
 const DefaultState = {
     loading: false,
@@ -21,6 +21,14 @@ const ClientListStorageReducer = (state = DefaultState, action) => {
                 loading: false,
                 data: action.payload,
                 errorMsg: ""
+            }
+        case CLIENT_LIST_STORAGE_RESPONSE_RESET:
+            return {
+                ...state,
+                loading: false,
+                data: [],
+                errorMsg: "",
+                serverErrorMsg: ""
             }
         default:
             return state

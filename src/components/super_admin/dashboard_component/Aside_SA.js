@@ -33,7 +33,7 @@ const SAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
               whiteSpace: 'nowrap',
             }}
           >
-            Sidebar Title
+            SERVICE SYSTEM
           </div>
         </SidebarHeader>
 
@@ -41,13 +41,12 @@ const SAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
         <Menu iconShape="circle">
             <MenuItem
               icon={<FaTachometerAlt />}
-              suffix={<span className="badge red">New</span>}
             >
               <Link to="/sadmin/home">Dashboard</Link>
             </MenuItem>
             <MenuItem icon={<FaGem />}><Link to="/sadmin/cases">Cases</Link></MenuItem>
             <MenuItem icon={<FaUsers />}><Link to="/sadmin/employees">Employees</Link></MenuItem>
-            <MenuItem icon={<FaUsers />}><Link to="/sadmin/peoples">Peoples</Link></MenuItem>
+            <MenuItem icon={<FaUsers />}><Link to="/sadmin/peoples">Accounts</Link></MenuItem>
           </Menu>
         </SidebarContent>
 
@@ -58,15 +57,7 @@ const SAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
               padding: '20px 24px',
             }}
           >
-            <a
-              href="https://github.com/azouaoui-med/react-pro-sidebar"
-              target="_blank"
-              className="sidebar-btn"
-              rel="noopener noreferrer"
-            >
-              <FaGithub />
-              <span>View Sources</span>
-            </a>
+
           </div>
         </SidebarFooter>
       </ProSidebar>

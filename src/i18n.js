@@ -1,7 +1,7 @@
 import { initReactI18next } from "react-i18next";
 import i18n from "i18next";
 let resources;
-let language = "de";
+let language = "en";
 
 import(`./locales/${language}/translations.json`).then((resp) => {
   resources = {

@@ -13,7 +13,7 @@ const ViewCasesProposalClient = (props) => {
         var urlvalues = string.toString().split('/')
         const config = {
             method: 'get',
-            url: '/api/v1/case/proposals/' + urlvalues[4],
+            url: '/api/v1/case/proposals/' + urlvalues[3],
             headers: { 
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
@@ -41,14 +41,6 @@ const ViewCasesProposalClient = (props) => {
     return (
         <div>
             <div class="px-4 sm:px-8">
-                <div class="flex">
-                    <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Proposals</p></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5">
-                    </div>
-                </div>
                 <div class="py-8">
                     {
                         tableLoading ? 
@@ -61,6 +53,9 @@ const ViewCasesProposalClient = (props) => {
                                     />
                                 </div>
                             </div>
+                        :
+                        _.isEmpty(proposals) ? 
+                        <p class="text-gray-600">No Proposals as of now</p>
                         :
                         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 overflow-x-auto">
                             <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">

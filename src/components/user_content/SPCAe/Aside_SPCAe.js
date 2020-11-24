@@ -72,7 +72,6 @@ const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
               <Menu iconShape="circle">
                 <MenuItem
                   icon={<FaTachometerAlt />}
-                  suffix={<span className="badge red">New</span>}
                 >
                   Dashboard
                 </MenuItem>

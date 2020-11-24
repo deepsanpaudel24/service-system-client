@@ -15,6 +15,9 @@ const EmployeeRoles = (props) => {
     const [CM, setCM] = useState(false)
     const [Collaborator, setCollaborator] = useState(false)
     const [Reviewer, setReviewer] = useState(false)
+    const [IntakeForm, setIntakeForm] = useState(false)
+    const [CustomTask, setCustomTask] = useState(false)
+
     const dispatch = useDispatch()
     const response = useSelector(state => state.UpdateEmployeeRolesResponse)
 
@@ -43,6 +46,8 @@ const EmployeeRoles = (props) => {
         setCM(employeeDetails.clientManagement)
         setCollaborator(employeeDetails.collaborator)
         setReviewer(employeeDetails.reviewer)
+        setIntakeForm(employeeDetails.IntakeForm)
+        setCustomTask(employeeDetails.CustomTask)
     }, [employeeDetails])
 
     const handleCollaboratorChange = e => {
@@ -51,6 +56,14 @@ const EmployeeRoles = (props) => {
 
     const handleReviewerChange = e => {
         setReviewer(e.target.checked)
+    }
+
+    const handleClientIntakeForm = e => {
+        setIntakeForm(e.target.checked)
+    }
+
+    const handleCustomTask = e => {
+        setCustomTask(e.target.checked)
     }
 
     const handleServiceManagementChange = e => {
@@ -67,6 +80,8 @@ const EmployeeRoles = (props) => {
             'clientManagement': CM,
             'collaborator': Collaborator,
             'reviewer': Reviewer,
+            'IntakeForm': IntakeForm,
+            'CustomTask': CustomTask
         }
         var string = document.location.pathname
         var urlvalues = string.toString().split('/')
@@ -228,6 +243,37 @@ const EmployeeRoles = (props) => {
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="flex"> 
+                                        <div>
+                                            <input class="my-3" type="checkbox" value="SM" onChange={e => handleClientIntakeForm(e)} checked={IntakeForm}/>
+                                        </div>
+                                        <div style={{marginLeft: "2em"}}>
+                                            <div class="mb-8">
+                                                <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                    Client Intake Form                                                
+                                                </div>
+                                                <hr class="border-gray-400" />
+                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex"> 
+                                        <div>
+                                            <input class="my-3" type="checkbox" value="SM" onChange={e => handleCustomTask(e)} checked={CustomTask}/>
+                                        </div>
+                                        <div style={{marginLeft: "2em"}}>
+                                            <div class="mb-8">
+                                                <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                    Custom Task                                                
+                                                </div>
+                                                <hr class="border-gray-400" />
+                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         :

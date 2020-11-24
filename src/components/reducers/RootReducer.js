@@ -44,6 +44,12 @@ import CustomTaskListStorageReducer from './CustomTaskListStorageReducer';
 import IntakeFormListStorageReducer from './IntakeFormListStorageReducer';
 import ConfirmContractReducer from './ConfirmContractReducer';
 import CreateClientCaseReducer from './Create_client_case_reducer';
+import SetPeoplePasswordReducer from './SetPeoplePasswordReducer';
+import PeoplesListStorageReducer from './PeopleListStorageReducer';
+import SACaseListStorageReducer from './SuperAdminCaseListStorageReducer';
+import SAPeopleCaseListStorageReducer from './SuperAdminPeopleCaseListStorageReducer';
+import EmployeeCaseListReducer from './EmployeeCaseListReducer';
+import ChildAccountListStorageReducer from './ChildAccountListStorageReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -91,7 +97,13 @@ const rootReducer =  combineReducers({
     CustomTaskListStorageResponse: CustomTaskListStorageReducer,
     IntakeFormListStorageResponse: IntakeFormListStorageReducer,
     ConfirmContractResponse: ConfirmContractReducer,
-    CreateClientCaseResponse: CreateClientCaseReducer
+    CreateClientCaseResponse: CreateClientCaseReducer,
+    SetPeoplePasswordResponse: SetPeoplePasswordReducer,
+    PeoplesListStorageResponse: PeoplesListStorageReducer,
+    SACaseListStorageResponse: SACaseListStorageReducer,
+    SAPeopleCaseListStorageResponse: SAPeopleCaseListStorageReducer,
+    EmployeeCaseListResponse: EmployeeCaseListReducer,
+    ChildAccountListStorageResponse: ChildAccountListStorageReducer
 })
 
 export default rootReducer

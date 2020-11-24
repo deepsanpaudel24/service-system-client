@@ -701,9 +701,24 @@ const ViewCaseDetailsSP = (props) => {
                       )}
                     </p>
                   )}
+                  {
+                        caseDetails.hasOwnProperty('clientName') ? 
+                        <p class="flex mt-5 text-sm text-gray-600" style={{marginTop: "2em"}}>
+                          CLIENT{" "}
+                          <p class="ml-3 mr-10 text-sm text-black">
+                            {caseDetails.clientName}
+                          </p>
+                        </p>
+                        :
+                        ""
+                      }
                   <p
-                    class="text-gray-700 text-base mt-3 tracking-wide"
-                    style={{ marginTop: "3rem", "textAlign": "justify", "text-justify": "inter-word" }}
+                    class="text-gray-700 text-base  tracking-wide"
+                    style={{
+                      marginTop: "1rem",
+                      textAlign: "justify",
+                      "text-justify": "inter-word",
+                    }}
                   >
                     {caseDetails.desc}
                   </p>
@@ -1099,7 +1114,8 @@ const ViewCaseDetailsSP = (props) => {
                   :
                   activeTab == "intro" ?
                   <div class="mt-4" style={{ height: "25rem", width: "38rem" }}>
-                    <VideoPlayer />
+                    <VideoPlayer source={caseDetails.intro_video}/>
+                    <p class="my-3">{caseDetails.intro_text}</p>
                   </div>
                   :
                   activeTab == "proposal" ?

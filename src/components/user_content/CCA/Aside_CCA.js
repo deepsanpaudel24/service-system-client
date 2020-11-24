@@ -33,7 +33,7 @@ const CCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
               whiteSpace: 'nowrap',
             }}
           >
-            Sidebar Title
+            SERVICE SYSTEM
           </div>
         </SidebarHeader>
 
@@ -41,7 +41,6 @@ const CCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
           <Menu iconShape="circle">
             <MenuItem
               icon={<FaTachometerAlt />}
-              suffix={<span className="badge red">New</span>}
             >
               <Link to="/user/home">Dashboard</Link>
             </MenuItem>
@@ -57,15 +56,7 @@ const CCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
               padding: '20px 24px',
             }}
           >
-            <a
-              href="#"
-              target="_blank"
-              className="sidebar-btn"
-              rel="noopener noreferrer"
-            >
-              <FaGithub />
-              <span>View Sources</span>
-            </a>
+            
           </div>
         </SidebarFooter>
       </ProSidebar>

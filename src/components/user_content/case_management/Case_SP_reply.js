@@ -3,6 +3,8 @@ import _ from "lodash";
 import {PulseLoader} from "react-spinners";
 import {useDispatch, useSelector} from "react-redux";
 import { ReplyCaseRequestDispacther } from "../../actions/case_management/ReplyCaseRequestAction";
+import { MdAttachFile, MdFileUpload } from "react-icons/md";
+import { VscClose } from "react-icons/vsc";
 
 const ReplyCaseRequest = (props) => {
     const [formStep, setFormStep] = useState(1)
@@ -13,6 +15,7 @@ const ReplyCaseRequest = (props) => {
     const [avgTimeTaken, setAvgTimeTaken] = useState("")
     const [proposedDeadline, setProposedDeadline] = useState("")
     const [fileToSend, setFileToSend] = useState([]);
+    const [fileNameToShow, setFileNameToShow] = useState([])  
     const [formEmptyError, setFormEmptyError] = useState("")
     const [caseId, setCaseId] = useState("")
     const dispatch = useDispatch()
@@ -95,7 +98,32 @@ const ReplyCaseRequest = (props) => {
             }
         }
         setFileToSend(validateFilesList)
+        // loop through files
+        var files = e.target.files
+        var filesNameList = [] 
+        for (var i = 0; i < files.length; i++) {
+        // get item
+        var file = files.item(i);
+        filesNameList.push(file.name)
+        }
+        setFileNameToShow(filesNameList)
     }
+
+    const handleRemoveChatFile = (name, index) => {
+        var filteredFileList = []
+        var fileList = fileToSend
+        var NewFileNameList = fileNameToShow
+    
+        for (var i = 0; i < fileList.length; i++) {
+          var file = fileList[i]
+          if(file.name !== name){
+            filteredFileList.push(file)
+          } 
+        }
+        NewFileNameList.splice(index, 1)
+        setFileToSend(filteredFileList)
+        setFileNameToShow(NewFileNameList)
+      }
 
     const handleReplyCaseRequest = () => {
         if(title == "" || desc == "" || rate == "" || avgTimeTaken == "" || proposedDeadline == ""){
@@ -296,14 +324,41 @@ const ReplyCaseRequest = (props) => {
                                 </div>
                                 <div class="mt-6 mb-5" >
                                     <label for="price" class="block text-gray-700 text-sm">Related Files (Optional)</label>
-                                    <input 
-                                        class="rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                        id="budget" 
+                                    <label for="allfilesMessage" style={{ cursor: "pointer" }}>
+                                        <a>
+                                            <em class="fa fa-upload"></em>{" "}
+                                            <span class="bg-gray-200 border border-gray-100 hover:bg-grey text-grey-darkest py-2 px-4 rounded inline-flex items-center">
+                                                <p class="text-lg"><MdFileUpload /></p>
+                                                <span> &nbsp;Attach Files</span>
+                                            </span>
+                                        </a>
+                                    </label>
+                                    <input
                                         type="file"
-                                        multiple
+                                        name="allfilesMessage"
+                                        id="allfilesMessage"
+                                        style={{ display: "none" }}
                                         onChange={e => handleFileUpload(e)}
+                                        multiple
                                         accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                     />
+                                    {
+                                        !_.isEmpty(fileNameToShow) ? 
+                                            fileNameToShow.map((item, index) => {
+                                                return(
+                                                    <div class="flex mx-3 my-5">
+                                                        <div class="w-3/12">
+                                                            <p>{item}</p>
+                                                        </div>
+                                                        <div class="w-1/12">
+                                                            <p class="text-red-400 mx-6 text-lg" onClick={() => handleRemoveChatFile(item, index)}><VscClose /></p>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })
+                                        :
+                                        ""
+                                    }
                                 </div>
                                 <div class="flex justify-start my-5">
                                     {showData()}
