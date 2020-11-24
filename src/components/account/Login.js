@@ -32,7 +32,7 @@ const Login = (props) => {
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
         }
-        axios(config)
+        axios(config) 
         .then((res) => {
             console.log(res.data)
                 if(res.data['user_type'] == "SA" || res.data['user_type'] == "SAe"){

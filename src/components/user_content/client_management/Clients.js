@@ -28,6 +28,7 @@ const Clients = (props) => {
     const dispatch = useDispatch()
     const response2 = useSelector(state => state.ClientListStorageResponse)
 
+    // gets authorized client
     useLayoutEffect(() => {
         const config = {
             method: 'get',

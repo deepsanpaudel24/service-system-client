@@ -27,7 +27,6 @@ const SAContent = () => {
                 <Route exact path='/sadmin/peoples' component={Peoples} />
                 <Route exact path="/sadmin/people/add" component={AddPeoples} />
                 <Route exact path="/sadmin/people/:id" component={PeopleDetails} />
-
                 <Route exact path='/sadmin/proposals/:id' component={Proposals} />
             </Switch>
         </div>

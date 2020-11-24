@@ -1,6 +1,5 @@
 //imports for react
 import React from 'react';
-// import axios from "axios";
 import { BrowserRouter, Switch, Route, NavLink, Redirect} from "react-router-dom";
 
 //imports for redux use
@@ -21,6 +20,7 @@ import ProfileSetupDetailed from "./account/Profile_setup_detailed";
 import HomePage from "./user_content/Home";
 import SAHomePage from './super_admin/Home';
 import EmployeePasswordSetup from './account/Employee_password_setup';
+
 import axios from 'axios';
 import ClientPasswordSetup from './account/Client_password_setup';
 import ProfileSetupPreferences from './account/Profile_setup_preferences';
