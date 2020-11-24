@@ -4,8 +4,8 @@ import { PulseLoader } from "react-spinners";
 import axios from "axios";
 import download from "downloadjs";
 import _ from "lodash";
-import { Link } from "react-router-dom";
 import {
+  AddTimerDispatcher,
   AddTimerResponseReset,
 } from "../../actions/TimerAction";
 import pdfLogo from "../../../images/pdf-Icon.png";
@@ -24,7 +24,9 @@ import ChatClientSide from "../../chat/ChatClientSide";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { CaseDetailsStorageDispatcher } from "../../actions/case_management/CaseDetailsStorage";
 import { ReplyCaseRequestResponseReset } from "../../actions/case_management/ReplyCaseRequestAction";
-import Pagination from "../Pagination";
+
+// IMPORTS FOR THE TIMER  
+import Timer from "react-compound-timer";
 
 const ViewCaseDetailsSP = (props) => {
   const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -36,13 +38,18 @@ const ViewCaseDetailsSP = (props) => {
   const [proposalSentConfirm, setProposalSentConfirm] = useState(false);
   const [fileToSend, setFileToSend] = useState([]);
   const [totalTimeWorked, setTotalTimeWorked] = useState();
-  const [startingTime, setStartingTime] = useState(null);
+  const [startingTime, setStartingTime] = useState("");
   const [stoppingTime, setStoppingTime] = useState(null);
   const [showIfBillable, setShowIfBillable] = useState(false);
   const [userName, setUserName] = useState("")
   const [activeTab, setActiveTab] = useState("documents")
   const [confirmFileUpload, setConfirmFileUpload] = useState(false)
   const [confirmFileRemove, setConfirmFileRemove] = useState(false)
+  const [billable, setBillable] = useState(false)
+
+  const [InitialTimerValue, setInitialTimerValue] = useState(0)
+  const [ShowTimer, setShowTimer] = useState(false)
+
   const dispatch = useDispatch();
   const response = useSelector((state) => state.AddTimerResponse);
   const timerResponse = useSelector((state) => state.TimerActionResponse);
@@ -139,7 +146,91 @@ const ViewCaseDetailsSP = (props) => {
 
   }, []);
 
-  useEffect(() => {}, [caseDetails]);
+  useEffect(() => {
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    
+    // comparing if the redux store has the timer running
+    if(timerResponse.data['start']){
+      // comparing if this case has the timer running
+      if(timerResponse.data['caseId'] == urlvalues[3]){
+        var millis = Date.now() - timerResponse.data['startingTime']
+        setInitialTimerValue(millis)
+        setShowTimer(true)
+      }
+    }
+  }, [caseDetails]);
+
+  //******************************** TIMER CODE ******************************* */
+
+  const handleBillable = () => {
+    setShowIfBillable(false);
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    setStartingTime(Date.now().toString());
+    setBillable(true)
+    var data = {
+      caseId: urlvalues[3],
+      start: true,
+      title: caseDetails.title,
+      startingTime: Date.now(),
+      billable: true,
+    };
+    setShowTimer(true)
+    dispatch(TimerDispatcher(data));
+  };
+
+  const handleNonBillable = () => {
+    setShowIfBillable(false);
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    setStartingTime(Date.now().toString());
+    setBillable(false)
+    var data = {
+      caseId: urlvalues[3],
+      start: true,
+      title: caseDetails.title,
+      startingTime: Date.now(),
+      billable: false,
+    };
+    setShowTimer(true)
+    dispatch(TimerDispatcher(data));
+  };
+
+  const handleStopTimer = () => {
+    setStoppingTime(new Date().toLocaleTimeString());
+    setInitialTimerValue(0)
+    var data = {
+      stop: true,
+    };
+    dispatch(TimerDispatcher(data));
+  };
+
+
+  // Function to start the timer 
+  const handleTimerStarter = (start) => {
+    start()
+  }
+
+  const handleTimerStopper = (stop, reset, timerRunningTime) => {
+    stop();
+    reset();
+    setShowTimer(false)
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    var data = {
+        "title": caseDetails.title,
+        "startingTime": startingTime,
+        "stoppingTime": Date.now(),
+        "Timervalue": timerRunningTime,
+        "Billable": billable,
+        "caseId": urlvalues[3]
+    }
+    //dispatch action to send the timer details to backend server
+    dispatch(AddTimerDispatcher(data))
+}
+
+  //******************************* TIMER CODE ENDS ************************************/
 
   const handleFileOpen = (filename) => {
     var string = document.location.pathname;
@@ -214,7 +305,7 @@ const ViewCaseDetailsSP = (props) => {
     var urlvalues = string.toString().split("/");
     const config = {
       method: "get",
-      url: "api/v1/total-time/" + urlvalues[3],
+      url: "/api/v1/total-time/" + urlvalues[3],
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("access_token"),
@@ -241,46 +332,6 @@ const ViewCaseDetailsSP = (props) => {
 
   const handleAskIfBillable = () => {
     setShowIfBillable(true);
-  };
-
-  const handleBillable = () => {
-    setShowIfBillable(false);
-    var string = document.location.pathname;
-    var urlvalues = string.toString().split("/");
-    setStartingTime(new Date().toLocaleTimeString());
-    var data = {
-      caseId: urlvalues[3],
-      start: true,
-      title: caseDetails.title,
-      startingTime: new Date().toLocaleTimeString(),
-      billable: true,
-    };
-
-    dispatch(TimerDispatcher(data));
-  };
-
-  const handleNonBillable = () => {
-    setShowIfBillable(false);
-    var string = document.location.pathname;
-    var urlvalues = string.toString().split("/");
-    setStartingTime(new Date().toLocaleTimeString());
-    var data = {
-      caseId: urlvalues[3],
-      start: true,
-      title: caseDetails.title,
-      startingTime: new Date().toLocaleTimeString(),
-      billable: false,
-    };
-
-    dispatch(TimerDispatcher(data));
-  };
-
-  const handleStopTimer = () => {
-    setStoppingTime(new Date().toLocaleTimeString());
-    var data = {
-      stop: true,
-    };
-    dispatch(TimerDispatcher(data));
   };
 
   const handleViewContract = () => {
@@ -701,17 +752,66 @@ const ViewCaseDetailsSP = (props) => {
                       )}
                     </p>
                   )}
+                  <div class="flex">
                   {
                         caseDetails.hasOwnProperty('clientName') ? 
-                        <p class="flex mt-5 text-sm text-gray-600" style={{marginTop: "2em"}}>
+                        <p class="flex mt-5 text-base text-gray-600" style={{marginTop: "2em"}}>
                           CLIENT{" "}
-                          <p class="ml-3 mr-10 text-sm text-black">
+                          <p class="ml-3 mr-10 text-base text-black">
                             {caseDetails.clientName}
                           </p>
                         </p>
                         :
                         ""
-                      }
+                  }
+                  {  ShowTimer ? 
+                    <p class="flex mt-5 text-base text-gray-600" style={{marginTop: "2em"}}>
+                            TIMER {" "}
+                            <p class="ml-5 mr-10 text-base text-black">
+                              {/* TIMER CODE  STARTS */}
+                                <Timer
+                                      initialTime={InitialTimerValue}
+                                      startImmediately={false}
+                                  >
+                                      {({ start, stop, reset, getTime}) => (
+                                          <React.Fragment>
+                                              <div class="flex" style={{marginRight: "3rem"}}>
+                                                  <div class="flex-auto text-base font-bold text-black text-center px-2 mr-2">
+                                                      <Timer.Hours /> &nbsp;&nbsp; hrs 
+                                                  </div>
+                                                  <div class="flex-auto text-base font-bold text-black text-center px-2 mr-2">
+                                                      :
+                                                  </div>
+                                                  <div class="flex-auto text-base font-bold text-black text-center px-2 mr-2">
+                                                      <Timer.Minutes /> &nbsp;&nbsp; mins
+                                                  </div>
+                                                  <div class="flex-auto text-base font-bold text-black text-center px-2 mr-2">
+                                                      :
+                                                  </div>
+                                                  <div class="flex-auto text-base font-bold text-black text-center px-2 ">
+                                                      <Timer.Seconds /> &nbsp;&nbsp; secs
+                                                  </div>
+                                              </div>
+                                              {
+                                                  timerResponse.data['start'] ? 
+                                                    handleTimerStarter(start)
+                                                  :
+                                                  timerResponse.data['stop'] ?
+                                                    handleTimerStopper(stop, reset, getTime())
+                                                  :
+                                                  ""
+                                              }
+                                              <br />
+                                          </React.Fragment>
+                                      )}
+                                  </Timer>
+                              {/* TIMER CODE ENDS */}
+                            </p>
+                          </p> 
+                        :
+                        ""
+                    } 
+                  </div>
                   <p
                     class="text-gray-700 text-base  tracking-wide"
                     style={{

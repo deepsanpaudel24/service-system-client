@@ -6,18 +6,12 @@ import LogoutUser from "../../actions/UserLogoutAction";
 import { useDispatch, useSelector } from 'react-redux';
 import _ from "lodash";
 import SPCAContent from "./Content_SPCA";
-import { TimerRunningTimeDispatcher } from "../../actions/Timer_management/TimerRunningTimeAction";
-import { AddTimerDispatcher } from "../../actions/TimerAction";
+import {BsFillStopwatchFill} from "react-icons/bs";
 import { NotificationChangeStatusDispacther } from "../../actions/notifications/Notification_change_status_action";
 import { MdNotificationsNone } from 'react-icons/md';
 
 const SPCANavbar = () => {
     const [showOptions, setShowOptions] = useState(false)
-    // const [logout, setLogout] = useState(false)
-    const [timerTitle, setTimerTitle] = useState("")
-    const [timerStartingTime, setTimerStartingTime] = useState("")
-    const [timerCaseId, setTimerCaseId] = useState("")
-    const [billable, setBillable] = useState(false)
 
     // For notification modules
     const [showNotifications, setShowNotifications] = useState(false)
@@ -100,30 +94,6 @@ const SPCANavbar = () => {
         }
     }
 
-    const handleTimerStarter = (start) => {
-        start();
-        setTimerTitle(timerResponse.data['title'])
-        setTimerStartingTime(timerResponse.data['startingTime'])
-        setTimerCaseId(timerResponse.data['caseId'])
-        setBillable(timerResponse.data['billable'])
-    }
-
-    const handleTimerStopper = (stop, reset, timerRunningTime) => {
-        stop();
-        reset();
-        var data = {
-            "title": timerTitle,
-            "startingTime": timerStartingTime,
-            "stoppingTime": new Date().toLocaleTimeString(),
-            "Timervalue": timerRunningTime,
-            "Billable": billable,
-            "caseId": timerCaseId
-        }
-        //dispatch action to send the timer details to backend server
-        dispatch(AddTimerDispatcher(data))
-    }
-
-
     return(
         <div>
             {LogoutUserResponse()}
@@ -138,46 +108,12 @@ const SPCANavbar = () => {
                         </div>
                     </div>
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                        
-                        <Timer
-                            initialTime={0}
-                            startImmediately={false}
-                        >
-                            {({ start, stop, reset, getTime}) => (
-                                <React.Fragment>
-                                    <div class="flex" style={{marginRight: "3rem"}}>
-                                        <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
-                                            <Timer.Hours />
-                                            <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Hour(s)</p>
-                                        </div>
-                                        <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
-                                            :
-                                        </div>
-                                        <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
-                                            <Timer.Minutes />
-                                            <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Minutes(s)</p>
-                                        </div>
-                                        <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1 mr-2">
-                                            :
-                                        </div>
-                                        <div class="flex-auto text-xl font-bold text-white text-center px-2 py-1">
-                                            <Timer.Seconds />
-                                            <p class="text-gray-300" style={{fontSize: "0.6rem"}}>Seconds(s)</p>
-                                        </div>
-                                    </div>
-                                    {
-                                        timerResponse.data['start'] ? 
-                                            handleTimerStarter(start)
-                                        :
-                                        timerResponse.data['stop'] ?
-                                            handleTimerStopper(stop, reset, getTime())
-                                        :
-                                        ""
-                                    }
-                                    <br />
-                                </React.Fragment>
-                            )}
-                        </Timer>
+                        {
+                            timerResponse.data['start'] ? 
+                                <Link to={`/user/case/${timerResponse.data['caseId']}`}><p class="text-white text-xl mx-4 mt-1"><BsFillStopwatchFill /></p></Link>
+                            :
+                                ""
+                        }
                         <div class="ml-3 relative">
                             {
                                 numberOfNotifications == 0 ? 
