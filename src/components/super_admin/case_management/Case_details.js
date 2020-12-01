@@ -1,13 +1,16 @@
 import React , {useState, useEffect, useLayoutEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import {PulseLoader} from "react-spinners";
 import axios from "axios";
 import _ from "lodash";
 import { ForwardCaseRequestDispacther, ForwardCaseRequestDispactherResponseReset } from "../../actions/case_management/ForwardCaseRequestAction";
+import TransferPayment from "./Transfer_payment";
+import { FinalPaymentTransferDispatcherResponseReset } from "../../actions/case_management/FinalPaymentTransferAction";
 
 const ViewCaseDetailsSA = (props) => {
     const [caseDetails, setCaseDetails] = useState([])
+    const [TransferConfirm, setTransferConfirm] = useState(false)
     const [caseTags, setCaseTags] = useState([])
     const [forwardedSPIdList, setForwardedSPIdList] = useState([])
     const [pageLoading, setPageLoaoding] = useState(true)
@@ -45,6 +48,10 @@ const ViewCaseDetailsSA = (props) => {
     useEffect(() => {
         
     }, [caseDetails])
+
+    const redirectAfterTransfer = () => {
+        props.history.push("/sadmin/cases")
+    }
 
     var list_of_service_providers = []
     const handleServiceProviders = e => {
@@ -139,11 +146,11 @@ const ViewCaseDetailsSA = (props) => {
                 setCaseTags(tagslist)
                 setForwardedSPIdList(res.data['forwardedSP_list'])
                 setPageLoaoding(false)
-                dispatch(ForwardCaseRequestDispactherResponseReset())
+                //dispatch(ForwardCaseRequestDispactherResponseReset())
             })
             .catch((error) => {
                 setPageLoaoding(false)
-                dispatch(ForwardCaseRequestDispactherResponseReset())
+                //dispatch(ForwardCaseRequestDispactherResponseReset())
             })
             return(
                 props.history.push('/sadmin/cases')
@@ -220,41 +227,11 @@ const ViewCaseDetailsSA = (props) => {
                                                 {caseDetails.title}
                                             </p>
                                         </div>
-                                        {caseDetails.status == "On-progress" ? (
-                                            <p class="flex my-3 text-base text-gray-600">
-                                                FEE{" "}
-                                                <p class="ml-3 mr-10 text-base text-black">
-                                                ${caseDetails.rate}/ {caseDetails.rateType}
-                                                </p>
-                                                CASE REQUESTED ON
-                                                <p class="ml-3 mr-10 text-base text-black">
-                                                {caseDetails.requestedDate}
-                                                </p>
-                                                STATUS{" "}
-                                                {caseDetails.status == "Forwarded" ? (
-                                                <p class="ml-3 mr-10 text-base text-blue-600">
-                                                    CASE FORWARDED
-                                                </p>
-                                                ): caseDetails.status == "Requested" ? (
-                                                <p class="ml-3 mr-10 text-base text-blue-600">
-                                                    CASE RECEIVED
-                                                </p>
-                                                ): caseDetails.status == "Proposal-Forwarded" ? (
-                                                <p class="ml-3 mr-10 text-base text-blue-600">
-                                                    PROPOSAL FORWARDED
-                                                </p>
-                                                ) : (
-                                                <p class="ml-3 mr-10 text-base text-green-600">
-                                                    ON-PROGRESS
-                                                </p>
-                                                )}
-                                            </p>
-                                            ) 
-                                             : (
+                                        {caseDetails.status == "Requested" || caseDetails.status == "Forwarded" || caseDetails.status == "Proposal-Forwarded" ? (
                                             <p class="flex my-3 text-base text-gray-600">
                                             PROPOSED BUDGET{" "}
                                             <p class="ml-3 mr-10 text-base text-black">
-                                                ${caseDetails.budgetClient}
+                                                {caseDetails.budgetClient}
                                             </p>
                                             CASE REQUESTED ON
                                             <p class="ml-3 mr-10 text-base text-black">
@@ -273,11 +250,81 @@ const ViewCaseDetailsSA = (props) => {
                                                 <p class="ml-3 mr-10 text-base text-blue-600">
                                                 PROPOSAL FORWARDED
                                                 </p>
-                                            ) : (
+                                            ) : caseDetails.status == "Awaiting-Advance-Payment" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                AWAITING ADVANCE INSTALLMENT
+                                                </p>
+                                            ): caseDetails.status == "Request-Completion" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    CASE COMPLETION REQUESTED
+                                                </p>
+                                              ) : caseDetails.status == "Confirm-Completion" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    AWAITING FINAL INSTALLMENT
+                                                </p>
+                                              ): caseDetails.status == "Client-Final-Installment-Paid" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                   FINAL PAYMENT RECEIVED
+                                                </p>
+                                              ): caseDetails.status == "Closed" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                   CLOSED
+                                                </p>
+                                              ) : (
                                                 <p class="ml-3 mr-10 text-base text-green-600">
                                                 ON-PROGRESS
                                                 </p>
                                             )}
+                                            </p>
+                                            ) 
+                                             : (
+                                            <p class="flex my-3 text-base text-gray-600">
+                                                FEE{" "}
+                                                <p class="ml-3 mr-10 text-base text-black">
+                                                {caseDetails.rate}/ {caseDetails.rateType}
+                                                </p>
+                                                CASE REQUESTED ON
+                                                <p class="ml-3 mr-10 text-base text-black">
+                                                {caseDetails.requestedDate}
+                                                </p>
+                                                STATUS{" "}
+                                                {caseDetails.status == "Forwarded" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    CASE FORWARDED
+                                                </p>
+                                                ): caseDetails.status == "Requested" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    CASE RECEIVED
+                                                </p>
+                                                ): caseDetails.status == "Proposal-Forwarded" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    PROPOSAL FORWARDED
+                                                </p>
+                                                ) : caseDetails.status == "Awaiting-Advance-Payment" ? (
+                                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                                    AWAITING ADVANCE INSTALLMENT
+                                                    </p>
+                                                ): caseDetails.status == "Request-Completion" ? (
+                                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                                        CASE COMPLETION REQUESTED
+                                                    </p>
+                                                  ) : caseDetails.status == "Confirm-Completion" ? (
+                                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                                        AWAITING FINAL INSTALLMENT
+                                                    </p>
+                                                  ) : caseDetails.status == "Client-Final-Installment-Paid" ? (
+                                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                                       FINAL PAYMENT RECEIVED
+                                                    </p>
+                                                  ) : caseDetails.status == "Closed" ? (
+                                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                                       CLOSED
+                                                    </p>
+                                                  ) : (
+                                                <p class="ml-3 mr-10 text-base text-green-600">
+                                                    ON-PROGRESS
+                                                </p>
+                                                )}
                                             </p>
                                         )}
                                         {
@@ -312,6 +359,21 @@ const ViewCaseDetailsSA = (props) => {
                                                 </p>
                                             </div>
                                         </div>
+                                        {
+                                            caseDetails.status == "Client-Final-Installment-Paid" ? 
+                                            <TransferPayment 
+                                                spname = {caseDetails.serviceProvidername} 
+                                                spid={caseDetails.serviceProvider.$oid}
+                                                clientname = {caseDetails.clientName} 
+                                                clientid={caseDetails.client.$oid}
+                                                casetitle = {caseDetails.title}
+                                                caseid = {caseDetails._id.$oid}
+                                                redirectAfterTransfer = {redirectAfterTransfer}
+                                            />
+                                            :
+                                            ""
+                                        }
+                                        
                                         {
                                             caseDetails.status == "Requested" ?
                                             <div>

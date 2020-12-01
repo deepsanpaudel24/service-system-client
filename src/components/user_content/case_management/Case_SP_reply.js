@@ -5,8 +5,13 @@ import {useDispatch, useSelector} from "react-redux";
 import { ReplyCaseRequestDispacther } from "../../actions/case_management/ReplyCaseRequestAction";
 import { MdAttachFile, MdFileUpload } from "react-icons/md";
 import { VscClose } from "react-icons/vsc";
+import axios from "axios";
 
 const ReplyCaseRequest = (props) => {
+    const [currency, setCurrency] = useState("usd")
+    const [paymentType, setPaymentType] = useState("full-payment")
+    const [advancePayment, setAdvancePayment] = useState(1)
+    const [advancePaymentError, setAdvancePaymentError] = useState(false)
     const [formStep, setFormStep] = useState(1)
     const [title, setTitle] = useState("")
     const [desc, setDesc] = useState("")
@@ -20,6 +25,21 @@ const ReplyCaseRequest = (props) => {
     const [caseId, setCaseId] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.ReplyCaseRequestResponse)
+
+    useLayoutEffect(() => {
+        const config = {
+            method: 'get',
+            url: '/api/v1/user/profile-details',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
+        }
+        axios(config)
+        .then((res) => {
+            setCurrency(res.data['currency_preferences'])
+        })
+    })
 
     useEffect(() => {
         var string = document.location.pathname
@@ -41,8 +61,22 @@ const ReplyCaseRequest = (props) => {
         setRateType(e.target.value)
     }
 
+    const handlePaymentType = e => {
+        setPaymentType(e.target.value)
+    }
+
+    const handleAdvancePayment = e => {
+        if (e.target.value > 50 || e.target.value < 1){
+            setAdvancePaymentError(true)
+        }
+        else {
+            setAdvancePaymentError(false)
+        }
+        setAdvancePayment(e.target.value)
+    }
+
     const handleRateChange = e => {
-        setRate(e.target.value)
+        setRate(e.target.value + " " + currency)
     }
 
     const handleForward = () => {
@@ -127,7 +161,11 @@ const ReplyCaseRequest = (props) => {
 
     const handleReplyCaseRequest = () => {
         if(title == "" || desc == "" || rate == "" || avgTimeTaken == "" || proposedDeadline == ""){
+            
           setFormEmptyError("Please fill up all the required fields")
+        }
+        else if (paymentType=="advance-payment" && advancePayment == "") {
+            setFormEmptyError("Please fill up all the required fields")
         }
         else {
             var formData = new FormData();
@@ -140,6 +178,8 @@ const ReplyCaseRequest = (props) => {
             formData.append("rate", rate)
             formData.append("averageTimeTaken", avgTimeTaken)
             formData.append("spDeadline", proposedDeadline)
+            formData.append("paymentType", paymentType)
+            formData.append("advancePayment", advancePayment)
 
           //send the case request to backend.
             var string = document.location.pathname
@@ -204,6 +244,14 @@ const ReplyCaseRequest = (props) => {
     return (
         <div class="flex mb-4">
             <div class="w-3/5 ml-5">
+                { 
+                    advancePaymentError ?
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                        <p class="font-bold">Advance payment should be between 0 - 50 %</p>
+                    </div>
+                    :
+                    ""
+                }
                 <form>
                     <p class="text-3xl my-3" >Make a proposal</p>
                     <div class="border-t border-gray-200"></div>
@@ -241,6 +289,7 @@ const ReplyCaseRequest = (props) => {
                                 </label>
                                 <div>
                                     <select 
+                                            key="rateType"
                                             onChange={e => handleRateType(e)}
                                             class="shadow block appearance-none text-gray-700 w-full bg-white border px-3 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline">
                                             <option value="">choose ...</option>
@@ -253,7 +302,7 @@ const ReplyCaseRequest = (props) => {
                                 rateType == "hourly" ?
                                     <div class="mt-6 mb-3" >
                                         <label class="block text-gray-700 text-sm mb-2" for="password">
-                                            Hourly Rate (USD)
+                                            Hourly Rate ({currency})
                                         </label>
                                         <div>
                                             <input 
@@ -268,7 +317,7 @@ const ReplyCaseRequest = (props) => {
                                     rateType == "flatFee" ?
                                         <div class="mt-6 mb-3" >
                                             <label class="block text-gray-700 text-sm mb-2" for="password">
-                                                Flat Fee (USD)
+                                                Flat Fee ({currency})
                                             </label>
                                             <div>
                                                 <input 
@@ -322,6 +371,46 @@ const ReplyCaseRequest = (props) => {
                                             />
                                     </div>
                                 </div>
+
+                                <div class="mt-6 mb-3" >
+                                    <label class="block text-gray-700 text-sm mb-2" for="password">
+                                        Payment Type
+                                    </label>
+                                    <div>
+                                        <select 
+                                                key="paymentType"
+                                                defaultValue={paymentType}
+                                                onChange={e => handlePaymentType(e)}
+                                                class="shadow block appearance-none text-gray-700 w-full bg-white border px-3 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline">
+                                                <option value="full-payment">Full Payment after completion</option>
+                                                <option value="advance-payment">Advance payment and final payment</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {
+                                    paymentType == "advance-payment" ? 
+                                        <div class="mt-6 mb-3" >
+                                            <label class="block text-gray-700 text-sm mb-2" for="password">
+                                                Advance payment ( In percentage )
+                                            </label>
+                                            <div>
+                                                <input 
+                                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                    id="advance-payment" 
+                                                    type="number"
+                                                    defaultValue= {advancePayment}
+                                                    max="50"
+                                                    min="1"
+                                                    required
+                                                    onChange={e => handleAdvancePayment(e)}
+                                                />
+                                            </div>
+                                        </div>
+                                    :
+                                        ""
+                                }
+
                                 <div class="mt-6 mb-5" >
                                     <label for="price" class="block text-gray-700 text-sm">Related Files (Optional)</label>
                                     <label for="allfilesMessage" style={{ cursor: "pointer" }}>

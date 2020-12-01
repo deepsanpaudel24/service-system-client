@@ -4,6 +4,7 @@ export const UPLOAD_CONTRACT_PAPER_LOADING = 'UPLOAD_CONTRACT_PAPER_LOADING'
 export const UPLOAD_CONTRACT_PAPER_FAIL =   'UPLOAD_CONTRACT_PAPER_FAIL'
 export const UPLOAD_CONTRACT_PAPER_SERVER_FAIL =   'REPLY_EMPLOYEE_SERVER_FAIL'
 export const UPLOAD_CONTRACT_PAPER_SUCCESS = 'UPLOAD_CONTRACT_PAPER_SUCCESS'
+export const UPLOAD_CONTRACT_PAPER_RESPONSE_RESET = 'UPLOAD_CONTRACT_PAPER_RESPONSE_RESET'
 
 export const UploadContractPaperAction = (data, caseId) => async dispatch => {
     try {
@@ -39,4 +40,10 @@ export const UploadContractPaperAction = (data, caseId) => async dispatch => {
             type: "UPLOAD_CONTRACT_PAPER_FAIL"
         })
     }
+}
+
+export const UploadContractPaperResponseReset = () => async dispatch => {
+    dispatch({
+        type: "UPLOAD_CONTRACT_PAPER_RESPONSE_RESET"
+    })
 }

@@ -431,24 +431,25 @@ const ContractDetailsClient = (props) => {
                                                 >
                                                     Upload
                                                 </button>
-                                                {
-                                                    !_.isEmpty(fileNameToShow) ? 
-                                                        fileNameToShow.map((item, index) => {
-                                                            return(
-                                                                <div class="flex mx-3 my-5">
-                                                                    <div class="w-3/12">
-                                                                        <p>{item}</p>
-                                                                    </div>
-                                                                    <div class="w-1/12">
-                                                                        <p class="text-red-400 mx-6 text-lg" onClick={() => handleRemoveChatFile(item, index)}><VscClose /></p>
-                                                                    </div>
-                                                                </div>
-                                                            )
-                                                        })
-                                                    :
-                                                    ""
-                                                }
+                                                
                                             </div>
+                                        }
+                                        {
+                                            !_.isEmpty(fileNameToShow) ? 
+                                                fileNameToShow.map((item, index) => {
+                                                    return(
+                                                        <div class="flex mx-3 my-5">
+                                                            <div class="w-3/12">
+                                                                <p>{item}</p>
+                                                            </div>
+                                                            <div class="w-1/12">
+                                                                <p class="text-red-400 mx-6 text-lg" onClick={() => handleRemoveChatFile(item, index)}><VscClose /></p>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            :
+                                            ""
                                         }
                                         {
                                             paperDetails.hasOwnProperty('signedFiles') ? 

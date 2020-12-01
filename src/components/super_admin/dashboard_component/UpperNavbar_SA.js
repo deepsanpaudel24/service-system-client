@@ -132,7 +132,7 @@ const SANavbar = () => {
                         }
                         {
                             showNotifications ?
-                                <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg" style={{width: "20rem"}}>
+                                <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg z-10" style={{width: "20rem"}}>
                                     <div class="rounded-md bg-white shadow-xs">
                                         <div class="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                                             {

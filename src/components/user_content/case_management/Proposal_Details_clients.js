@@ -103,20 +103,7 @@ const ViewProposalDetailsClient = (props) => {
   
     const confirmNewCaseRequest = () => {
         if(!_.isEmpty(response.data)){
-           if(response.data['message'] == true){
-                return(
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4" role="alert">
-                        <p class="font-bold">Proposal accepted</p>
-                    </div>
-                )
-           }
-           else if(response.data['message'] == false) {
-            return(
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4" role="alert">
-                    <p class="font-bold">Proposal declined</p>
-                </div>
-               )
-           }
+          props.history.push("/user/cases")
         }
     }
 
@@ -184,7 +171,7 @@ const ViewProposalDetailsClient = (props) => {
                                     <p class="flex my-3 text-base text-gray-600">
                                         PROPOSED FEE{" "}
                                         <p class="ml-3 mr-10 text-base text-black">
-                                        ${proposalDetails.rate}/ {proposalDetails.rateType}
+                                        {proposalDetails.rate}/ {proposalDetails.rateType}
                                         </p>
                                         PROPOSAL SENT ON
                                         <p class="ml-3 mr-10 text-base text-black">
@@ -205,6 +192,30 @@ const ViewProposalDetailsClient = (props) => {
                                         </p>
                                         )}
                                     </p>
+                                    <div class="flex">
+                                      {
+                                            proposalDetails.hasOwnProperty('paymentType') ? 
+                                            <p class="flex mt-3 text-base text-gray-600" style={{marginTop: "1em"}}>
+                                              PAYMENT TYPE{" "}
+                                              <p class="ml-3 mr-10 text-base text-black">
+                                                {proposalDetails.paymentType == "full-payment" ? "One-time payment": "Tranches"}
+                                              </p>
+                                            </p>
+                                            :
+                                            ""
+                                      }
+                                      {
+                                            proposalDetails.hasOwnProperty('paymentType') && proposalDetails.paymentType == "advance-payment"? 
+                                            <p class="flex mt-3 text-base text-gray-600" style={{marginTop: "1em"}}>
+                                              ADVANCE PAYMENT{" "}
+                                              <p class="ml-3 mr-10 text-base text-black">
+                                                {proposalDetails.advancePayment} %
+                                              </p>
+                                            </p>
+                                            :
+                                            ""
+                                      }
+                                    </div>
                                     <p
                                         class="text-gray-700 text-base mt-3 tracking-wide"
                                         style={{ marginTop: "3rem", "textAlign": "justify", "text-justify": "inter-word" }}

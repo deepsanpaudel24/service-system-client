@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useLayoutEffect} from 'react';
 import {
   ProSidebar,
   Menu,
@@ -8,10 +8,43 @@ import {
   SidebarFooter,
   SidebarContent,
 } from 'react-pro-sidebar';
-import { FaTachometerAlt, FaGem, FaList, FaGithub, FaRegLaughWink, FaHeart } from 'react-icons/fa';
-import sidebarBg from '../assets/bg1.jpg';
+import { FaTachometerAlt, FaGem, FaUsers, FaTasks, FaWpforms  } from 'react-icons/fa';
+import axios from "axios";
+import { Link, Redirect } from "react-router-dom";
 
-const CCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
+const CCAAside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
+  const [SM, setSM] = useState(false)  
+  const [CM, setCM] = useState(false)
+  const [CustomTask, setCustomTask] = useState(false)
+  const [IntakeForm, setIntakeForm] = useState(false)
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useLayoutEffect(() => {
+    const config = {
+        method: 'get',
+        url: '/api/v1/user/validity',
+        headers: { 
+              'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+            }
+    }
+    axios(config)
+    .then((res) => {
+        setSM(res.data['serviceManagement'])
+        setCM(res.data['clientManagement'])
+        setCustomTask(res.data['CustomTask'])
+        setIntakeForm(res.data['IntakeForm'])
+    })
+    .catch((error) => {
+        localStorage.removeItem('access_token')
+        window.location.reload(true)
+    })
+}, [])
+
+useEffect(() => {
+
+}, [SM])
+
   return (
     <div className="flex h-screen">
       <ProSidebar
@@ -41,56 +74,13 @@ const CCAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
           <Menu iconShape="circle">
             <MenuItem
               icon={<FaTachometerAlt />}
-              suffix={<span className="badge red">New</span>}
             >
               Dashboard
             </MenuItem>
-            <MenuItem icon={<FaGem />}> Components</MenuItem>
-          </Menu>
-          <Menu iconShape="circle">
-            <SubMenu
-              suffix={<span className="badge yellow">3</span>}
-              title={"With Submenu"}
-              icon={<FaRegLaughWink />}
-            >
-              <MenuItem>Submenu 1</MenuItem>
-              <MenuItem>Submenu 2</MenuItem>
-              <MenuItem>Submenu 3</MenuItem>
-            </SubMenu>
-            <SubMenu
-              prefix={<span className="badge gray">3</span>}
-              title={"With Prefix"}
-              icon={<FaHeart />}
-            >
-              <MenuItem>Submenu 1</MenuItem>
-              <MenuItem>Submenu 2</MenuItem>
-              <MenuItem>Submenu 3</MenuItem>
-            </SubMenu>
-            <SubMenu title={"Multi level"} icon={<FaList />}>
-              <MenuItem>Submenu 1 </MenuItem>
-              <MenuItem>Submenu 2 </MenuItem>
-              <SubMenu title={`$Submenu 3`}>
-                <MenuItem>Submenu 3.1 </MenuItem>
-                <MenuItem>Submenu 3.2 </MenuItem>
-                <SubMenu title={`$Submenu 3.3`}>
-                  <MenuItem>Submenu 3.3.1 </MenuItem>
-                  <MenuItem>Submenu 3.3.2 </MenuItem>
-                  <MenuItem>Submenu 3.3.3 </MenuItem>
-                </SubMenu>
-              </SubMenu>
-            </SubMenu>
+            <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
           </Menu>
         </SidebarContent>
 
-        <SidebarFooter style={{ textAlign: 'center' }}>
-          <div
-            className="sidebar-btn-wrapper"
-            style={{
-              padding: '20px 24px',
-            }}
-          >
-          </div>
-        </SidebarFooter>
       </ProSidebar>
     </div>
   );

@@ -6,10 +6,14 @@ import axios from "axios";
 import _ from "lodash";
 import Pagination from "../Pagination";
 import { SACaseListStorageDispatcher, SACaseListStorageResponseReset } from "../../actions/case_management/SuperAdminCaseListStorageDispatcher";
+import { ForwardCaseRequestDispactherResponseReset } from "../../actions/case_management/ForwardCaseRequestAction";
+import { FinalPaymentTransferDispatcherResponseReset } from "../../actions/case_management/FinalPaymentTransferAction";
 
 const ViewCasesSA = (props) => {
     const [cases, setCases] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
+    const [caseForwardedConfirm, setCaseForwardedConfirm] = useState(false)
+    const [TransferConfirm, setTransferConfirm] = useState(false)
     // For sorting 
     const [sortingKey, setSortingKey] = useState(null)
     const [sortingValue, setSortingValue] = useState(null)
@@ -26,6 +30,8 @@ const ViewCasesSA = (props) => {
 
     const dispatch = useDispatch()
     const response2 = useSelector(state => state.SACaseListStorageResponse)
+    const response3 = useSelector(state => state.ForwardCaseRequestResponse)
+    const response4 = useSelector(state => state.FinalPaymentTransferResponse);
 
     
     useLayoutEffect(() => {
@@ -36,13 +42,10 @@ const ViewCasesSA = (props) => {
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
           }
-        if(response2.data.hasOwnProperty(1)){
-            var casesList = response2.data[1]
-            setCases(casesList)
-            setTableLoading(false)
-            setTotalRecords(response2.data['total_records'])
-        }
-        else {
+        if (!_.isEmpty(response3.data)) {
+            
+            setCaseForwardedConfirm(true)
+            dispatch(ForwardCaseRequestDispactherResponseReset())
             axios(config)
             .then((res) => {
                     setCases(res.data['cases'])
@@ -54,6 +57,42 @@ const ViewCasesSA = (props) => {
             .catch((error) => {
                 console.log(error.response)
             })
+        }
+        else if (!_.isEmpty(response4.data)){
+            setTransferConfirm(true)
+            dispatch(FinalPaymentTransferDispatcherResponseReset())
+            axios(config)
+            .then((res) => {
+                    setCases(res.data['cases'])
+                    setTableLoading(false)
+                    setTotalRecords(res.data['total_records'])
+                    var page = res.data['page']
+                    dispatch(SACaseListStorageDispatcher({[page]: res.data['cases'], 'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+        else {
+            if(response2.data.hasOwnProperty(1)){
+                var casesList = response2.data[1]
+                setCases(casesList)
+                setTableLoading(false)
+                setTotalRecords(response2.data['total_records'])
+            }
+            else {
+                axios(config)
+                .then((res) => {
+                        setCases(res.data['cases'])
+                        setTableLoading(false)
+                        setTotalRecords(res.data['total_records'])
+                        var page = res.data['page']
+                        dispatch(SACaseListStorageDispatcher({[page]: res.data['cases'], 'total_records': res.data['total_records']}))
+                })
+                .catch((error) => {
+                    console.log(error.response)
+                })
+            }
         }
       }, [])
   
@@ -357,6 +396,22 @@ const ViewCasesSA = (props) => {
                     </div>
                 </nav>
                 <div class="py-4">
+                    { 
+                        caseForwardedConfirm ?
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                            <p class="font-bold">The case has been forwarded successfully</p>
+                        </div>
+                        :
+                        ""
+                    }
+                    {
+                        TransferConfirm ? 
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                            <p class="font-bold">Final payment transferred to service provider via stripe.</p>
+                        </div>
+                        :
+                        ""
+                    }
                     {
                         tableLoading ? 
                             <div class="animate-pulse flex space-x-4">
@@ -495,12 +550,52 @@ const ViewCasesSA = (props) => {
                                                                     <span class="relative">Signed Contract Paper Sent</span>
                                                                 </span>
                                                                 :
+                                                                item.status == "Awaiting-Advance-Payment" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Awaiting Advance Installment</span>
+                                                                </span>
+                                                                :
                                                                 item.status == "On-progress" ?
                                                                 <span
                                                                     class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
                                                                     <span class="relative">On-progress</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Request-Completion" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Completion Requested</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Confirm-Completion" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Awaiting Final Installment</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Client-Final-Installment-Paid" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Final Payment Received</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Closed" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Closed</span>
                                                                 </span>
                                                                 :
                                                                 <span

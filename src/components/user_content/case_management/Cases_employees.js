@@ -40,7 +40,6 @@ const ViewCasesemp = (props) => {
               }
           }
         if(response.data.hasOwnProperty(1)){
-            console.log("Value of redux ", response.data)
             var casesList = response.data[1]
             setCases(casesList)
             setTableLoading(false)

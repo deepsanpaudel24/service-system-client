@@ -1,4 +1,4 @@
-import { UPLOAD_CONTRACT_PAPER_LOADING, UPLOAD_CONTRACT_PAPER_FAIL, UPLOAD_CONTRACT_PAPER_SERVER_FAIL, UPLOAD_CONTRACT_PAPER_SUCCESS } from "../actions/case_management/UploadContractPaperAction"
+import { UPLOAD_CONTRACT_PAPER_LOADING, UPLOAD_CONTRACT_PAPER_FAIL, UPLOAD_CONTRACT_PAPER_SERVER_FAIL, UPLOAD_CONTRACT_PAPER_SUCCESS, UPLOAD_CONTRACT_PAPER_RESPONSE_RESET } from "../actions/case_management/UploadContractPaperAction"
 
 const DefaultState = {
     loading: false,
@@ -33,6 +33,14 @@ const UploadContractPaperReducer = (state = DefaultState, action) => {
                 ...state,
                 loading: false,
                 serverErrorMsg: action.serverErrorMsg
+            }
+        case UPLOAD_CONTRACT_PAPER_RESPONSE_RESET:
+            return {
+                ...state,
+                loading: false,
+                data: [],
+                errorMsg: "",
+                serverErrorMsg: ""
             }
         default:
             return state

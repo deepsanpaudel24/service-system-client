@@ -4,6 +4,7 @@ import { PulseLoader } from "react-spinners";
 import axios from "axios";
 import download from "downloadjs";
 import _ from "lodash";
+import {Link, Redirect} from "react-router-dom";
 import {
   AddTimerDispatcher,
   AddTimerResponseReset,
@@ -27,6 +28,8 @@ import { ReplyCaseRequestResponseReset } from "../../actions/case_management/Rep
 
 // IMPORTS FOR THE TIMER  
 import Timer from "react-compound-timer";
+import { UploadContractPaperResponseReset } from "../../actions/case_management/UploadContractPaperAction";
+import { RequestCompletionDispatcher } from "../../actions/case_management/RequestCompletionAction";
 
 const ViewCaseDetailsSP = (props) => {
   const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -50,6 +53,8 @@ const ViewCaseDetailsSP = (props) => {
   const [InitialTimerValue, setInitialTimerValue] = useState(0)
   const [ShowTimer, setShowTimer] = useState(false)
 
+  const [confirmUploadContract, setConfirmUploadContract] = useState(false)
+
   const dispatch = useDispatch();
   const response = useSelector((state) => state.AddTimerResponse);
   const timerResponse = useSelector((state) => state.TimerActionResponse);
@@ -57,15 +62,57 @@ const ViewCaseDetailsSP = (props) => {
   const ProposalSentResponse = useSelector(state => state.ReplyCaseRequestResponse)
   const response2 = useSelector(state => state.UploadContractPaperResponse)
   const response3 = useSelector(state => state.ConfirmContractResponse)
+  const response4 = useSelector(state => state.RequestCompletionResponse)
 
   useLayoutEffect(() => {
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");
-    if(!_.isEmpty(ProposalSentResponse.data)){
+
+    if(_.isEmpty(CaseDetailsResponse.data) || !_.isEmpty(response3.data)){
+      const config = {
+        method: "get",
+        url: "/api/v1/case-sp/" + urlvalues[3],
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config)
+        .then((res) => {
+          setCaseDetails(res.data);
+          setPageLoaoding(false);
+          var tagslist = res.data["caseTags"].toString().split(",");
+          setCaseTags(tagslist);
+          dispatch(CaseDetailsStorageDispatcher(res.data))
+        })
+        .catch((error) => {
+          setPageLoaoding(false);
+        });
+    }
+    else if(!_.isEmpty(ProposalSentResponse.data)){
       setProposalSentConfirm(true)
       dispatch(ReplyCaseRequestResponseReset())
+      const config = {
+        method: "get",
+        url: "/api/v1/case-sp/" + urlvalues[3],
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config)
+        .then((res) => {
+          setCaseDetails(res.data);
+          setPageLoaoding(false);
+          var tagslist = res.data["caseTags"].toString().split(",");
+          setCaseTags(tagslist);
+          dispatch(CaseDetailsStorageDispatcher(res.data))
+        })
+        .catch((error) => {
+          setPageLoaoding(false);
+        });
     }
-    if(_.isEmpty(CaseDetailsResponse.data) || !_.isEmpty(response2.data) || !_.isEmpty(response3.data)){
+    else if (!_.isEmpty(response2.data)) {
+      setConfirmUploadContract(true)
+      dispatch(UploadContractPaperResponseReset())
       const config = {
         method: "get",
         url: "/api/v1/case-sp/" + urlvalues[3],
@@ -284,6 +331,9 @@ const ViewCaseDetailsSP = (props) => {
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");
     props.history.push("/user/case/reply/" + urlvalues[3]);
+    // return(
+    //   <Redirect to={`/user/case/reply/${urlvalues[3]}`} />
+    // )
   };
 
   // For timer details
@@ -461,6 +511,42 @@ const ViewCaseDetailsSP = (props) => {
     });
   }
 
+
+  // To request the completion of the case by service provider
+  const handleRequestCompletion = () => {
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    dispatch(RequestCompletionDispatcher(urlvalues[3]))
+  } 
+
+  const ConfirmRequestsCompletion = () => {
+    if(!_.isEmpty(response4.data)){
+      return <Redirect to="/user/cases" />
+    }
+  }
+
+  const RequestCompletion = () => {
+    if(response4.loading){
+        return (
+            <div class="">
+                <PulseLoader
+                    size={10}
+                    color={"#6DADE3"}
+                    loading={true}
+                />
+            </div>
+        )
+    }
+    return (
+        <div>
+            <div>
+              <button class="bg-blue-600 text-white px-3 py-2" onClick={() => handleRequestCompletion()}>Request Completion</button>
+            </div>
+        </div>
+    )
+
+}
+
   const DeletePopUp = (item) => {
     confirmAlert({
         customUI: ({ onClose }) => {
@@ -515,6 +601,7 @@ const ViewCaseDetailsSP = (props) => {
 
   return (
     <div>
+      {ConfirmRequestsCompletion()}
       <div class="px-4 sm:px-8">
         {pageLoading ? (
           <div class="flex h-screen">
@@ -528,6 +615,14 @@ const ViewCaseDetailsSP = (props) => {
               <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                 <div class="mb-8">
                   {showTimerAddedConfirm()}
+                  {
+                    confirmUploadContract ? 
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                        <p class="font-bold">Contract paper uploaded successfully</p>
+                    </div>
+                    :
+                    ""
+                  }
                   {
                     confirmFileUpload ? 
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
@@ -559,7 +654,7 @@ const ViewCaseDetailsSP = (props) => {
                       </p>
                     </div>
                     <div class="w-1/5 flex justify-end">
-                      {caseDetails.status == "On-progress" ? (
+                      {caseDetails.status == "On-progress" || caseDetails.status == "Confirm-Completion" ? (
                         timerResponse.data["start"] ? (
                           <button class="focus:outline-none">
                             <div
@@ -596,129 +691,46 @@ const ViewCaseDetailsSP = (props) => {
                           </button>
                         )
                       ) : caseDetails.status == "Forwarded" ? (
-                        <button class="focus:outline-none">
-                          <div
-                            class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
-                            onClick={() => handleReply()}
-                          >
-                            Make Proposal
-                          </div>
-                        </button>
+                        <Link to={`/user/case/reply/${caseDetails._id.$oid}`}>
+                          <button class="focus:outline-none">
+                            <div
+                              class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
+                            >
+                              Make Proposal
+                            </div>
+                          </button>
+                        </Link>
                       ) : caseDetails.status == "Contract-Waiting" ? (
-                        <button class="focus:outline-none">
-                          <div
-                            class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
-                            onClick={() => handleSendContract()}
-                          >
-                            Send Contract Paper
-                          </div>
-                        </button>
+                        <Link to= {`/user/case/send/contract/${caseDetails._id.$oid}`}>
+                          <button class="focus:outline-none">
+                            <div
+                              class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
+                            >
+                              Send Contract Paper
+                            </div>
+                          </button>
+                        </Link>
                       ): caseDetails.status == "Contract-Sent" || caseDetails.status == "Contract-Replied" ? (
-                        <button class="focus:outline-none">
-                          <div
-                            class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
-                            onClick={() => handleViewContract()}
-                          >
-                            View Contract Paper
-                          </div>
-                        </button>
+                        <Link to={`/user/contract/${caseDetails._id.$oid}`}>
+                          <button class="focus:outline-none">
+                            <div
+                              class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
+                            >
+                              View Contract Paper
+                            </div>
+                          </button>
+                        </Link>
                       )
                       :
                       ""
                       }
                     </div>
                   </div>
-                  {caseDetails.status == "On-progress" ? (
-                      _.isEmpty(totalTimeWorked) ? (
-                        <p class="flex my-3 text-base text-gray-600">
-                          FEE{" "}
-                          <p class="ml-3 mr-10 text-base text-black">
-                            ${caseDetails.rate}/ {caseDetails.rateType}
-                          </p>
-                          CASE REQUESTED ON
-                          <p class="ml-3 mr-10 text-base text-black">
-                            {caseDetails.requestedDate}
-                          </p>
-                          STATUS{" "}
-                          {caseDetails.status == "Forwarded" ? (
-                            <p class="ml-3 mr-10 text-base text-blue-600">
-                              RECEIVED
-                            </p>
-                          ) : caseDetails.status == "Proposal-Forwarded" ? (
-                            <p class="ml-3 mr-10 text-base text-blue-600">
-                              PROPOSAL FORWARDED
-                            </p>
-                          ) : caseDetails.status == "Contract-Waiting" ? (
-                            <p class="ml-3 mr-10 text-base text-blue-600">
-                              CLIENT WAITING CONTRACT PAPER
-                            </p>
-                          )  : caseDetails.status == "Contract-Sent" ? (
-                            <p class="ml-3 mr-10 text-base text-blue-600">
-                              CONTRACT PAPER SENT
-                            </p>
-                          ) : caseDetails.status == "Contract-Replied" ? (
-                            <p class="ml-3 mr-10 text-base text-blue-600">
-                                SIGNED CONTRACT PAPER RECEIVED
-                            </p>
-                          ) : (
-                            <p class="ml-3 mr-10 text-base text-green-600">
-                              ON-PROGRESS
-                            </p>
-                          )}
-                          TOTAL TIME WORKED
-                          <p class="ml-3 text-base text-black">NOT STARTED YET</p>
-                        </p>
-                        ) : (
-                          <p class="flex my-3 text-base text-gray-600">
-                            FEE{" "}
-                            <p class="ml-3 mr-10 text-base text-black">
-                              ${caseDetails.rate}/ {caseDetails.rateType}
-                            </p>
-                            CASE REQUESTED ON
-                            <p class="ml-3 mr-10 text-base text-black">
-                              {caseDetails.requestedDate}
-                            </p>
-                            STATUS{" "}
-                            {caseDetails.status == "Forwarded" ? (
-                              <p class="ml-3 mr-10 text-base text-blue-600">
-                                RECEIVED
-                              </p>
-                            ) : caseDetails.status == "Proposal-Forwarded" ? (
-                              <p class="ml-3 mr-10 text-base text-blue-600">
-                                PROPOSAL FORWARDED
-                              </p>
-                            ) : caseDetails.status == "Contract-Waiting" ? (
-                              <p class="ml-3 mr-10 text-base text-blue-600">
-                                CLIENT WAITING CONTRACT PAPER
-                              </p>
-                            ) : caseDetails.status == "Contract-Sent" ? (
-                              <p class="ml-3 mr-10 text-base text-blue-600">
-                                CONTRACT PAPER SENT
-                              </p>
-                            ) : caseDetails.status == "Contract-Replied" ? (
-                              <p class="ml-3 mr-10 text-base text-blue-600">
-                                  SIGNED CONTRACT PAPER RECEIVED
-                              </p>
-                            ) : (
-                              <p class="ml-3 mr-10 text-base text-green-600">
-                                ON-PROGRESS
-                              </p>
-                            )}
-                            TOTAL TIME WORKED
-                            <p class="ml-3 text-base text-black">
-                              {" "}
-                              {totalTimeWorked.hours} hours:{" "}
-                              {totalTimeWorked.minutes} mins:{" "}
-                              {totalTimeWorked.seconds} seconds
-                            </p>
-                          </p>
-                        )
-                      ) 
-                  : (
-                    <p class="flex my-3 text-base text-gray-600">
+                  {caseDetails.status == "Requested" || caseDetails.status == "Forwarded" || caseDetails.status == "Proposal-Forwarded"  ? (
+                      <p class="flex my-3 text-base text-gray-600">
                       PROPOSED BUDGET{" "}
                       <p class="ml-3 mr-10 text-base text-black">
-                        ${caseDetails.budgetClient}
+                        {caseDetails.budgetClient}
                       </p>
                       CASE REQUESTED ON
                       <p class="ml-3 mr-10 text-base text-black">
@@ -745,12 +757,158 @@ const ViewCaseDetailsSP = (props) => {
                         <p class="ml-3 mr-10 text-base text-blue-600">
                             SIGNED CONTRACT PAPER RECEIVED
                         </p>
+                      ) : caseDetails.status == "Awaiting-Advance-Payment" ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                            AWAITING ADVANCE PAYMENT
+                        </p>
+                      ): caseDetails.status == "Request-Completion" ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                            CASE COMPLETION REQUESTED
+                        </p>
+                      ) : caseDetails.status == "Confirm-Completion" ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                            AWAITING FINAL INSTALLMENT
+                        </p>
+                      ): caseDetails.status == "Client-Final-Installment-Paid" ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                          PLATFORM RECEIVED FINAL PAYMENT
+                        </p>
+                      ) : caseDetails.status == "Closed" ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                           CLOSED
+                        </p>
                       ) : (
                         <p class="ml-3 mr-10 text-base text-green-600">
                           ON-PROGRESS
                         </p>
                       )}
                     </p>
+                      ) 
+                  : (
+                    _.isEmpty(totalTimeWorked) ? (
+                      <p class="flex my-3 text-base text-gray-600">
+                        FEE{" "}
+                        <p class="ml-3 mr-10 text-base text-black">
+                          {caseDetails.rate}/ {caseDetails.rateType}
+                        </p>
+                        CASE REQUESTED ON
+                        <p class="ml-3 mr-10 text-base text-black">
+                          {caseDetails.requestedDate}
+                        </p>
+                        STATUS{" "}
+                        {caseDetails.status == "Forwarded" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                            RECEIVED
+                          </p>
+                        ) : caseDetails.status == "Proposal-Forwarded" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                            PROPOSAL FORWARDED
+                          </p>
+                        ) : caseDetails.status == "Contract-Waiting" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                            CLIENT WAITING CONTRACT PAPER
+                          </p>
+                        )  : caseDetails.status == "Contract-Sent" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                            CONTRACT PAPER SENT
+                          </p>
+                        ) : caseDetails.status == "Contract-Replied" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                              SIGNED CONTRACT PAPER RECEIVED
+                          </p>
+                        ): caseDetails.status == "Awaiting-Advance-Payment" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                              AWAITING ADVANCE PAYMENT
+                          </p>
+                        ): caseDetails.status == "Request-Completion" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                              CASE COMPLETION REQUESTED
+                          </p>
+                        ) : caseDetails.status == "Confirm-Completion" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                              AWAITING FINAL INSTALLMENT
+                          </p>
+                        ): caseDetails.status == "Client-Final-Installment-Paid" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                            PLATFORM RECEIVED FINAL PAYMENT
+                          </p>
+                        ) : caseDetails.status == "Closed" ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                             CLOSED
+                          </p>
+                        ) : (
+                          <p class="ml-3 mr-10 text-base text-green-600">
+                            ON-PROGRESS
+                          </p>
+                        )}
+                        TOTAL TIME WORKED
+                        <p class="ml-3 text-base text-black">NOT STARTED YET</p>
+                      </p>
+                      ) : (
+                        <p class="flex my-3 text-base text-gray-600">
+                          FEE{" "}
+                          <p class="ml-3 mr-10 text-base text-black">
+                            {caseDetails.rate}/ {caseDetails.rateType}
+                          </p>
+                          CASE REQUESTED ON
+                          <p class="ml-3 mr-10 text-base text-black">
+                            {caseDetails.requestedDate}
+                          </p>
+                          STATUS{" "}
+                          {caseDetails.status == "Forwarded" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              RECEIVED
+                            </p>
+                          ) : caseDetails.status == "Proposal-Forwarded" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              PROPOSAL FORWARDED
+                            </p>
+                          ) : caseDetails.status == "Contract-Waiting" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              CLIENT WAITING CONTRACT PAPER
+                            </p>
+                          ) : caseDetails.status == "Contract-Sent" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              CONTRACT PAPER SENT
+                            </p>
+                          ) : caseDetails.status == "Contract-Replied" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                                SIGNED CONTRACT PAPER RECEIVED
+                            </p>
+                          ): caseDetails.status == "Awaiting-Advance-Payment" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                                AWAITING ADVANCE PAYMENT
+                            </p>
+                          ): caseDetails.status == "Request-Completion" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                                CASE COMPLETION REQUESTED
+                            </p>
+                          ) : caseDetails.status == "Confirm-Completion" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                                AWAITING FINAL INSTALLMENT
+                            </p>
+                          ): caseDetails.status == "Client-Final-Installment-Paid" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              PLATFORM RECEIVED FINAL PAYMENT
+                            </p>
+                          ) : caseDetails.status == "Closed" ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                               CLOSED
+                            </p>
+                          ) : (
+                            <p class="ml-3 mr-10 text-base text-green-600">
+                              ON-PROGRESS
+                            </p>
+                          )}
+                          TOTAL TIME WORKED
+                          <p class="ml-3 text-base text-black">
+                            {" "}
+                            {totalTimeWorked.hours} hours:{" "}
+                            {totalTimeWorked.minutes} mins:{" "}
+                            {totalTimeWorked.seconds} seconds
+                          </p>
+                        </p>
+                      )
                   )}
                   <div class="flex">
                   {
@@ -844,6 +1002,12 @@ const ViewCaseDetailsSP = (props) => {
                     </p>
                   </div>
                 </div>
+                {
+                  caseDetails.status == "On-progress" ? 
+                  RequestCompletion()
+                  :
+                  ""
+                }
                 <div class="pt-8 pb-5">
                     {
                       activeTab == "documents" ? 
@@ -1231,7 +1395,7 @@ const ViewCaseDetailsSP = (props) => {
                       <p class="flex my-3 text-sm text-gray-600">
                         PROPOSED FEE{" "}
                         <p class="ml-3 mr-10 text-sm text-black">
-                          ${propsalDetails.rate}/ {propsalDetails.rateType}
+                          {propsalDetails.rate}/ {propsalDetails.rateType}
                         </p>
                         PROPOSAL SENT ON
                         <p class="ml-3 mr-10 text-sm text-black">
@@ -1252,9 +1416,33 @@ const ViewCaseDetailsSP = (props) => {
                           </p>
                         )}
                       </p>
+                      <div class="flex">
+                        {
+                              propsalDetails.hasOwnProperty('paymentType') ? 
+                              <p class="flex mt-3 text-sm text-gray-600" style={{marginTop: "1em"}}>
+                                PAYMENT TYPE{" "}
+                                <p class="ml-3 mr-10 text-sm text-black">
+                                  {propsalDetails.paymentType == "full-payment" ? "One-time payment": "Tranches"}
+                                </p>
+                              </p>
+                              :
+                              ""
+                        }
+                        {
+                              propsalDetails.hasOwnProperty('paymentType') && propsalDetails.paymentType == "advance-payment"? 
+                              <p class="flex mt-3 text-sm text-gray-600" style={{marginTop: "1em"}}>
+                                ADVANCE PAYMENT{" "}
+                                <p class="ml-3 mr-10 text-sm text-black">
+                                  {propsalDetails.advancePayment} %
+                                </p>
+                              </p>
+                              :
+                              ""
+                        }
+                      </div>
                       <p
                         class="text-gray-700 text-base mt-3 tracking-wide"
-                        style={{ marginTop: "3rem", "textAlign": "justify", "text-justify": "inter-word" }}
+                        style={{ marginTop: "2rem", "textAlign": "justify", "text-justify": "inter-word" }}
                       >
                         {propsalDetails.desc}
                       </p>

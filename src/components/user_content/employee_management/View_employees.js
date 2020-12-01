@@ -173,9 +173,19 @@ const ViewEmployees = (props) => {
             })
         }
     }
-
+    
+    const regex = /^\.com$/;
     // For search bar action 
     const handleSearch = (e) => {
+        var search_keyword;
+        if (!regex.test(e.target.value)) {
+            setSearchKeyword(e.target.value);
+            search_keyword = e.target.value
+        } 
+        else {
+            setSearchKeyword("");
+            search_keyword = ""
+        }
         // send reset dispatch request to redux
         dispatch(EmployeesListStorageResponseReset())
         setPage(1)
@@ -188,7 +198,7 @@ const ViewEmployees = (props) => {
             method: 'post',
             url: '/api/v1/user/employee/list/'+ defaultPage,
             data: {
-                "keyword": e.target.value,
+                "keyword": search_keyword,
                 "filters": filters,
                 "sorting": {
                     "sortingKey": "",

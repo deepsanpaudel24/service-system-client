@@ -25,11 +25,13 @@ import ProfileSetting from "../Profile_setting";
 import AddService from "../service_management/Add_Service";
 import EditService from "../service_management/Edit_service";
 import Services from "../service_management/Services";
+import Dashboard from "./Dashboard_page";
 
 const SPCAContent = () => {
     return(
         <div>
             <Switch>
+                <Route exact path='/user/home' component={Dashboard} />
                 <Route exact path='/user/change-password' component={ChangePassword} />
                 <Route exact path="/user/profile-setting" component={ProfileSetting} />
                 <Route exact path='/user/employees' component={ViewEmployees} />

@@ -1,4 +1,4 @@
-import { ACCEPT_PROPOSAL_LOADING, ACCEPT_PROPOSAL_FAIL, ACCEPT_PROPOSAL_SERVER_FAIL , ACCEPT_PROPOSAL_SUCCESS, ACCEPT_PROPOSAL_RESPONSE_RESET} from "../actions/case_management/ProposalAcceptAction";
+import { FINAL_PAYMENT_TRANSFER_LOADING, FINAL_PAYMENT_TRANSFER_FAIL, FINAL_PAYMENT_TRANSFER_SERVER_FAIL , FINAL_PAYMENT_TRANSFER_SUCCESS, FINAL_PAYMENT_TRANSFER_RESPONSE_RESET} from "../actions/case_management/FinalPaymentTransferAction";
 
 const DefaultState = {
     loading: false,
@@ -8,34 +8,34 @@ const DefaultState = {
     emailConfirmationMessage: ""
 }
 
-const ProposalAcceptReducer = (state = DefaultState, action) => {
+const FinalPaymentTransferReducer = (state = DefaultState, action) => {
     switch (action.type) {
-        case ACCEPT_PROPOSAL_LOADING:
+        case FINAL_PAYMENT_TRANSFER_LOADING:
             return {
                 ...state,
                 loading: true,
                 errorMsg: ""
             }
-        case ACCEPT_PROPOSAL_FAIL: 
+        case FINAL_PAYMENT_TRANSFER_FAIL: 
             return {
                 ...state,
                 loading: false,
                 errorMsg: "Something went wrong"
             }
-        case ACCEPT_PROPOSAL_SUCCESS:
+        case FINAL_PAYMENT_TRANSFER_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 data: action.payload,
                 errorMsg: "",
             }
-        case ACCEPT_PROPOSAL_SERVER_FAIL:
+        case FINAL_PAYMENT_TRANSFER_SERVER_FAIL:
             return {
                 ...state,
                 loading: false,
                 serverErrorMsg: action.serverErrorMsg
             }
-        case ACCEPT_PROPOSAL_RESPONSE_RESET:
+        case FINAL_PAYMENT_TRANSFER_RESPONSE_RESET:
             return {
                 ...state,
                 loading: false,
@@ -49,4 +49,4 @@ const ProposalAcceptReducer = (state = DefaultState, action) => {
     }
 }
 
-export default ProposalAcceptReducer
+export default FinalPaymentTransferReducer

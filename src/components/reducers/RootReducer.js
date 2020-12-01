@@ -50,6 +50,9 @@ import SACaseListStorageReducer from './SuperAdminCaseListStorageReducer';
 import SAPeopleCaseListStorageReducer from './SuperAdminPeopleCaseListStorageReducer';
 import EmployeeCaseListReducer from './EmployeeCaseListReducer';
 import ChildAccountListStorageReducer from './ChildAccountListStorageReducer';
+import RequestCompletionReducer from './RequestCompletionReducer';
+import ConfirmCompletionReducer from './ConfirmCompletionReducer';
+import FinalPaymentTransferReducer from './FinalPaymentTransferReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -103,7 +106,10 @@ const rootReducer =  combineReducers({
     SACaseListStorageResponse: SACaseListStorageReducer,
     SAPeopleCaseListStorageResponse: SAPeopleCaseListStorageReducer,
     EmployeeCaseListResponse: EmployeeCaseListReducer,
-    ChildAccountListStorageResponse: ChildAccountListStorageReducer
+    ChildAccountListStorageResponse: ChildAccountListStorageReducer,
+    RequestCompletionResponse: RequestCompletionReducer,
+    ConfirmCompletionResponse: ConfirmCompletionReducer,
+    FinalPaymentTransferResponse: FinalPaymentTransferReducer
 })
 
 export default rootReducer

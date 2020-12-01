@@ -174,8 +174,18 @@ const Clients = (props) => {
         }
     }
 
+    const regex = /^\.com$/;
     // For search bar action 
     const handleSearch = (e) => {
+        var search_keyword;
+        if (!regex.test(e.target.value)) {
+            setSearchKeyword(e.target.value);
+            search_keyword = e.target.value
+        } 
+        else {
+            setSearchKeyword("");
+            search_keyword = ""
+        }
         // send reset dispatch request to redux
         dispatch(ClientListStorageResponseReset())
         setPage(1)
@@ -188,7 +198,7 @@ const Clients = (props) => {
             method: 'post',
             url: '/api/v1/clients/'+ defaultPage,
             data: {
-                "keyword": e.target.value,
+                "keyword": search_keyword,
                 "filters": filters,
                 "sorting": {
                     "sortingKey": "",

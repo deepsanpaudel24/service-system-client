@@ -6,6 +6,7 @@ import axios from "axios";
 import _ from "lodash";
 import { ClientCaseListStorageDispatcher, ClientCaseListStorageResponseReset } from "../../actions/case_management/ClientCasesListStorage";
 import Pagination from "../Pagination";
+import { ReplyCaseRequestResponseReset } from "../../actions/case_management/ReplyCaseRequestAction";
 
 const ViewCasesSP = (props) => {
     const [cases, setCases] = useState([])
@@ -28,6 +29,7 @@ const ViewCasesSP = (props) => {
     const response = useSelector(state => state.ClientCaseListResponse)
     const response2 = useSelector(state => state.UploadContractPaperResponse)
     const response3 = useSelector(state => state.ConfirmContractResponse)
+    const response4 = useSelector(state => state.ReplyCaseRequestResponse)
 
     useLayoutEffect(() => {
         var string = document.location.pathname
@@ -39,6 +41,20 @@ const ViewCasesSP = (props) => {
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
           }
+        if (!_.isEmpty(response4)){
+            dispatch(ReplyCaseRequestResponseReset())
+            axios(config)
+            .then((res) => {
+                    setCases(res.data['cases'])
+                    setTableLoading(false)
+                    setTotalRecords(res.data['total_records'])
+                    var page = res.data['page']
+                    dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
         if(response.data.hasOwnProperty(1)){
             var casesList = response.data[1]
             setCases(casesList)
@@ -507,12 +523,52 @@ const ViewCasesSP = (props) => {
                                                                     <span class="relative">Signed Contract Paper Received</span>
                                                                 </span>
                                                                 :
+                                                                item.status == "Awaiting-Advance-Payment" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Awaiting Advance payment</span>
+                                                                </span>
+                                                                :
                                                                 item.status == "On-progress" ?
                                                                 <span
                                                                     class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
                                                                     <span class="relative">On-progress</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Request-Completion" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Completion Requested</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Confirm-Completion" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Awaiting Final Installment</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Client-Final-Installment-Paid" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Platform Received Final Payment</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Closed" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Closed</span>
                                                                 </span>
                                                                 :
                                                                 <span

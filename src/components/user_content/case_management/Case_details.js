@@ -18,9 +18,12 @@ import ChatClientSide from "../../chat/ChatClientSide";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import ViewCasesProposalClient from "./Case_propsals_client";
+import StripeCheckout from "../payments/Checkout";
+import { ConfirmCompletionDispatcher } from "../../actions/case_management/ConfirmCompletionAction";
 
 const ViewCaseDetailsClient = (props) => {
-  const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/");
+  const [confirmCompletion, setConfirmCompletion] = useState(false)
+  const [confirmCompletionLoading, setConfirmCompletionLoading] = useState(false)
   const [caseDetails, setCaseDetails] = useState([]);
   const [caseTags, setCaseTags] = useState([]);
   const [pageLoading, setPageLoaoding] = useState(true);
@@ -87,6 +90,11 @@ const ViewCaseDetailsClient = (props) => {
   }, []);
 
   useEffect(() => {}, [caseDetails]);
+
+  // ************************************* Stripe Checkout Integration Event handler ********************************
+
+  // Event handler for the checkout form of stripe 
+
 
   const handleFileOpen = (filename) => {
     var string = document.location.pathname;
@@ -250,6 +258,49 @@ const ViewCaseDetailsClient = (props) => {
   };
 
 
+
+  // To request the completion of the case by service provider
+  const handleConfirmCompletion = () => {
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    setConfirmCompletionLoading(true)
+    const config = {
+      method: 'put',
+      url: '/api/v1/confirm-case-completion/'+ urlvalues[3],
+    }
+    axios(config)
+    .then((res) => {
+      setConfirmCompletionLoading(false)
+      setConfirmCompletion(true)
+      // also dispatch a action so that the cases page can refresh
+      dispatch(ConfirmCompletionDispatcher(res.data))
+      const config = {
+        method: "get",
+        url: "/api/v1/case/" + urlvalues[3],
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config)
+        .then((res) => {
+          setCaseDetails(res.data["case_details"]);
+          setPageLoaoding(false);
+          var tagslist = res.data["case_details"]["caseTags"]
+            .toString()
+            .split(",");
+          setCaseTags(tagslist);
+          dispatch(CaseDetailsStorageDispatcher(res.data));
+        })
+        .catch((error) => {
+          setPageLoaoding(false);
+        });
+    })
+    .catch((error) => {
+      setConfirmCompletionLoading(false)
+    })
+  } 
+
+
   const DeletePopUp = (item) => {
     confirmAlert({
         customUI: ({ onClose }) => {
@@ -316,6 +367,14 @@ const ViewCaseDetailsClient = (props) => {
             <div class="max-w-sm w-full lg:max-w-full lg:flex">
               <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                 <div class="mb-8">
+                {
+                    confirmCompletion ? 
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                        <p class="font-bold">Case completion confirmed successfully</p>
+                    </div>
+                    :
+                    ""
+                  }
                   {
                     confirmFileUpload ? 
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
@@ -339,7 +398,7 @@ const ViewCaseDetailsClient = (props) => {
                       </p>
                     </div>
                     <div class="w-1/5 flex justify-end">
-                      {caseDetails.status == "Contract-Sent" ||
+                      { caseDetails.status == "Contract-Sent" ||
                       caseDetails.status == "Contract-Replied" ? (
                         <button class="focus:outline-none">
                           <div
@@ -349,16 +408,89 @@ const ViewCaseDetailsClient = (props) => {
                             View Contract Paper
                           </div>
                         </button>
-                      ) : (
-                        ""
-                      )}
+                      )
+                      :
+                      caseDetails.status == "Awaiting-Advance-Payment" || caseDetails.status == "Confirm-Completion" ?
+                        <StripeCheckout
+                            caseId={caseDetails._id.$oid}
+                            caseTitle={caseDetails.title} 
+                            clientId={caseDetails.client.$oid}
+                            clientName={caseDetails.clientName}
+                            serviceProviderId={caseDetails.serviceProvider.$oid}
+                            serviceProvidername={caseDetails.serviceProvidername}
+                            caseStatus={caseDetails.status}
+                        />
+                      :
+                      ""
+                    }
                     </div>
                   </div>
-                  {caseDetails.status == "On-progress" ? (
+                  {caseDetails.status == "Requested" || caseDetails.status == "Forwarded" || caseDetails.status == "Proposal-Forwarded" ? (
+                    <p class="flex my-3 text-base text-gray-600">
+                    PROPOSED BUDGET{" "}
+                    <p class="ml-3 mr-10 text-base text-black">
+                      {caseDetails.budgetClient}
+                    </p>
+                    CASE REQUESTED ON
+                    <p class="ml-3 mr-10 text-base text-black">
+                      {caseDetails.requestedDate}
+                    </p>
+                    STATUS{" "}
+                    {caseDetails.status == "Forwarded" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                        FORWARDED
+                      </p>
+                    ) : caseDetails.status == "Requested" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                        CASE REQUESTED
+                      </p>
+                    ) : caseDetails.status == "Proposal-Forwarded" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                        PROPOSAL RECEIVED
+                      </p>
+                    ) : caseDetails.status == "Contract-Waiting" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                        WAITING CONTRACT PAPER
+                      </p>
+                    ) : caseDetails.status == "Contract-Sent" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                        CONTRACT PAPER RECEIVED
+                      </p>
+                    ) : caseDetails.status == "Contract-Replied" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                        SIGNED CONTRACT PAPER SENT
+                      </p>
+                    ) : caseDetails.status == "Awaiting-Advance-Payment" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                        MAKE ADVANCE INSTALLMENT
+                      </p>
+                    ) : caseDetails.status == "Request-Completion" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                          CASE COMPLETION REQUESTED
+                      </p>
+                    ): caseDetails.status == "Confirm-Completion" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                          CASE COMPLETION CONFIRMED
+                      </p>
+                    ): caseDetails.status == "Client-Final-Installment-Paid" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                        FINAL PAYMENT DONE
+                      </p>
+                    ) : caseDetails.status == "Closed" ? (
+                      <p class="ml-3 mr-10 text-base text-blue-600">
+                         CLOSED
+                      </p>
+                    ) : (
+                      <p class="ml-3 mr-10 text-base text-green-600">
+                        ON-PROGRESS
+                      </p>
+                    )}
+                  </p>
+                  ) : (
                     <p class="flex my-3 text-base text-gray-600">
                       FEE{" "}
                       <p class="ml-3 mr-10 text-base text-black">
-                        ${caseDetails.rate}/ {caseDetails.rateType}
+                        {caseDetails.rate}/ {caseDetails.rateType}
                       </p>
                       CASE REQUESTED ON
                       <p class="ml-3 mr-10 text-base text-black">
@@ -389,46 +521,25 @@ const ViewCaseDetailsClient = (props) => {
                         <p class="ml-3 mr-10 text-base text-blue-600">
                           SIGNED CONTRACT PAPER SENT
                         </p>
-                      ) : (
-                        <p class="ml-3 mr-10 text-base text-green-600">
-                          ON-PROGRESS
-                        </p>
-                      )}
-                    </p>
-                  ) : (
-                    <p class="flex my-3 text-base text-gray-600">
-                      PROPOSED BUDGET{" "}
-                      <p class="ml-3 mr-10 text-base text-black">
-                        ${caseDetails.budgetClient}
-                      </p>
-                      CASE REQUESTED ON
-                      <p class="ml-3 mr-10 text-base text-black">
-                        {caseDetails.requestedDate}
-                      </p>
-                      STATUS{" "}
-                      {caseDetails.status == "Forwarded" ? (
+                      ): caseDetails.status == "Awaiting-Advance-Payment" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
-                          FORWARDED
+                          MAKE ADVANCE INSTALLMENT ({caseDetails.advancePayment}%)
                         </p>
-                      ) : caseDetails.status == "Requested" ? (
+                      ): caseDetails.status == "Request-Completion" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
-                          CASE REQUESTED
+                            CASE COMPLETION REQUESTED
                         </p>
-                      ) : caseDetails.status == "Proposal-Forwarded" ? (
+                      ) : caseDetails.status == "Confirm-Completion" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
-                          PROPOSAL RECEIVED
+                            MAKE FINAL INSTALLEMENT
                         </p>
-                      ) : caseDetails.status == "Contract-Waiting" ? (
+                      ): caseDetails.status == "Client-Final-Installment-Paid" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
-                          WAITING CONTRACT PAPER
+                          FINAL PAYMENT DONE
                         </p>
-                      ) : caseDetails.status == "Contract-Sent" ? (
+                      ) : caseDetails.status == "Closed" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
-                          CONTRACT PAPER RECEIVED
-                        </p>
-                      ) : caseDetails.status == "Contract-Replied" ? (
-                        <p class="ml-3 mr-10 text-base text-blue-600">
-                          SIGNED CONTRACT PAPER SENT
+                           CLOSED
                         </p>
                       ) : (
                         <p class="ml-3 mr-10 text-base text-green-600">
@@ -437,9 +548,10 @@ const ViewCaseDetailsClient = (props) => {
                       )}
                     </p>
                   )}
-                  {
+                  <div class="flex mt-5 mb-4"> 
+                    {
                         caseDetails.hasOwnProperty('serviceProvidername') ? 
-                        <p class="flex mt-5 text-sm text-gray-600" style={{marginTop: "2em"}}>
+                        <p class="flex  text-sm text-gray-600" style={{marginTop: "2em"}}>
                           SERVICE PROVIDER{" "}
                           <p class="ml-3 mr-10 text-sm text-black">
                             {caseDetails.serviceProvidername}
@@ -448,6 +560,9 @@ const ViewCaseDetailsClient = (props) => {
                         :
                         ""
                       }
+
+                    </div>
+
                   <p
                     class="text-gray-700 text-base tracking-wide"
                     style={{
@@ -459,25 +574,56 @@ const ViewCaseDetailsClient = (props) => {
                     {caseDetails.desc}
                   </p>
                 </div>
-                <div class="flex items-center">
-                  <div class="text-sm ">
-                    <p>
-                      Tags: &nbsp;&nbsp;
-                      {caseTags.map((item, index) => {
-                        return (
-                          <span
-                            key={index}
-                            class="relative inline-block px-3 py-1 my-4 mx-2 font-semibold text-gray-900 leading-tight"
-                          >
-                            <span
-                              aria-hidden
-                              class="absolute inset-0 bg-gray-300 opacity-50"
-                            ></span>
-                            <span class="relative">{item}</span>
-                          </span>
-                        );
-                      })}
-                    </p>
+
+                <nav>
+                    <div class="">
+                        <div class="relative flex items-center justify-between h-16">
+                            <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                              <div class="flex items-center">
+                                <div class="text-sm mr-5">
+                                  <p>
+                                    Tags: &nbsp;&nbsp;
+                                    {caseTags.map((item, index) => {
+                                      return (
+                                        <span
+                                          key={index}
+                                          class="relative inline-block px-3 py-1 my-4 mx-2 font-semibold text-gray-900 leading-tight"
+                                        >
+                                          <span
+                                            aria-hidden
+                                            class="absolute inset-0 bg-gray-300 opacity-50"
+                                          ></span>
+                                          <span class="relative">{item}</span>
+                                        </span>
+                                      );
+                                    })}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                              
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <div>
+                  <div>
+                  {
+                    caseDetails.status == "Request-Completion" ? 
+                      confirmCompletionLoading ? 
+                      <div class="">
+                          <PulseLoader
+                              size={10}
+                              color={"#6DADE3"}
+                              loading={true}
+                          />
+                      </div>
+                      :
+                      <button class="bg-blue-600 text-white px-3 py-2" onClick={() => handleConfirmCompletion()}>Confirm Completion</button>
+                    :
+                    ""
+                  }
                   </div>
                 </div>
                 <div class="pt-8 pb-5">

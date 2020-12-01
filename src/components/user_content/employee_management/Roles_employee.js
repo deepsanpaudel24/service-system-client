@@ -9,10 +9,12 @@ import { UpdateEmployeeRolesDispatcher } from "../../actions/employee_management
 const EmployeeRoles = (props) => {
     const [employeeDetails, setEmployeeDetails] = useState([])
     const [empDetailsLoading, setEmpDetailsLoading] = useState(true)
-    const [SMloading, setSMloading] = useState(false)
     const [SM, setSM] = useState(false)
     const [CMloading, setCMloading] = useState(false)
     const [CM, setCM] = useState(false)
+
+    const [caseManagement, setCaseManagement] = useState(false)
+    const [assignCaseManagement, setAssignCaseManagement] = useState(false)
     const [Collaborator, setCollaborator] = useState(false)
     const [Reviewer, setReviewer] = useState(false)
     const [IntakeForm, setIntakeForm] = useState(false)
@@ -42,6 +44,8 @@ const EmployeeRoles = (props) => {
       }, [])
   
     useEffect(() => {
+        setCaseManagement(employeeDetails.caseManagement)
+        setAssignCaseManagement(employeeDetails.assignCaseManagement)
         setSM(employeeDetails.serviceManagement)
         setCM(employeeDetails.clientManagement)
         setCollaborator(employeeDetails.collaborator)
@@ -56,6 +60,17 @@ const EmployeeRoles = (props) => {
 
     const handleReviewerChange = e => {
         setReviewer(e.target.checked)
+    }
+
+    // For full fledged case management module access
+    const handleCaseManagement = e => {
+        setCaseManagement(e.target.checked)
+        setAssignCaseManagement(e.target.checked)
+    }
+
+    // For only the assigned case moudle acess
+    const handleAssignCaseManagement = e => {
+        setAssignCaseManagement(e.target.checked)
     }
 
     const handleClientIntakeForm = e => {
@@ -76,6 +91,8 @@ const EmployeeRoles = (props) => {
 
     const handleRolesSubmit = () => {
         var data = {
+            'caseManagement': caseManagement,
+            'assignCaseManagement': assignCaseManagement,
             'serviceManagement': SM,
             'clientManagement': CM,
             'collaborator': Collaborator,
@@ -172,6 +189,57 @@ const EmployeeRoles = (props) => {
                         employeeDetails.user_type == "SPCAe" ? 
                             <div class="flex my-3">
                                 <div class="w-3/5">
+                                    
+                                    <div>
+                                        <div class="flex"> 
+                                            <div>
+                                                <input class="my-3" type="checkbox" value="SM" onChange={e => handleCaseManagement(e)} checked={caseManagement}/>
+                                            </div>
+                                            <div style={{marginLeft: "2em"}}>
+                                                <div class="mb-8">
+                                                    <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                        Case Management                                                
+                                                    </div>
+                                                    <hr class="border-gray-400" />
+                                                    <p class="text-gray-700 text-sm my-5">Employee will have full-fledged access to the case management module as you have with this level of permission.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {
+                                            caseManagement ? 
+                                            <div class="flex" style={{marginLeft: "3em"}}> 
+                                                <div>
+                                                    <input class="my-3" type="checkbox" value="SM" checked={assignCaseManagement} disabled/>
+                                                </div>
+                                                <div style={{marginLeft: "2em"}}>
+                                                    <div class="mb-8">
+                                                        <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                            Assigned Case Management                                                
+                                                        </div>
+                                                        <hr class="border-gray-400" />
+                                                        <p class="text-gray-700 text-sm my-5">Employee will have be able to access only the cases they have been assigned by you with this level of permission.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            :
+                                            <div class="flex" style={{marginLeft: "3em"}}> 
+                                                <div>
+                                                    <input class="my-3" type="checkbox" value="SM" onChange={e => handleAssignCaseManagement(e)} checked={assignCaseManagement}/>
+                                                </div>
+                                                <div style={{marginLeft: "2em"}}>
+                                                    <div class="mb-8">
+                                                        <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                            Assigned Case Management                                                
+                                                        </div>
+                                                        <hr class="border-gray-400" />
+                                                        <p class="text-gray-700 text-sm my-5">Employee will have be able to access only the cases they have been assigned by you with this level of permission.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        }
+                                    </div>
+
                                     <div class="flex"> 
                                         <div>
                                             <input class="my-3" type="checkbox" value="SM" onChange={e => handleServiceManagementChange(e)} checked={SM}/>
@@ -182,7 +250,7 @@ const EmployeeRoles = (props) => {
                                                     Service Management
                                                 </div>
                                                 <hr class="border-gray-400" />
-                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                                <p class="text-gray-700 text-sm my-5">Employee will have full-fledged access to the service management module as you have with this level of permission.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -209,7 +277,7 @@ const EmployeeRoles = (props) => {
                                                             Client Management
                                                         </div>
                                                         <hr class="border-gray-400" />
-                                                        <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                                        <p class="text-gray-700 text-sm my-5">Employee will have full-fledged access to the client management module as you have with this level of permission.</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -225,7 +293,7 @@ const EmployeeRoles = (props) => {
                                                     Collaborator                                                
                                                 </div>
                                                 <hr class="border-gray-400" />
-                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                                <p class="text-gray-700 text-sm my-5">Employee's role for the case assignment will be shown as collaborator. </p>
                                             </div>
                                         </div>
                                     </div>
@@ -239,7 +307,7 @@ const EmployeeRoles = (props) => {
                                                     Reviewer                                                
                                                 </div>
                                                 <hr class="border-gray-400" />
-                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                                <p class="text-gray-700 text-sm my-5">Employee's role for the case assignment will be shown as reviewer</p>
                                             </div>
                                         </div>
                                     </div>
@@ -254,7 +322,7 @@ const EmployeeRoles = (props) => {
                                                     Client Intake Form                                                
                                                 </div>
                                                 <hr class="border-gray-400" />
-                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                                <p class="text-gray-700 text-sm my-5">Employee will have full-fledged access to the intake form module as you have with this level of permission.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -269,7 +337,7 @@ const EmployeeRoles = (props) => {
                                                     Custom Task                                                
                                                 </div>
                                                 <hr class="border-gray-400" />
-                                                <p class="text-gray-700 text-sm my-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+                                                <p class="text-gray-700 text-sm my-5">Employee will have full-fledged access to the custom task management module as you have with this level of permission.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -277,7 +345,61 @@ const EmployeeRoles = (props) => {
                                 </div>
                             </div>
                         :
-                        <p>No roles has been defined for CCAe till now</p>
+                            <div class="flex my-3">
+                                <div class="w-3/5">
+                                    
+                                    <div>
+                                        <div class="flex"> 
+                                            <div>
+                                                <input class="my-3" type="checkbox" value="SM" onChange={e => handleCaseManagement(e)} checked={caseManagement}/>
+                                            </div>
+                                            <div style={{marginLeft: "2em"}}>
+                                                <div class="mb-8">
+                                                    <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                        Case Management                                                
+                                                    </div>
+                                                    <hr class="border-gray-400" />
+                                                    <p class="text-gray-700 text-sm my-5">Employee will have full-fledged access to the case management module as you have with this level of permission.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {
+                                            caseManagement ? 
+                                            <div class="flex" style={{marginLeft: "3em"}}> 
+                                                <div>
+                                                    <input class="my-3" type="checkbox" value="SM" checked={assignCaseManagement} disabled/>
+                                                </div>
+                                                <div style={{marginLeft: "2em"}}>
+                                                    <div class="mb-8">
+                                                        <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                            Assigned Case Management                                                
+                                                        </div>
+                                                        <hr class="border-gray-400" />
+                                                        <p class="text-gray-700 text-sm my-5">Employee will have be able to access only the cases they have been assigned by you with this level of permission.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            :
+                                            <div class="flex" style={{marginLeft: "3em"}}> 
+                                                <div>
+                                                    <input class="my-3" type="checkbox" value="SM" onChange={e => handleAssignCaseManagement(e)} checked={assignCaseManagement}/>
+                                                </div>
+                                                <div style={{marginLeft: "2em"}}>
+                                                    <div class="mb-8">
+                                                        <div class="flex text-gray-800 font-bold text-xl mb-2">
+                                                            Assigned Case Management                                                
+                                                        </div>
+                                                        <hr class="border-gray-400" />
+                                                        <p class="text-gray-700 text-sm my-5">Employee will have be able to access only the cases they have been assigned by you with this level of permission.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        }
+                                    </div>
+
+                                </div>
+                            </div>
                     }
 
                         <div class="flex justify-start my-2">

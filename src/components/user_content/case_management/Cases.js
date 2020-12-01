@@ -6,11 +6,16 @@ import _ from "lodash";
 import { NewCaseRequestResponseReset } from "../../actions/case_management/NewCaseRequestAction";
 import { ClientCaseListStorageDispatcher, ClientCaseListStorageResponseReset } from "../../actions/case_management/ClientCasesListStorage";
 import Pagination from "../Pagination";
+import { ForwardCaseRequestDispactherResponseReset } from "../../actions/case_management/ForwardCaseRequestAction";
+import { ProposalAcceptDispatcherResponseReset } from "../../actions/case_management/ProposalAcceptAction";
+import { ConfirmCompletionDispatcherResponseReset } from "../../actions/case_management/ConfirmCompletionAction";
 
 const ViewCasesClient = (props) => {
     const [cases, setCases] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
     const [newCaseRequestConfirm, setNewCaseRequestConfirm] = useState(false)
+    const [confirmCompletionalert, setConfirmCompletionalert] = useState(false)
+    const [confirmProposalAcceptedAlert ,setConfrimProposalAcceptedAlert] = useState(false)
 
     // For sorting 
     const [sortingKey, setSortingKey] = useState(null)
@@ -30,6 +35,7 @@ const ViewCasesClient = (props) => {
     const response = useSelector(state => state.ClientCaseListResponse)
     const response2 = useSelector(state => state.NewCaseRequestResponse)
     const response3 = useSelector(state => state.ProposalAcceptResponse)
+    const response4 = useSelector(state => state.ConfirmCompletionResponse)
     
     useLayoutEffect(() => {
         var string = document.location.pathname
@@ -41,14 +47,9 @@ const ViewCasesClient = (props) => {
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
           }
-        if(response.data.hasOwnProperty(1)){
-            console.log("Value of redux ", response.data)
-            var casesList = response.data[1]
-            setCases(casesList)
-            setTableLoading(false)
-            setTotalRecords(response.data['total_records'])
-        }
-        else {
+        if(!_.isEmpty(response2.data)){
+            setNewCaseRequestConfirm(true)
+            dispatch(NewCaseRequestResponseReset())
             axios(config)
             .then((res) => {
                     setCases(res.data['cases'])
@@ -60,6 +61,57 @@ const ViewCasesClient = (props) => {
             .catch((error) => {
                 console.log(error.response)
             })
+        }
+        else if(!_.isEmpty(response4.data)){
+            setConfirmCompletionalert(true)
+            dispatch(ConfirmCompletionDispatcherResponseReset())
+            axios(config)
+            .then((res) => {
+                    setCases(res.data['cases'])
+                    setTableLoading(false)
+                    setTotalRecords(res.data['total_records'])
+                    var page = res.data['page']
+                    dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+        else if(!_.isEmpty(response3.data)){
+            setConfrimProposalAcceptedAlert(true)
+            dispatch(ProposalAcceptDispatcherResponseReset())
+            axios(config)
+            .then((res) => {
+                    setCases(res.data['cases'])
+                    setTableLoading(false)
+                    setTotalRecords(res.data['total_records'])
+                    var page = res.data['page']
+                    dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+        else {
+            if(response.data.hasOwnProperty(1)){
+                var casesList = response.data[1]
+                setCases(casesList)
+                setTableLoading(false)
+                setTotalRecords(response.data['total_records'])
+            }
+            else {
+                axios(config)
+                .then((res) => {
+                        setCases(res.data['cases'])
+                        setTableLoading(false)
+                        setTotalRecords(res.data['total_records'])
+                        var page = res.data['page']
+                        dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
+                })
+                .catch((error) => {
+                    console.log(error.response)
+                })
+            }
         }
       }, [])
   
@@ -385,6 +437,22 @@ const ViewCasesClient = (props) => {
                         :
                         ""
                     }
+                    { 
+                        confirmCompletionalert ?
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                            <p class="font-bold">Completion request has been confirmed successfully</p>
+                        </div>
+                        :
+                        ""
+                    }
+                    { 
+                        confirmProposalAcceptedAlert ?
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                            <p class="font-bold">Proposal has been accepted successfully</p>
+                        </div>
+                        :
+                        ""
+                    }
                     {
                         tableLoading ? 
                             <div class="animate-pulse flex space-x-4">
@@ -521,6 +589,46 @@ const ViewCasesClient = (props) => {
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
                                                                     <span class="relative">Signed Contract Paper Sent</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Awaiting-Advance-Payment" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Make Advance Installment</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Request-Completion" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Completion Requested</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Confirm-Completion" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Make Final Installment</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Client-Final-Installment-Paid" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Final Payment Done</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Closed" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Closed</span>
                                                                 </span>
                                                                 :
                                                                 <span

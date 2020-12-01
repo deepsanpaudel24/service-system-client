@@ -1,5 +1,6 @@
-import React , {useState} from "react";
+import React , {useEffect, useLayoutEffect, useState} from "react";
 import _ from "lodash";
+import axios from "axios";
 import CreatableSelect from 'react-select/creatable';
 import {PulseLoader} from "react-spinners";
 import {useDispatch, useSelector} from "react-redux";
@@ -9,6 +10,7 @@ import { MdFileUpload } from "react-icons/md";
 
 const CreateCaseRequest = (props) => {
     const [title, setTitle] = useState("")
+    const [currency, setCurrency] = useState("usd")
     const [formStep, setFormStep] = useState(1)
     const [desc, setDesc] = useState("")
     const [budget, setBudget] = useState("")
@@ -19,6 +21,25 @@ const CreateCaseRequest = (props) => {
     const [formEmptyError, setFormEmptyError] = useState("")
     const dispatch = useDispatch()
     const response = useSelector(state => state.NewCaseRequestResponse)
+
+    useLayoutEffect(() => {
+        const config = {
+            method: 'get',
+            url: '/api/v1/user/profile-details',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+              }
+        }
+        axios(config)
+        .then((res) => {
+            setCurrency(res.data['currency_preferences'])
+        })
+    })
+
+    useEffect(() => {
+
+    }, [])
 
     const handleTitleChange = (e) => {
         setFormEmptyError("")
@@ -37,7 +58,7 @@ const CreateCaseRequest = (props) => {
   
       const handleBudgetChange = (e) => {
         setFormEmptyError("")
-        setBudget(e.target.value)
+        setBudget(e.target.value + " " + currency)
     }
 
     const handleCaseTags = (e) => {
@@ -237,7 +258,7 @@ const CreateCaseRequest = (props) => {
                                     />
                                 </div>
                                 <div class="mt-6 mb-5" >
-                                    <label for="price" class="block text-gray-700 text-sm">Approx budget (In USD) (Optional)</label>
+                                    <label for="price" class="block text-gray-700 text-sm">Approx budget (In {currency}) (Optional)</label>
                                     <input 
                                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                         id="budget" 
@@ -301,15 +322,6 @@ const CreateCaseRequest = (props) => {
                                     />
 
                                     
-
-                                    {/* <input 
-                                        class="rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                        id="budget" 
-                                        type="file"
-                                        multiple
-                                        onChange={e => handleFileUpload(e)}
-                                        accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                    /> */}
                                     {
                                         !_.isEmpty(fileNameToShow) ? 
                                             fileNameToShow.map((item, index) => {

@@ -4,7 +4,7 @@ export const ACCEPT_PROPOSAL_LOADING = 'ACCEPT_PROPOSAL_LOADING'
 export const ACCEPT_PROPOSAL_FAIL =   'ACCEPT_PROPOSAL_FAIL'
 export const ACCEPT_PROPOSAL_SERVER_FAIL =   'ACCEPT_PROPOSAL_SERVER_FAIL'
 export const ACCEPT_PROPOSAL_SUCCESS = 'ACCEPT_PROPOSAL_SUCCESS'
-
+export const ACCEPT_PROPOSAL_RESPONSE_RESET = 'ACCEPT_PROPOSAL_RESPONSE_RESET'
 
 export const ProposalAcceptDispacther = (data, proposalId) => async dispatch => {
     try {
@@ -40,4 +40,10 @@ export const ProposalAcceptDispacther = (data, proposalId) => async dispatch => 
             type: "ACCEPT_PROPOSAL_FAIL"
         })
     }
+}
+
+export const ProposalAcceptDispatcherResponseReset = () =>async dispatch  => {
+    dispatch({
+        type: "ACCEPT_PROPOSAL_RESPONSE_RESET"
+    })
 }

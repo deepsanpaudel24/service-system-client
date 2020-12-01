@@ -8,13 +8,17 @@ import {
   SidebarFooter,
   SidebarContent,
 } from 'react-pro-sidebar';
-import { FaTachometerAlt, FaGem, FaUsers, FaGithub, FaRegLaughWink, FaHeart } from 'react-icons/fa';
+import { FaTachometerAlt, FaGem, FaUsers, FaTasks, FaWpforms  } from 'react-icons/fa';
 import axios from "axios";
 import { Link, Redirect } from "react-router-dom";
 
 const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
+  
   const [SM, setSM] = useState(false)  
   const [CM, setCM] = useState(false)
+  const [CustomTask, setCustomTask] = useState(false)
+  const [IntakeForm, setIntakeForm] = useState(false)
+
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useLayoutEffect(() => {
@@ -27,9 +31,10 @@ const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
       }
       axios(config)
       .then((res) => {
-          console.log("employee dashboard", res.data)
           setSM(res.data['serviceManagement'])
           setCM(res.data['clientManagement'])
+          setCustomTask(res.data['CustomTask'])
+          setIntakeForm(res.data['IntakeForm'])
       })
       .catch((error) => {
           localStorage.removeItem('access_token')
@@ -62,13 +67,10 @@ const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
               whiteSpace: 'nowrap',
             }}
           >
-            Sidebar Title
+            SERVICE SYSTEM
           </div>
         </SidebarHeader>
-        {
-          SM ? 
-            CM ?
-            <SidebarContent>
+        <SidebarContent>
               <Menu iconShape="circle">
                 <MenuItem
                   icon={<FaTachometerAlt />}
@@ -76,69 +78,33 @@ const Aside = ({ collapsed, toggled, handleToggleSidebar }, props) => {
                   Dashboard
                 </MenuItem>
                 <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
-                <MenuItem icon={<FaUsers />}><Link to="/user/clients">Client Management</Link></MenuItem>
-                <MenuItem icon={<FaGem />}><Link to="/user/services"> Service Management </Link></MenuItem>
+                {
+                  SM ?
+                   <MenuItem icon={<FaGem />}><Link to="/user/services"> Service </Link></MenuItem>
+                   :
+                   <></>
+                }
+                {
+                  CM ? 
+                  <MenuItem icon={<FaUsers />}><Link to="/user/clients">Client </Link></MenuItem>
+                  :
+                  <></>
+                }
+                {
+                  CustomTask ? 
+                  <MenuItem icon={<FaTasks />}><Link to="/user/tasks">Tasks</Link></MenuItem>
+                  :
+                  <></>
+                }
+                {
+                  IntakeForm ? 
+                  <MenuItem icon={<FaWpforms />}><Link to="/user/intake-form/list">Intake Form</Link></MenuItem>
+                  :
+                  <></>
+                }
               </Menu>
             </SidebarContent>
-            :
-            <SidebarContent>
-              <Menu iconShape="circle">
-                <MenuItem
-                  icon={<FaTachometerAlt />}
-                  suffix={<span className="badge red">New</span>}
-                >
-                  Dashboard
-                </MenuItem>
-                <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
-                <MenuItem icon={<FaGem />}><Link to="/user/services"> Service Management </Link></MenuItem>
-              </Menu>
-            </SidebarContent>
-          :
-          CM ? 
-          <SidebarContent>
-              <Menu iconShape="circle">
-                <MenuItem
-                  icon={<FaTachometerAlt />}
-                  suffix={<span className="badge red">New</span>}
-                >
-                  Dashboard
-                </MenuItem>
-                <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
-                <MenuItem icon={<FaUsers />}><Link to="/user/clients"> Client Management </Link></MenuItem>
-              </Menu>
-            </SidebarContent>
-            :
-          <SidebarContent>
-            <Menu iconShape="circle">
-              <MenuItem
-                icon={<FaTachometerAlt />}
-                suffix={<span className="badge red">New</span>}
-              >
-                Dashboard
-              </MenuItem>
-              <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
-            </Menu>
-          </SidebarContent>
-        }
 
-        <SidebarFooter style={{ textAlign: 'center' }}>
-          <div
-            className="sidebar-btn-wrapper"
-            style={{
-              padding: '20px 24px',
-            }}
-          >
-            <a
-              href="https://github.com/azouaoui-med/react-pro-sidebar"
-              target="_blank"
-              className="sidebar-btn"
-              rel="noopener noreferrer"
-            >
-              <FaGithub />
-              <span>View Sources</span>
-            </a>
-          </div>
-        </SidebarFooter>
       </ProSidebar>
     </div>
   );
