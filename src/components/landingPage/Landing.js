@@ -4,6 +4,12 @@ import LandingIcon from "../../images/landingpage.png"
 import { withTranslation } from 'react-i18next';
 
 const Landing = ({t}) => {
+
+    const handleLanguageChange = e => {
+        localStorage.setItem("lang", e.target.value)
+        window.location.reload()
+    }
+
     return (
         <div>
             <div>
@@ -21,9 +27,17 @@ const Landing = ({t}) => {
                     </div>
                     <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
                         <div class="text-sm lg:flex-grow">
-                            
                         </div>
-                        <div>
+                        <div class="flex">
+                            <select
+                                class="form-select bg-orange-100 text-sm mx-2 py-1 px-3 text-black border-black focus:outline-none"
+                                style={{marginRight: "3rem"}}
+                                defaultValue={localStorage.getItem("lang")}
+                                onChange={e => handleLanguageChange(e)}
+                            >
+                                <option value="en">English</option>
+                                <option value="de">German</option>
+                            </select>
                             <Link to="/user/register">
                                 <p class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-black hover:border-transparent hover:text-white hover:bg-black mt-4 lg:mt-0">{t("Sign up")}</p>
                             </Link>

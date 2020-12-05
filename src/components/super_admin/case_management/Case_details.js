@@ -6,7 +6,9 @@ import axios from "axios";
 import _ from "lodash";
 import { ForwardCaseRequestDispacther, ForwardCaseRequestDispactherResponseReset } from "../../actions/case_management/ForwardCaseRequestAction";
 import TransferPayment from "./Transfer_payment";
+import SACaseTransactions from "./Case_Transactions";
 import { FinalPaymentTransferDispatcherResponseReset } from "../../actions/case_management/FinalPaymentTransferAction";
+import Proposals from "./Proposals";
 
 const ViewCaseDetailsSA = (props) => {
     const [caseDetails, setCaseDetails] = useState([])
@@ -17,6 +19,9 @@ const ViewCaseDetailsSA = (props) => {
     const [serviceProviders, setserviceProviders] = useState([])
     const [showAlert, setShowAlert] = useState(false)
     const [propsals, setPropsals] = useState("")
+
+    const [activeTab, setActiveTab] = useState("forwardedTab")
+
     const dispatch = useDispatch()
     const response = useSelector(state => state.ForwardCaseRequestResponse)
 
@@ -53,26 +58,33 @@ const ViewCaseDetailsSA = (props) => {
         props.history.push("/sadmin/cases")
     }
 
-    var list_of_service_providers = []
+    //************************************ case forwarded function begins  ****************************/ 
+
+    // var list_of_service_providers = []
     const handleServiceProviders = e => {
-        if(e.target.checked){
-            list_of_service_providers.push(e.target.value)
+
+        var list_of_service_providers = forwardedSPIdList;
+        if (e.target.checked) {
+            list_of_service_providers.push(e.target.value);
+        } else {
+            const index = list_of_service_providers.indexOf(e.target.value);
+            list_of_service_providers.splice(index, 1);
         }
-        if(!e.target.checked){
-            const index = list_of_service_providers.indexOf(e.target.value)
-            list_of_service_providers.splice(index, 1)
-        }
+        setForwardedSPIdList(list_of_service_providers);
+        console.log(list_of_service_providers);
+
     }
 
     const handleCaseForward = () => {
         var string = document.location.pathname
         var urlvalues = string.toString().split('/')
         var data = {
-            "service_providers" : list_of_service_providers.toString()
+            "service_providers" : forwardedSPIdList.toString(),
         }
         dispatch(ForwardCaseRequestDispacther(urlvalues[3], data))
     }
-    
+    // ************************************* case forwarded function ends **********************************/
+
     const showServerError = () => {
         if(!_.isEmpty(response.serverErrorMsg)){
             return (
@@ -157,6 +169,22 @@ const ViewCaseDetailsSA = (props) => {
             )
         }
     }
+
+    // ******************************** tab functions begins *************************************
+
+    const handleFowardedTab = () => {
+        setActiveTab("forwardedTab")
+    }
+
+    const handleProposalsTab = () => {
+        setActiveTab("proposals")
+    }
+
+    const handleTransactionsTab = () => {
+        setActiveTab("transactionsTab")
+    }
+
+    // ******************************** tab functions ends *************************************
 
     const showButton = () => {
         if(response.loading){
@@ -250,11 +278,23 @@ const ViewCaseDetailsSA = (props) => {
                                                 <p class="ml-3 mr-10 text-base text-blue-600">
                                                 PROPOSAL FORWARDED
                                                 </p>
-                                            ) : caseDetails.status == "Awaiting-Advance-Payment" ? (
+                                            ) : caseDetails.status == "Contract-Waiting" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                  WAITING CONTRACT PAPER
+                                                </p>
+                                              ) : caseDetails.status == "Contract-Sent" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                  CONTRACT PAPER RECEIVED
+                                                </p>
+                                              ) : caseDetails.status == "Contract-Replied" ? (
+                                                <p class="ml-3 mr-10 text-base text-blue-600">
+                                                  SIGNED CONTRACT PAPER SENT
+                                                </p>
+                                              ) : caseDetails.status == "Awaiting-Advance-Payment" ? (
                                                 <p class="ml-3 mr-10 text-base text-blue-600">
                                                 AWAITING ADVANCE INSTALLMENT
                                                 </p>
-                                            ): caseDetails.status == "Request-Completion" ? (
+                                            ) : caseDetails.status == "Request-Completion" ? (
                                                 <p class="ml-3 mr-10 text-base text-blue-600">
                                                     CASE COMPLETION REQUESTED
                                                 </p>
@@ -300,7 +340,19 @@ const ViewCaseDetailsSA = (props) => {
                                                 <p class="ml-3 mr-10 text-base text-blue-600">
                                                     PROPOSAL FORWARDED
                                                 </p>
-                                                ) : caseDetails.status == "Awaiting-Advance-Payment" ? (
+                                                ) : caseDetails.status == "Contract-Waiting" ? (
+                                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                                      WAITING CONTRACT PAPER
+                                                    </p>
+                                                  ) : caseDetails.status == "Contract-Sent" ? (
+                                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                                      CONTRACT PAPER RECEIVED
+                                                    </p>
+                                                  ) : caseDetails.status == "Contract-Replied" ? (
+                                                    <p class="ml-3 mr-10 text-base text-blue-600">
+                                                      SIGNED CONTRACT PAPER SENT
+                                                    </p>
+                                                  ) : caseDetails.status == "Awaiting-Advance-Payment" ? (
                                                     <p class="ml-3 mr-10 text-base text-blue-600">
                                                     AWAITING ADVANCE INSTALLMENT
                                                     </p>
@@ -373,121 +425,177 @@ const ViewCaseDetailsSA = (props) => {
                                             :
                                             ""
                                         }
-                                        
+
+                                        {/* Tab begins here  */}
+                                        <div class="pt-8 pb-5">
+                                            { activeTab == "forwardedTab" ? (
+                                                <ul class="flex border-b">
+                                                    <li class="-mb-px mr-1">
+                                                        <button
+                                                        class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none"
+                                                        onClick={() => handleFowardedTab()}
+                                                        >
+                                                           {caseDetails.status == "Requested" ? "Matching Service Providers": "Forwarded Service Providers"}
+                                                        </button>
+                                                    </li>
+                                                    <li class="mr-1">
+                                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => handleProposalsTab()}>Proposals</button>
+                                                    </li>
+                                                    <li class="mr-1">
+                                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => handleTransactionsTab()}>Transactions</button>
+                                                    </li>
+                                                </ul>
+                                            ) 
+                                            :
+                                            activeTab == "proposals" ?
+                                                <ul class="flex border-b">
+                                                    <li class="mr-1">
+                                                        <button
+                                                        class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                                                        onClick={() => handleFowardedTab()}
+                                                        >
+                                                            {caseDetails.status == "Requested" ? "Matching Service Providers": "Forwarded Service Providers"}
+                                                        </button>
+                                                    </li>
+                                                    <li class="-mb-px mr-1">
+                                                        <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => handleProposalsTab()}>Proposals</button>
+                                                    </li>
+                                                    <li class="mr-1">
+                                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => handleTransactionsTab()}>Transactions</button>
+                                                    </li>
+                                                </ul>
+                                            :
+                                            (
+                                                <ul class="flex border-b">
+                                                    <li class="mr-1">
+                                                        <button
+                                                        class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                                                        onClick={() => handleFowardedTab()}
+                                                        >
+                                                        {caseDetails.status == "Requested" ? "Matching Service Providers": "Forwarded Service Providers"}
+                                                        </button>
+                                                    </li>
+                                                    <li class="mr-1">
+                                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => handleProposalsTab()}>Proposals</button>
+                                                    </li>
+                                                    <li class="-mb-px mr-1">
+                                                        <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => handleTransactionsTab()}>Transactions</button>
+                                                    </li>
+                                                </ul>
+                                            )
+                                            }
+                                        </div>
+                                        {/* Tab ends here  */}
+                                            
                                         {
-                                            caseDetails.status == "Requested" ?
-                                            <div>
-                                                <div class="flex items-center mt-8 mt-3">
-                                                    <div class="text-sm">
-                                                        <p class="text-xl text-gray-900 leading-none mb-2">
-                                                            Matching service providers
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div class="flex mt-3">
-                                                {
-                                                    serviceProviders.length > 0 ? 
-                                                        serviceProviders.map((item, index) => {
-                                                            return(
-                                                                <div class="w-3/12 mr-4">
-                                                                    <div class="flex"> 
-                                                                        <div>
-                                                                            <input class="my-3" type="checkbox" value={item._id.$oid} 
-                                                                                onChange={e => handleServiceProviders(e)} 
-                                                                            />
-                                                                        </div>
-                                                                        <div style={{marginLeft: "2em"}}>
-                                                                            <div class="mb-8">
-                                                                                <div class="flex text-gray-800 font-bold text-md mb-2">
-                                                                                    {item.name}
+                                            activeTab == "forwardedTab" ? 
+                                            <>
+                                            {
+                                                caseDetails.status == "Requested" ?
+                                                    <div>
+                                                        <div class="flex mt-3">
+                                                        {
+                                                            serviceProviders.length > 0 ? 
+                                                                serviceProviders.map((item, index) => {
+                                                                    return(
+                                                                        <div class="w-3/12 mr-4">
+                                                                            <div class="flex"> 
+                                                                                <div>
+                                                                                    <input class="my-3" type="checkbox" value={item._id.$oid} 
+                                                                                        onChange={e => handleServiceProviders(e)} 
+                                                                                    />
                                                                                 </div>
-                                                                                <hr class="border-gray-400" />
-                                                                                <p class="text-gray-700 text-sm my-3">Address: {item.address}</p>
-                                                                                <p class="text-gray-700 text-sm my-3">Forwarded cases: {item.no_forwarded_cases}</p>
-                                                                                <p class="text-gray-700 text-sm my-3">On-progress cases: {item.no_forwarded_cases}</p>
-                                                                                <p class="text-gray-700 text-sm my-3">
-                                                                                    Tags: {item.service_categories.join(', ')}
-                                                                                </p>
+                                                                                <div style={{marginLeft: "2em"}}>
+                                                                                    <div class="mb-8">
+                                                                                        <div class="flex text-gray-800 font-bold text-md mb-2">
+                                                                                            {item.name}
+                                                                                        </div>
+                                                                                        <hr class="border-gray-400" />
+                                                                                        <p class="text-gray-700 text-sm my-3">Address: {item.address}</p>
+                                                                                        <p class="text-gray-700 text-sm my-3">Forwarded cases: {item.no_forwarded_cases}</p>
+                                                                                        <p class="text-gray-700 text-sm my-3">On-progress cases: {item.no_progress_cases}</p>
+                                                                                        <p class="text-gray-700 text-sm my-3">
+                                                                                            Tags: {item.service_categories.join(', ')}
+                                                                                        </p>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                            )
-                                                        })
-                                                    :
-                                                    "No matching service providers"
-                                                }
-                                                </div>
-                                                <div class="flex justify-start my-5">
-                                                    {showButton()}
-                                                </div>
-                                            </div>
-                                            :
-                                            <div>
-                                                {
-                                                    caseDetails.status == "Proposal-Forwarded" ?
-                                                    <div class="flex items-center mt-8">
-                                                        <div class="text-sm">
-                                                            <a href={`/sadmin/proposals/${caseDetails._id.$oid}`} class=" text-gray-900 text-blue-700 leading-none mb-2">
-                                                                View Proposals for this case
-                                                            </a>
+                                                                    )
+                                                                })
+                                                            :
+                                                            "No matching service providers"
+                                                        }
+                                                        </div>
+                                                        <div class="flex justify-start my-5">
+                                                            {showButton()}
                                                         </div>
                                                     </div>
                                                     :
-                                                    ""
-                                                }
-                                                
-                                                <div class="flex items-center mt-5">
-                                                    <div class="text-sm">
-                                                        <p class="text-lg text-gray-900 leading-none mb-2">
-                                                            Case forwarded to
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div class="flex mt-3">
-                                                    {
-                                                        forwardedSPIdList.map((item) => {
-                                                            return(
-                                                            <div class="w-3/12 mr-4" key={item._id.$oid}>
-                                                                <div class="flex items-center">
-                                                                    <div class="flex-shrink-0 w-10 h-10">
-                                                                        <Link to={`/sadmin/people/`}>
-                                                                            <img class="w-full h-full rounded-full"
-                                                                                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                                                                                alt="" />
-                                                                        </Link>
-                                                                    </div>
-                                                                    <div class="ml-3">
-                                                                        <Link to={`/sadmin/people/`}>
-                                                                            <p class="text-blue-700 text-lg whitespace-no-wrap">
-                                                                                {item.email}
-                                                                            </p>
-                                                                        </Link>
-                                                                        <p class="my-2 text-gray-700 text-sm whitespace-no-wrap">
-                                                                            {item.name}
-                                                                        </p>
-                                                                        <p class="my-2 text-gray-700 text-sm whitespace-no-wrap">
-                                                                            {item.address}
-                                                                        </p>
-                                                                        { 
-                                                                            caseDetails.status == "Forwarded" || caseDetails.status == "Requested" ? 
-                                                                            <button
-                                                                                onClick={() => handleUndo(item._id.$oid)}
-                                                                                class="text-sm font-medium bg-red-500 py-1 px-2 rounded text-white align-middle focus:outline-none"
-                                                                            >
-                                                                                Undo
-                                                                            </button>
-                                                                            :
-                                                                            ""
-                                                                        }
-                                                                    </div>
+                                                    <div>
+                                                        {
+                                                            caseDetails.status == "Proposal-Forwarded" ?
+                                                            <div class="flex items-center mt-8">
+                                                                <div class="text-sm">
+                                                                    <a href={`/sadmin/proposals/${caseDetails._id.$oid}`} class=" text-gray-900 text-blue-700 leading-none mb-2">
+                                                                        View Proposals for this case
+                                                                    </a>
                                                                 </div>
                                                             </div>
-                                                            )
-                                                        })
-                                                    }
-                                                </div>
-                                            </div>
+                                                            :
+                                                            ""
+                                                        }
+                                                        <div class="flex mt-3">
+                                                            {
+                                                                forwardedSPIdList.map((item) => {
+                                                                    return(
+                                                                    <div class="w-3/12 mr-4" key={item._id.$oid}>
+                                                                        <div class="flex items-center">
+                                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                                <Link to={`/sadmin/people/`}>
+                                                                                    <img class="w-full h-full rounded-full"
+                                                                                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
+                                                                                        alt="" />
+                                                                                </Link>
+                                                                            </div>
+                                                                            <div class="ml-3">
+                                                                                <Link to={`/sadmin/people/`}>
+                                                                                    <p class="text-blue-700 text-lg whitespace-no-wrap">
+                                                                                        {item.email}
+                                                                                    </p>
+                                                                                </Link>
+                                                                                <p class="my-2 text-gray-700 text-sm whitespace-no-wrap">
+                                                                                    {item.name}
+                                                                                </p>
+                                                                                <p class="my-2 text-gray-700 text-sm whitespace-no-wrap">
+                                                                                    {item.address}
+                                                                                </p>
+                                                                                { 
+                                                                                    caseDetails.status == "Forwarded" || caseDetails.status == "Requested" ? 
+                                                                                    <button
+                                                                                        onClick={() => handleUndo(item._id.$oid)}
+                                                                                        class="text-sm font-medium bg-red-500 py-1 px-2 rounded text-white align-middle focus:outline-none"
+                                                                                    >
+                                                                                        Undo
+                                                                                    </button>
+                                                                                    :
+                                                                                    ""
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </>
+                                            :
+                                            activeTab == "proposals" ?
+                                            <Proposals />
+                                            :
+                                            <SACaseTransactions />
                                         }
                                     </div>
                                 }

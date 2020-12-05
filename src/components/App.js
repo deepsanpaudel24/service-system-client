@@ -47,6 +47,7 @@ function App() {
             <Route path={'/user/reset-password/:token'} component={ResetPassword} />
             <Route path={"/user/setup/user-type"} component={SetupUserType} />
 
+            <Route path="/sadmin/transactions" component={SAHomePage} />
             <Route path={"/sadmin/home"} component={SAHomePage} />
             <Route path={"/sadmin/change-password"} component={SAHomePage} />
             <Route path={"/sadmin/employees"} component={SAHomePage} />
@@ -106,6 +107,8 @@ function App() {
             <Route path="/user/intake-form/list" component={HomePage} />
             <Route path="/user/fill-form" component={HomePage} />
             <Route path="/user/client/intake-form-send/:id" component={HomePage} />
+
+            <Route path="/user/transactions" component={HomePage} />
 
             <Route path="/socket/test" component={SocketTest} />
 

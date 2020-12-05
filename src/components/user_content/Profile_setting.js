@@ -757,9 +757,6 @@ const ProfileSetting = (props) => {
                                         <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
                                     </li>
                                     <li class="mr-1">
-                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBillingInfoTab()}>Billing Information</button>
-                                    </li>
-                                    <li class="mr-1">
                                         <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Introduction</button>
                                     </li>
                                 </ul>
@@ -769,9 +766,6 @@ const ProfileSetting = (props) => {
                                     <li class="mr-1">
                                         <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
                                     </li>
-                                    <li class="-mb-px mr-1">
-                                        <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeBillingInfoTab()}>Billing Information</button>
-                                    </li>
                                     <li class="mr-1">
                                         <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Introduction</button>
                                     </li>
@@ -780,9 +774,6 @@ const ProfileSetting = (props) => {
                                 <ul class="flex border-b">
                                     <li class="mr-1">
                                         <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
-                                    </li>
-                                    <li class="mr-1">
-                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBillingInfoTab()}>Billing Information</button>
                                     </li>
                                     <li class="-mb-px mr-1">
                                         <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Introduction</button>

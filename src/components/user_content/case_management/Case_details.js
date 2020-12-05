@@ -20,6 +20,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import ViewCasesProposalClient from "./Case_propsals_client";
 import StripeCheckout from "../payments/Checkout";
 import { ConfirmCompletionDispatcher } from "../../actions/case_management/ConfirmCompletionAction";
+import ClientCaseTransactions from "./Client_Case_Transactions";
 
 const ViewCaseDetailsClient = (props) => {
   const [confirmCompletion, setConfirmCompletion] = useState(false)
@@ -127,6 +128,9 @@ const ViewCaseDetailsClient = (props) => {
   };
   const activateProposalTab = () => {
     setActiveTab("proposals");
+  };
+  const activateTransactionsTab = () => {
+    setActiveTab("trasactions");
   };
 
   const handleViewContract = () => {
@@ -640,8 +644,14 @@ const ViewCaseDetailsClient = (props) => {
                       <li class="mr-1">
                           <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateProposalTab()}>Proposals</button>
                       </li>
+                      <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateTransactionsTab()}>Transactions</button>
+                      </li>
                     </ul>
-                  ) : (
+                  ) 
+                  :
+                  activeTab == "proposals" ? 
+                  (
                     <ul class="flex border-b">
                       <li class="mr-1">
                         <button
@@ -659,345 +669,545 @@ const ViewCaseDetailsClient = (props) => {
                           Proposals
                         </button>
                       </li>
+                      <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateTransactionsTab()}>Transactions</button>
+                      </li>
                     </ul>
-                  )}
+                  )
+                  :
+                  (
+                    <ul class="flex border-b">
+                      <li class="mr-1">
+                        <button
+                          class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                          onClick={() => activateDocsTab()}
+                        >
+                          Case Documents
+                        </button>
+                      </li>
+                      <li class="mr-1">
+                        <button
+                          class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" 
+                          onClick={() => activateProposalTab()}
+                        >
+                          Proposals
+                        </button>
+                      </li>
+                      <li class="-mb-px mr-1">
+                          <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activateTransactionsTab()}>Transactions</button>
+                      </li>
+                    </ul>
+                  )
+                }
                 </div>
                 {activeTab == "documents" ? (
                   <div>
-                    <nav class="flex flex-wrap">
-                      <div class="w-full block flex-grow lg:flex lg:w-auto">
-                        <div class="lg:flex-grow">
-                          <div class="flex gap-6 mt-4">
-                            {caseDetails.files.map((item) => {
-                              var filename = item.split("/").slice(-1)[0];
-                              if (filename.length < 12) {
-                                var display_name = filename;
-                              } else {
-                                var display_name =
-                                  filename.slice(0, 12) + " ...";
-                              }
-                              var extension = filename
-                                .split(".")
-                                .slice(-1)[0]
-                                .toLowerCase();
-                              var owner = filename.split(".").slice(-2)[0];
-                              if (extension == "pdf") {
-                                return (
-                                  <div class="bg-gray-100  shadow rounded-lg">
-                                    {owner == "c" ? (
-                                      <div class="flex justify-end mr-2 mt-1 mb-2">
-                                        <button
-                                          class="focus:outline-none"
-                                          onClick={() => DeletePopUp(item)}
-                                        >
-                                          <p class="text-red-400 ml-3">
-                                            <RiDeleteBin5Line />
-                                          </p>
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                    <div
-                                      class={`flex flex-col items-center justify-center bg-gray-100 ${
-                                        owner == "c" ? "" : "pt-8"
-                                      } px-4 pb-4`}
-                                      style={{ maxWidth: "15rem" }}
-                                    >
-                                      <div
-                                        class="inline-flex overflow-hidden"
-                                        style={{
-                                          height: "10rem",
-                                          width: "10rem",
-                                        }}
-                                      >
-                                        <img
-                                          src={pdfLogo}
-                                          alt=""
-                                          class="h-full w-full"
-                                          style={{ opacity: "0.5" }}
-                                        />
-                                      </div>
-                                      <div class="flex mt-4">
-                                        <div class="w-5/6">
-                                          {/* <a
-                                            href={ServerDomain + item}
-                                            target="blank"
-                                          >
-                                            <p class="text-md font-medium mt-2">
-                                              {display_name}{" "}
-                                            </p>
-                                          </a> */}
-                                          <button
-                                            onClick={() =>
-                                              handleFileOpen(
-                                                item.split("/").slice(-1)[0]
-                                              )
-                                            }
-                                          >
-                                            {" "}
-                                            {display_name}{" "}
-                                          </button>
+                  <div class="flex ">
+                      {/* div for the realted files list beigns here */}
+                      <div class="w-4/5">
+                        {/* div for the related files start from here */}
+                          {/* div for the related files of Clients starts*/}
+                            <div class="flex gap-6 flex-wrap">
+                              {
+                                caseDetails.files.map((item) => {
+                                  var filename = item.split("/").slice(-1)[0]
+                                  if(filename.length < 12){
+                                    var display_name = filename
+                                  }
+                                  else {
+                                    var display_name = filename.slice(0,12) + " ..."
+                                  }
+                                  var extension = filename.split(".").slice(-1)[0].toLowerCase()
+                                  var owner = filename.split(".").slice(-2)[0];
+                                  if (owner == "sp"){
+                                    if(extension == "pdf"){
+                                      return (
+                                        <div class="bg-gray-100  shadow rounded-lg">
+                                        <div class="flex justify-end mr-2 mt-1 mb-2">
+                                        {
+                                          owner == "c" ? 
+                                          <div class="flex justify-end mr-2 mt-1 mb-2">
+                                            <button
+                                              class="focus:outline-none"
+                                              onClick={() => DeletePopUp(item)}
+                                            >
+                                              <p class="text-red-400 ml-3">
+                                                <RiDeleteBin5Line />
+                                              </p>
+                                            </button>
+                                          </div>
+                                          :
+                                          ""
+                                        }
                                         </div>
-                                        <div class="w-1/6">
-                                          <button class="focus:outline-none">
-                                            <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                              <MdFileDownload />
+                                        <div
+                                          class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "c" ? "" : "pt-8"} px-4 pb-4`}
+                                          style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                          onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                        >
+                                          <div
+                                            class="inline-flex overflow-hidden"
+                                            style={{ height: "10rem", width: "10rem" }}
+                                          >
+                                            <img
+                                              src={pdfLogo}
+                                              alt=""
+                                              class="h-full w-full"
+                                              style={{ opacity: "0.5" }}
+                                            />
+                                          </div>
+                                          <div class="flex mt-4">
+                                            <div class="w-5/6">
+                                              <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                {" "}
+                                                {display_name}{" "}
+                                              </button>
                                             </div>
-                                          </button>
+                                            <div class="w-1/6">
+                                              <button class="focus:outline-none">
+                                                <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                  <MdFileDownload />
+                                                </div>
+                                              </button>
+                                            </div>
+                                          </div>
                                         </div>
-                                      </div>
                                     </div>
-                                  </div>
-                                );
-                              } else if (
-                                [
-                                  "msword",
-                                  "doc",
-                                  "docx",
-                                  "vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                ].includes(extension)
-                              ) {
-                                return (
-                                  <div class="bg-gray-100  shadow rounded-lg">
-                                    {owner == "c" ? (
-                                      <div class="flex justify-end mr-2 mt-1 mb-2">
-                                        <button
-                                          class="focus:outline-none"
-                                          onClick={() => DeletePopUp(item)}
+                                      )
+                                    }
+                                    else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
+                                      return(
+                                        <div class="bg-gray-100  shadow rounded-lg">
+                                          {
+                                            owner == "c" ? 
+                                            <div class="flex justify-end mr-2 mt-1 mb-2">
+                                              <button
+                                                class="focus:outline-none"
+                                                onClick={() => DeletePopUp(item)}
+                                              >
+                                                <p class="text-red-400 ml-3">
+                                                  <RiDeleteBin5Line />
+                                                </p>
+                                              </button>
+                                            </div>
+                                            :
+                                            ""
+                                          }
+                                        <div
+                                          class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "c" ? "" : "pt-8"} px-4 pb-4`}
+                                          style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                          onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
                                         >
-                                          <p class="text-red-400 ml-3">
-                                            <RiDeleteBin5Line />
-                                          </p>
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                    <div
-                                      class={`flex flex-col items-center justify-center bg-gray-100 ${
-                                        owner == "c" ? "" : "pt-8"
-                                      } px-4 pb-4`}
-                                      style={{ maxWidth: "15rem" }}
-                                    >
-                                      <div
-                                        class="inline-flex overflow-hidden"
-                                        style={{
-                                          height: "10rem",
-                                          width: "10rem",
-                                        }}
-                                      >
-                                        <img
-                                          src={docxLogo}
-                                          alt=""
-                                          class="h-full w-full"
-                                          style={{ opacity: "0.5" }}
-                                        />
-                                      </div>
-                                      <div class="flex mt-4">
-                                        <div class="w-5/6">
-                                          {/* <a
-                                            href={ServerDomain + item}
-                                            target="blank"
+                                          <div
+                                            class="inline-flex overflow-hidden"
+                                            style={{ height: "10rem", width: "10rem" }}
                                           >
-                                            <p class="text-md font-medium mt-2">
-                                              {display_name}
-                                            </p>
-                                          </a> */}
+                                            <img
+                                              src={docxLogo}
+                                              alt=""
+                                              class="h-full w-full"
+                                              style={{ opacity: "0.5" }}
+                                            />
+                                          </div>
+                                          <div class="flex mt-4">
+                                            <div class="w-5/6">
+                                              <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                {" "}
+                                                {display_name}{" "}
+                                              </button>
+                                            </div>
+                                            <div class="w-1/6">
+                                              <button class="focus:outline-none">
+                                                <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                  <MdFileDownload />
+                                                </div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        </div>
+                                      )
+                                    }
+                                    else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
+                                      return(
+                                        <div class="bg-gray-100  shadow rounded-lg">
+                                          {
+                                            owner == "c" ? 
+                                            <div class="flex justify-end mr-2 mt-1 mb-2">
+                                              <button
+                                                class="focus:outline-none"
+                                                onClick={() => DeletePopUp(item)}
+                                              >
+                                                <p class="text-red-400 ml-3">
+                                                  <RiDeleteBin5Line />
+                                                </p>
+                                              </button>
+                                            </div>
+                                            :
+                                            ""
+                                          }
+                                        <div
+                                          class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "c" ? "" : "pt-8"} px-4 pb-4`}
+                                          style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                          onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                        >
+                                          <div
+                                            class="inline-flex overflow-hidden"
+                                            style={{ height: "10rem", width: "10rem" }}
+                                          >
+                                            <img
+                                              src={imageLogo}
+                                              alt=""
+                                              class="h-full w-full"
+                                              style={{ opacity: "0.5" }}
+                                            />
+                                          </div>
+                                          <div class="flex mt-4">
+                                            <div class="w-5/6">
+                                              <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                {" "}
+                                                {display_name}{" "}
+                                              </button>
+                                            </div>
+                                            <div class="w-1/6">
+                                              <button class="focus:outline-none">
+                                                <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                  <MdFileDownload />
+                                                </div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        </div>
+                                      )
+                                    }
+                                    else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
+                                      return(
+                                        <div class="bg-gray-100  shadow rounded-lg">
+                                          {
+                                            owner == "c" ? 
+                                            <div class="flex justify-end mr-2 mt-1 mb-2">
+                                              <button
+                                                class="focus:outline-none"
+                                                onClick={() => DeletePopUp(item)}
+                                              >
+                                                <p class="text-red-400 ml-3">
+                                                  <RiDeleteBin5Line />
+                                                </p>
+                                              </button>
+                                            </div>
+                                            :
+                                            ""
+                                          }
+                                        <div
+                                          class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "c" ? "" : "pt-8"} px-4 pb-4`}
+                                          style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                          onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                        >
+                                          <div
+                                            class="inline-flex overflow-hidden"
+                                            style={{ height: "10rem", width: "10rem" }}
+                                          >
+                                            <img
+                                              src={dataFileLogo}
+                                              alt=""
+                                              class="h-full w-full"
+                                              style={{ opacity: "0.5" }}
+                                            />
+                                          </div>
+                                          <div class="flex mt-4">
+                                            <div class="w-5/6">
+                                              <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                {" "}
+                                                {display_name}{" "}
+                                              </button>
+                                            </div>
+                                            <div class="w-1/6">
+                                              <button class="focus:outline-none">
+                                                <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                  <MdFileDownload />
+                                                </div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        </div>
+                                      )
+                                    }
 
-                                          <button
-                                            onClick={() =>
-                                              handleFileOpen(
-                                                item.split("/").slice(-1)[0]
-                                              )
-                                            }
-                                          >
-                                            {" "}
-                                            {display_name}{" "}
-                                          </button>
-                                        </div>
-                                        <div class="w-1/6">
-                                          <button class="focus:outline-none">
-                                            <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                              <MdFileDownload />
-                                            </div>
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              } else if (
-                                ["jpeg", "png", "jpg", "gif"].includes(
-                                  extension
-                                )
-                              ) {
-                                return (
-                                  <div class="bg-gray-100  shadow rounded-lg">
-                                    {owner == "c" ? (
-                                      <div class="flex justify-end mr-2 mt-1 mb-2">
-                                        <button
-                                          class="focus:outline-none"
-                                          onClick={() => DeletePopUp(item)}
-                                        >
-                                          <p class="text-red-400 ml-3">
-                                            <RiDeleteBin5Line />
-                                          </p>
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                    <div
-                                      class={`flex flex-col items-center justify-center bg-gray-100 ${
-                                        owner == "c" ? "" : "pt-8"
-                                      } px-4 pb-4`}
-                                      style={{ maxWidth: "15rem" }}
-                                    >
-                                      <div
-                                        class="inline-flex overflow-hidden"
-                                        style={{
-                                          height: "10rem",
-                                          width: "10rem",
-                                        }}
-                                      >
-                                        <img
-                                          src={imageLogo}
-                                          alt=""
-                                          class="h-full w-full"
-                                          style={{ opacity: "0.5" }}
-                                        />
-                                      </div>
-                                      <div class="flex mt-4">
-                                        <div class="w-5/6">
-                                          {/* <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a> */}
-                                          <button
-                                            onClick={() =>
-                                              handleFileOpen(
-                                                item.split("/").slice(-1)[0]
-                                              )
-                                            }
-                                          >
-                                            {" "}
-                                            {display_name}{" "}
-                                          </button>
-                                        </div>
-                                        <div class="w-1/6">
-                                          <button class="focus:outline-none">
-                                            <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                              <MdFileDownload />
-                                            </div>
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              } else if (
-                                ["csv", "xml", "xls", "xlsm", "xlsx"].includes(
-                                  extension
-                                )
-                              ) {
-                                return (
-                                  <div class="bg-gray-100  shadow rounded-lg">
-                                    {owner == "c" ? (
-                                      <div class="flex justify-end mr-2 mt-1 mb-2">
-                                        <button
-                                          class="focus:outline-none"
-                                          onClick={() => DeletePopUp(item)}
-                                        >
-                                          <p class="text-red-400 ml-3">
-                                            <RiDeleteBin5Line />
-                                          </p>
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                    <div
-                                      class={`flex flex-col items-center justify-center bg-gray-100 ${
-                                        owner == "c" ? "" : "pt-8"
-                                      } px-4 pb-4`}
-                                      style={{ maxWidth: "15rem" }}
-                                    >
-                                      <div
-                                        class="inline-flex overflow-hidden"
-                                        style={{
-                                          height: "10rem",
-                                          width: "10rem",
-                                        }}
-                                      >
-                                        <img
-                                          src={dataFileLogo}
-                                          alt=""
-                                          class="h-full w-full"
-                                          style={{ opacity: "0.5" }}
-                                        />
-                                      </div>
-                                      <div class="flex mt-4">
-                                        <div class="w-5/6">
-                                          {/* <a
-                                            href={ServerDomain + item}
-                                            target="blank"
-                                          >
-                                            <p class="text-md font-medium mt-2">
-                                              {display_name}{" "}
-                                            </p>
-                                          </a> */}
-
-                                          <button
-                                            onClick={() =>
-                                              handleFileOpen(
-                                                item.split("/").slice(-1)[0]
-                                              )
-                                            }
-                                          >
-                                            {" "}
-                                            {display_name}{" "}
-                                          </button>
-                                        </div>
-                                        <div class="w-1/6">
-                                          <button class="focus:outline-none">
-                                            <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                              <MdFileDownload />
-                                            </div>
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
+                                  }
+                                })
                               }
-                            })}
-                          </div>
-                        </div>
-                        <div>
-                          <label for="profileImage">
-                            <a
-                              class="h-12 w-auto px-5 py-2 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <em class="fa fa-upload"></em> Add Documents
-                            </a>
-                          </label>
-                          <input
-                            type="file"
-                            name="profileImage"
-                            id="profileImage"
-                            style={{ display: "none" }}
-                            multiple
-                            onChange={(e) => handleFileUpload(e)}
-                            accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                          />
-                        </div>
+                            </div>
+                          {/* div for the related files of Clients ends */}
+
+                          {/* div for the related files of service providers starts */}
+                          <div class="flex gap-6 my-4 flex-wrap">
+                              {
+                                caseDetails.files.map((item) => {
+                                  var filename = item.split("/").slice(-1)[0]
+                                  if(filename.length < 12){
+                                    var display_name = filename
+                                  }
+                                  else {
+                                    var display_name = filename.slice(0,12) + " ..."
+                                  }
+                                  var extension = filename.split(".").slice(-1)[0].toLowerCase()
+                                  var owner = filename.split(".").slice(-2)[0];
+                                  if (owner == "c"){
+                                    if(extension == "pdf"){
+                                      return (
+                                        <div class="bg-gray-100  shadow rounded-lg">
+                                        <div class="flex justify-end mr-2 mt-1 mb-2">
+                                        {
+                                          owner == "c" ? 
+                                          <div class="flex justify-end mr-2 mt-1 mb-2">
+                                            <button
+                                              class="focus:outline-none"
+                                              onClick={() => DeletePopUp(item)}
+                                            >
+                                              <p class="text-red-400 ml-3">
+                                                <RiDeleteBin5Line />
+                                              </p>
+                                            </button>
+                                          </div>
+                                          :
+                                          ""
+                                        }
+                                        </div>
+                                        <div
+                                          class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "c" ? "" : "pt-8"} px-4 pb-4`}
+                                          style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                          onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                        >
+                                          <div
+                                            class="inline-flex overflow-hidden"
+                                            style={{ height: "10rem", width: "10rem" }}
+                                          >
+                                            <img
+                                              src={pdfLogo}
+                                              alt=""
+                                              class="h-full w-full"
+                                              style={{ opacity: "0.5" }}
+                                            />
+                                          </div>
+                                          <div class="flex mt-4">
+                                            <div class="w-5/6">
+                                              <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                {" "}
+                                                {display_name}{" "}
+                                              </button>
+                                            </div>
+                                            <div class="w-1/6">
+                                              <button class="focus:outline-none">
+                                                <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                  <MdFileDownload />
+                                                </div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                    </div>
+                                      )
+                                    }
+                                    else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
+                                      return(
+                                        <div class="bg-gray-100  shadow rounded-lg">
+                                          {
+                                            owner == "c" ? 
+                                            <div class="flex justify-end mr-2 mt-1 mb-2">
+                                              <button
+                                                class="focus:outline-none"
+                                                onClick={() => DeletePopUp(item)}
+                                              >
+                                                <p class="text-red-400 ml-3">
+                                                  <RiDeleteBin5Line />
+                                                </p>
+                                              </button>
+                                            </div>
+                                            :
+                                            ""
+                                          }
+                                        <div
+                                          class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "c" ? "" : "pt-8"} px-4 pb-4`}
+                                          style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                          onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                        >
+                                          <div
+                                            class="inline-flex overflow-hidden"
+                                            style={{ height: "10rem", width: "10rem" }}
+                                          >
+                                            <img
+                                              src={docxLogo}
+                                              alt=""
+                                              class="h-full w-full"
+                                              style={{ opacity: "0.5" }}
+                                            />
+                                          </div>
+                                          <div class="flex mt-4">
+                                            <div class="w-5/6">
+                                              <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                {" "}
+                                                {display_name}{" "}
+                                              </button>
+                                            </div>
+                                            <div class="w-1/6">
+                                              <button class="focus:outline-none">
+                                                <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                  <MdFileDownload />
+                                                </div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        </div>
+                                      )
+                                    }
+                                    else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
+                                      return(
+                                        <div class="bg-gray-100  shadow rounded-lg">
+                                          {
+                                            owner == "c" ? 
+                                            <div class="flex justify-end mr-2 mt-1 mb-2">
+                                              <button
+                                                class="focus:outline-none"
+                                                onClick={() => DeletePopUp(item)}
+                                              >
+                                                <p class="text-red-400 ml-3">
+                                                  <RiDeleteBin5Line />
+                                                </p>
+                                              </button>
+                                            </div>
+                                            :
+                                            ""
+                                          }
+                                        <div
+                                          class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "c" ? "" : "pt-8"} px-4 pb-4`}
+                                          style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                          onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                        >
+                                          <div
+                                            class="inline-flex overflow-hidden"
+                                            style={{ height: "10rem", width: "10rem" }}
+                                          >
+                                            <img
+                                              src={imageLogo}
+                                              alt=""
+                                              class="h-full w-full"
+                                              style={{ opacity: "0.5" }}
+                                            />
+                                          </div>
+                                          <div class="flex mt-4">
+                                            <div class="w-5/6">
+                                              <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                {" "}
+                                                {display_name}{" "}
+                                              </button>
+                                            </div>
+                                            <div class="w-1/6">
+                                              <button class="focus:outline-none">
+                                                <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                  <MdFileDownload />
+                                                </div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        </div>
+                                      )
+                                    }
+                                    else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
+                                      return(
+                                        <div class="bg-gray-100  shadow rounded-lg">
+                                          {
+                                            owner == "c" ? 
+                                            <div class="flex justify-end mr-2 mt-1 mb-2">
+                                              <button
+                                                class="focus:outline-none"
+                                                onClick={() => DeletePopUp(item)}
+                                              >
+                                                <p class="text-red-400 ml-3">
+                                                  <RiDeleteBin5Line />
+                                                </p>
+                                              </button>
+                                            </div>
+                                            :
+                                            ""
+                                          }
+                                        <div
+                                          class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "c" ? "" : "pt-8"} px-4 pb-4`}
+                                          style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                          onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                        >
+                                          <div
+                                            class="inline-flex overflow-hidden"
+                                            style={{ height: "10rem", width: "10rem" }}
+                                          >
+                                            <img
+                                              src={dataFileLogo}
+                                              alt=""
+                                              class="h-full w-full"
+                                              style={{ opacity: "0.5" }}
+                                            />
+                                          </div>
+                                          <div class="flex mt-4">
+                                            <div class="w-5/6">
+                                              <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                {" "}
+                                                {display_name}{" "}
+                                              </button>
+                                            </div>
+                                            <div class="w-1/6">
+                                              <button class="focus:outline-none">
+                                                <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                  <MdFileDownload />
+                                                </div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        </div>
+                                      )
+                                    }
+
+                                  }
+                                })
+                              }
+                            </div>
+                          {/* div for the related files of service providers ends */}
+                        {/* div for the related files ends from here  */}
                       </div>
-                    </nav>
-                  </div>
-                ) : (
+                        {/* Div for adding the documents beigns from here */}
+                      <div class="w-1/5">
+                        <div class="flex flex-col items-end">
+                          <label for="profileImage"> 
+                            <a class="h-12 w-auto px-5 py-2 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg" style={{cursor: "pointer"}}>
+                            <em class="fa fa-upload"></em> Add Documents</a>
+                          </label> 
+                          <input type="file" name="profileImage" 
+                            id="profileImage" style={{display: "none"}} 
+                            multiple
+                            onChange={e => handleFileUpload(e)}
+                            accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            />
+                          </div>
+                      </div>
+                        {/* Div for adding the documents removed from here */}
+                    </div>
+                </div>
+              ) 
+              : 
+              activeTab == "proposals" ?
+              (
                   <div>
                     <ViewCasesProposalClient />
                   </div>
-                )}
+              )
+              :
+              <div>
+                <ClientCaseTransactions />
+              </div>
+              }
               </div>
             </div>
           </div>

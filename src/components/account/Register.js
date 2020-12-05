@@ -8,8 +8,9 @@ import PasswordStrengthBar from "react-password-strength-bar";
 import {PulseLoader} from "react-spinners";
 import { SendEmailConfirmationDispatcher } from "../actions/SendEmailConfirmationAction";
 import { withTranslation } from 'react-i18next';
+import { Redirect } from "react-router-dom";
 
-const Register = ({t}, props) => {
+const Register = ({t}) => {
     //create state
     const[email, setEmail] = useState("")
     const[password, setPassword] = useState("")
@@ -88,7 +89,7 @@ const Register = ({t}, props) => {
 
     const showMessage = () => {
         if(!_.isEmpty(response.data)) {
-             return props.history.push("/user/login")
+            return <Redirect to="/user/login" />
             
         }
     }

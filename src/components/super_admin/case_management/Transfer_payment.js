@@ -14,6 +14,7 @@ const TransferPayment = (props) => {
     const [commission_rate, setCommission_rate] = useState("")
     const [application_fee, setApplication_fee] = useState("")
     const [total_payable_amount, setTotal_payable_amount] = useState("")
+    const [total_payable_amount_converted, setTotal_payable_amount_converted] = useState("")
     const [sp_currency, setSp_currency] = useState("")
     const [admin_stripe_currency, setAdmin_stripe_currency] = useState("")
     const [admin_stripe_balance, setAdmin_stripe_balance] = useState("")
@@ -39,6 +40,7 @@ const TransferPayment = (props) => {
             setAdmin_stripe_currency(data['admin_stripe_currency'])
             setAdmin_stripe_balance(data['admin_stripe_balance'])
             setSp_stripe_account_id(data['sp_stripe_account'])
+            setTotal_payable_amount_converted(data['total_payable_amount_converted'])
 
         })
         .catch((error) => {
@@ -69,7 +71,8 @@ const TransferPayment = (props) => {
             'clientId':clientid,
             'clientName':clientname,
             'spId':spid,
-            'spName':spname
+            'spName':spname,
+            'total_payable_amount_converted': total_payable_amount_converted
         }
         const config = {
             method: 'post',

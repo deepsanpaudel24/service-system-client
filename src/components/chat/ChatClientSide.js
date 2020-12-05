@@ -10,7 +10,7 @@ import { HiChatAlt2 } from "react-icons/hi";
 
 const ChatClientSide = (props) => {
   //functionality related variables
-  const { userId, username, room } = props;
+  const { userId, username, room, refresh_page } = props;
   const [showMoreCount, setShowMoreCount] = useState(null);
   const [msgInfo, setMsgInfo] = useState({
     message: "",
@@ -217,6 +217,10 @@ const ChatClientSide = (props) => {
   // Handeling the files received from server
   const clientReceiveFile = (fileData, chatClientData) => {
     setAllMessages(chatClientData.all_messages);
+    // setTimeout(() => {
+    //   refresh_page()
+    // }, 3000);
+    refresh_page()
   };
 
   

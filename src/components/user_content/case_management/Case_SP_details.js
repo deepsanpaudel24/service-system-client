@@ -30,6 +30,8 @@ import { ReplyCaseRequestResponseReset } from "../../actions/case_management/Rep
 import Timer from "react-compound-timer";
 import { UploadContractPaperResponseReset } from "../../actions/case_management/UploadContractPaperAction";
 import { RequestCompletionDispatcher } from "../../actions/case_management/RequestCompletionAction";
+import CaseTimers from "./Case_Timers";
+import SPCaseTransactions from "./SP_Case_transactions";
 
 const ViewCaseDetailsSP = (props) => {
   const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
@@ -265,9 +267,14 @@ const ViewCaseDetailsSP = (props) => {
     setShowTimer(false)
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");
+    var d = new Date(parseInt(startingTime))
+    var s = new Date(Date.now())
+    console.log('stopping time', s)
     var data = {
         "title": caseDetails.title,
         "startingTime": startingTime,
+        "humanize_starting_time": d.toLocaleString(),
+        "humanize_stopping_time": s.toLocaleString(),
         "stoppingTime": Date.now(),
         "Timervalue": timerRunningTime,
         "Billable": billable,
@@ -327,14 +334,13 @@ const ViewCaseDetailsSP = (props) => {
     setActiveTab("assignment")
   }
 
-  const handleReply = () => {
-    var string = document.location.pathname;
-    var urlvalues = string.toString().split("/");
-    props.history.push("/user/case/reply/" + urlvalues[3]);
-    // return(
-    //   <Redirect to={`/user/case/reply/${urlvalues[3]}`} />
-    // )
-  };
+  const activeTimersTab = () => {
+    setActiveTab("timers")
+  }
+
+  const activeTransactionsTab = () => {
+    setActiveTab("transactions")
+  }
 
   // For timer details
   useEffect(() => {
@@ -468,6 +474,30 @@ const ViewCaseDetailsSP = (props) => {
         console.log(error.response)
       });
       
+  }
+
+  // function to refresh the page data 
+  const refreshPage = () => {
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    const config4 = {
+      method: "get",
+      url: "/api/v1/case-sp/" + urlvalues[3],
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+      },
+    };
+    axios(config4)
+      .then((res) => {
+        setCaseDetails(res.data);
+        setPageLoaoding(false);
+        var tagslist = res.data["caseTags"].toString().split(",");
+        setCaseTags(tagslist);
+        dispatch(CaseDetailsStorageDispatcher(res.data))
+      })
+      .catch((error) => {
+        setPageLoaoding(false);
+      });
   }
 
   const handleRemoveFile = (file) => {
@@ -1027,6 +1057,12 @@ const ViewCaseDetailsSP = (props) => {
                               <li class="mr-1">
                                 <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
                               </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTimersTab()}>Timers</button>
+                              </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTransactionsTab()}>Transactions</button>
+                              </li>
                           </ul>
                       :
                         activeTab == "intro" ?
@@ -1037,19 +1073,20 @@ const ViewCaseDetailsSP = (props) => {
                               <li class="-mb-px mr-1">
                                   <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Client's Introduction</button>
                               </li>
-                              {
-                                caseDetails.status == "Proposal-Forwarded" || caseDetails.status == "On-progress" ? 
-                                  <li class="mr-1">
-                                    <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
-                                  </li>
-                                :
-                                ""
-                              }
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
+                              </li>
                               <li class="mr-1">
                                   <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
                               </li>
                               <li class="mr-1">
                                 <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
+                              </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTimersTab()}>Timers</button>
+                              </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTransactionsTab()}>Transactions</button>
                               </li>
                           </ul>
                       :
@@ -1061,19 +1098,20 @@ const ViewCaseDetailsSP = (props) => {
                               <li class="mr-1">
                                   <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Client's Introduction</button>
                               </li>
-                              {
-                                caseDetails.status == "Proposal-Forwarded" || caseDetails.status == "On-progress" ? 
-                                  <li class="-mb-px mr-1">
-                                    <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
-                                  </li>
-                                :
-                                ""
-                              }
+                              <li class="-mb-px mr-1">
+                                <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
+                              </li>
                               <li class="mr-1">
                                   <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
                               </li>
                               <li class="mr-1">
                                 <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
+                              </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTimersTab()}>Timers</button>
+                              </li>
+                              <li class="mr-1">
+                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTransactionsTab()}>Transactions</button>
                               </li>
                           </ul>
                       :
@@ -1085,21 +1123,72 @@ const ViewCaseDetailsSP = (props) => {
                           <li class="mr-1">
                               <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Client's Introduction</button>
                           </li>
-                          {
-                            caseDetails.status == "Proposal-Forwarded" || caseDetails.status == "On-progress" ? 
-                              <li class="mr-1">
-                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
-                              </li>
-                            :
-                            ""
-                          }
+                          <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
+                          </li>
                           <li class="-mb-px mr-1">
                               <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
                           </li>
                           <li class="mr-1">
                               <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
                           </li>
+                          <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTimersTab()}>Timers</button>
+                          </li>
+                          <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTransactionsTab()}>Transactions</button>
+                          </li>
                         </ul>
+                      :
+                      activeTab == "timers" ?
+                      <ul class="flex border-b">
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateDocsTab()}>Related Documents</button>
+                        </li>
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Client's Introduction</button>
+                        </li>
+                        <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
+                        </li>
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
+                        </li>
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
+                        </li>
+                        <li class="-mb-px mr-1">
+                            <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeTimersTab()}>Timers</button>
+                        </li>
+                        <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTransactionsTab()}>Transactions</button>
+                        </li>
+                      </ul>
+                      :
+                      activeTab == "transactions" ?
+                      <ul class="flex border-b">
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateDocsTab()}>Related Documents</button>
+                        </li>
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Client's Introduction</button>
+                        </li>
+                        <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
+                        </li>
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
+                        </li>
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
+                        </li>
+                        <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTimersTab()}>Timers</button>
+                        </li>
+                        <li class="-mb-px mr-1">
+                            <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeTransactionsTab()}>Transactions</button>
+                        </li>
+                      </ul>
                       :
                         <ul class="flex border-b">
                           <li class="mr-1">
@@ -1108,19 +1197,20 @@ const ViewCaseDetailsSP = (props) => {
                           <li class="mr-1">
                               <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Client's Introduction</button>
                           </li>
-                          {
-                            caseDetails.status == "Proposal-Forwarded" || caseDetails.status == "On-progress" ? 
-                              <li class="mr-1">
-                                <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
-                              </li>
-                            :
-                            ""
-                          }
+                          <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeProposalTab()}>My Proposal</button>
+                          </li>
                           <li class="mr-1">
                               <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeGDriveTab()}>Work with Google Drive</button>
                           </li>
                           <li class="-mb-px mr-1">
                               <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeAssignmentTab()}>Assignment</button>
+                          </li>
+                          <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTimersTab()}>Timers</button>
+                          </li>
+                          <li class="mr-1">
+                            <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeTransactionsTab()}>Transactions</button>
                           </li>
                         </ul>
                     }
@@ -1128,39 +1218,44 @@ const ViewCaseDetailsSP = (props) => {
                 {
                   activeTab == "documents" ?
                   <div>
-                    <nav class="flex flex-wrap">
-                      <div class="w-full block flex-grow lg:flex lg:w-auto">
-                          <div class="lg:flex-grow">
-                            <div class="flex gap-6 mt-4">
-                              {
-                                caseDetails.files.map((item) => {
-                                  var filename = item.split("/").slice(-1)[0]
-                                  if(filename.length < 12){
-                                    var display_name = filename
-                                  }
-                                  else {
-                                    var display_name = filename.slice(0,12) + " ..."
-                                  }
-                                  var extension = filename.split(".").slice(-1)[0].toLowerCase()
-                                  var owner = filename.split(".").slice(-2)[0];
-                                  if(extension == "pdf"){
-                                    return(
-                                      <div class="bg-gray-100  shadow rounded-lg">
-                                        {
-                                          owner == "sp" ? 
+                    <div class="flex gap-6">
+                        {/* div for the realted files list beigns here */}
+                        <div class="w-11/12">
+                          {/* div for the related files start from here */}
+                            {/* div for the related files of Clients starts*/}
+                              <div class="flex gap-6 flex-wrap">
+                                {
+                                  caseDetails.files.map((item) => {
+                                    var filename = item.split("/").slice(-1)[0]
+                                    if(filename.length < 12){
+                                      var display_name = filename
+                                    }
+                                    else {
+                                      var display_name = filename.slice(0,12) + " ..."
+                                    }
+                                    var extension = filename.split(".").slice(-1)[0].toLowerCase()
+                                    var owner = filename.split(".").slice(-2)[0];
+                                    if (owner == "c"){
+                                      if(extension == "pdf"){
+                                        return (
+                                          <div class="bg-gray-100  shadow rounded-lg">
                                           <div class="flex justify-end mr-2 mt-1 mb-2">
-                                            <button
-                                              class="focus:outline-none"
-                                              onClick={() => DeletePopUp(item)}
-                                            >
-                                              <p class="text-red-400 ml-3">
-                                                <RiDeleteBin5Line />
-                                              </p>
-                                            </button>
+                                          {
+                                            owner == "sp" ? 
+                                            <div class="flex justify-end mr-2 mt-1 mb-2">
+                                              <button
+                                                class="focus:outline-none"
+                                                onClick={() => DeletePopUp(item)}
+                                              >
+                                                <p class="text-red-400 ml-3">
+                                                  <RiDeleteBin5Line />
+                                                </p>
+                                              </button>
+                                            </div>
+                                            :
+                                            ""
+                                          }
                                           </div>
-                                          :
-                                          ""
-                                        }
                                           <div
                                             class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
                                             style={{ maxWidth: "15rem", cursor: "pointer" }}
@@ -1194,176 +1289,416 @@ const ViewCaseDetailsSP = (props) => {
                                             </div>
                                           </div>
                                       </div>
-                                    )
-                                  }
-                                  else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
-                                    return(
-                                      <div class="bg-gray-100  shadow rounded-lg">
-                                        {
-                                          owner == "sp" ? 
-                                          <div class="flex justify-end mr-2 mt-1 mb-2">
-                                            <button
-                                              class="focus:outline-none"
-                                              onClick={() => DeletePopUp(item)}
-                                            >
-                                              <p class="text-red-400 ml-3">
-                                                <RiDeleteBin5Line />
-                                              </p>
-                                            </button>
-                                          </div>
-                                          :
-                                          ""
-                                        }
-                                      <div
-                                        class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
-                                        style={{ maxWidth: "15rem", cursor: "pointer" }}
-                                        onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
-                                      >
-                                        <div
-                                          class="inline-flex overflow-hidden"
-                                          style={{ height: "10rem", width: "10rem" }}
-                                        >
-                                          <img
-                                            src={docxLogo}
-                                            alt=""
-                                            class="h-full w-full"
-                                            style={{ opacity: "0.5" }}
-                                          />
-                                        </div>
-                                        <div class="flex mt-4">
-                                          <div class="w-5/6">
-                                            <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
-                                              {" "}
-                                              {display_name}{" "}
-                                            </button>
-                                          </div>
-                                          <div class="w-1/6">
-                                            <button class="focus:outline-none">
-                                              <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                                <MdFileDownload />
+                                        )
+                                      }
+                                      else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
+                                        return(
+                                          <div class="bg-gray-100  shadow rounded-lg">
+                                            {
+                                              owner == "sp" ? 
+                                              <div class="flex justify-end mr-2 mt-1 mb-2">
+                                                <button
+                                                  class="focus:outline-none"
+                                                  onClick={() => DeletePopUp(item)}
+                                                >
+                                                  <p class="text-red-400 ml-3">
+                                                    <RiDeleteBin5Line />
+                                                  </p>
+                                                </button>
                                               </div>
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      </div>
-                                    )
-                                  }
-                                  else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
-                                    return(
-                                      <div class="bg-gray-100  shadow rounded-lg">
-                                        {
-                                          owner == "sp" ? 
-                                          <div class="flex justify-end mr-2 mt-1 mb-2">
-                                            <button
-                                              class="focus:outline-none"
-                                              onClick={() => DeletePopUp(item)}
+                                              :
+                                              ""
+                                            }
+                                          <div
+                                            class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                            style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                            onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                          >
+                                            <div
+                                              class="inline-flex overflow-hidden"
+                                              style={{ height: "10rem", width: "10rem" }}
                                             >
-                                              <p class="text-red-400 ml-3">
-                                                <RiDeleteBin5Line />
-                                              </p>
-                                            </button>
-                                          </div>
-                                          :
-                                          ""
-                                        }
-                                      <div
-                                        class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
-                                        style={{ maxWidth: "15rem", cursor: "pointer" }}
-                                        onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
-                                      >
-                                        <div
-                                          class="inline-flex overflow-hidden"
-                                          style={{ height: "10rem", width: "10rem" }}
-                                        >
-                                          <img
-                                            src={imageLogo}
-                                            alt=""
-                                            class="h-full w-full"
-                                            style={{ opacity: "0.5" }}
-                                          />
-                                        </div>
-                                        <div class="flex mt-4">
-                                          <div class="w-5/6">
-                                            <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
-                                              {" "}
-                                              {display_name}{" "}
-                                            </button>
-                                          </div>
-                                          <div class="w-1/6">
-                                            <button class="focus:outline-none">
-                                              <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                                <MdFileDownload />
+                                              <img
+                                                src={docxLogo}
+                                                alt=""
+                                                class="h-full w-full"
+                                                style={{ opacity: "0.5" }}
+                                              />
+                                            </div>
+                                            <div class="flex mt-4">
+                                              <div class="w-5/6">
+                                                <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                  {" "}
+                                                  {display_name}{" "}
+                                                </button>
                                               </div>
-                                            </button>
+                                              <div class="w-1/6">
+                                                <button class="focus:outline-none">
+                                                  <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                    <MdFileDownload />
+                                                  </div>
+                                                </button>
+                                              </div>
+                                            </div>
                                           </div>
-                                        </div>
-                                      </div>
-                                      </div>
-                                    )
-                                  }
-                                  else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
-                                    return(
-                                      <div class="bg-gray-100  shadow rounded-lg">
-                                        {
-                                          owner == "sp" ? 
-                                          <div class="flex justify-end mr-2 mt-1 mb-2">
-                                            <button
-                                              class="focus:outline-none"
-                                              onClick={() => DeletePopUp(item)}
+                                          </div>
+                                        )
+                                      }
+                                      else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
+                                        return(
+                                          <div class="bg-gray-100  shadow rounded-lg">
+                                            {
+                                              owner == "sp" ? 
+                                              <div class="flex justify-end mr-2 mt-1 mb-2">
+                                                <button
+                                                  class="focus:outline-none"
+                                                  onClick={() => DeletePopUp(item)}
+                                                >
+                                                  <p class="text-red-400 ml-3">
+                                                    <RiDeleteBin5Line />
+                                                  </p>
+                                                </button>
+                                              </div>
+                                              :
+                                              ""
+                                            }
+                                          <div
+                                            class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                            style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                            onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                          >
+                                            <div
+                                              class="inline-flex overflow-hidden"
+                                              style={{ height: "10rem", width: "10rem" }}
                                             >
-                                              <p class="text-red-400 ml-3">
-                                                <RiDeleteBin5Line />
-                                              </p>
-                                            </button>
-                                          </div>
-                                          :
-                                          ""
-                                        }
-                                      <div
-                                        class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
-                                        style={{ maxWidth: "15rem", cursor: "pointer" }}
-                                        onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
-                                      >
-                                        <div
-                                          class="inline-flex overflow-hidden"
-                                          style={{ height: "10rem", width: "10rem" }}
-                                        >
-                                          <img
-                                            src={dataFileLogo}
-                                            alt=""
-                                            class="h-full w-full"
-                                            style={{ opacity: "0.5" }}
-                                          />
-                                        </div>
-                                        <div class="flex mt-4">
-                                          <div class="w-5/6">
-                                            <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
-                                              {" "}
-                                              {display_name}{" "}
-                                            </button>
-                                          </div>
-                                          <div class="w-1/6">
-                                            <button class="focus:outline-none">
-                                              <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
-                                                <MdFileDownload />
+                                              <img
+                                                src={imageLogo}
+                                                alt=""
+                                                class="h-full w-full"
+                                                style={{ opacity: "0.5" }}
+                                              />
+                                            </div>
+                                            <div class="flex mt-4">
+                                              <div class="w-5/6">
+                                                <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                  {" "}
+                                                  {display_name}{" "}
+                                                </button>
                                               </div>
-                                            </button>
+                                              <div class="w-1/6">
+                                                <button class="focus:outline-none">
+                                                  <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                    <MdFileDownload />
+                                                  </div>
+                                                </button>
+                                              </div>
+                                            </div>
                                           </div>
-                                        </div>
+                                          </div>
+                                        )
+                                      }
+                                      else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
+                                        return(
+                                          <div class="bg-gray-100  shadow rounded-lg">
+                                            {
+                                              owner == "sp" ? 
+                                              <div class="flex justify-end mr-2 mt-1 mb-2">
+                                                <button
+                                                  class="focus:outline-none"
+                                                  onClick={() => DeletePopUp(item)}
+                                                >
+                                                  <p class="text-red-400 ml-3">
+                                                    <RiDeleteBin5Line />
+                                                  </p>
+                                                </button>
+                                              </div>
+                                              :
+                                              ""
+                                            }
+                                          <div
+                                            class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                            style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                            onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                          >
+                                            <div
+                                              class="inline-flex overflow-hidden"
+                                              style={{ height: "10rem", width: "10rem" }}
+                                            >
+                                              <img
+                                                src={dataFileLogo}
+                                                alt=""
+                                                class="h-full w-full"
+                                                style={{ opacity: "0.5" }}
+                                              />
+                                            </div>
+                                            <div class="flex mt-4">
+                                              <div class="w-5/6">
+                                                <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                  {" "}
+                                                  {display_name}{" "}
+                                                </button>
+                                              </div>
+                                              <div class="w-1/6">
+                                                <button class="focus:outline-none">
+                                                  <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                    <MdFileDownload />
+                                                  </div>
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          </div>
+                                        )
+                                      }
+
+                                    }
+                                  })
+                                }
+                              </div>
+                            {/* div for the related files of Clients ends */}
+
+                            {/* div for the related files of service providers starts */}
+                            <div class="flex gap-6 my-4 flex-wrap">
+                                {
+                                  caseDetails.files.map((item) => {
+                                    var filename = item.split("/").slice(-1)[0]
+                                    if(filename.length < 12){
+                                      var display_name = filename
+                                    }
+                                    else {
+                                      var display_name = filename.slice(0,12) + " ..."
+                                    }
+                                    var extension = filename.split(".").slice(-1)[0].toLowerCase()
+                                    var owner = filename.split(".").slice(-2)[0];
+                                    if (owner == "sp"){
+                                      if(extension == "pdf"){
+                                        return (
+                                          <div class="bg-gray-100  shadow rounded-lg">
+                                          <div class="flex justify-end mr-2 mt-1 mb-2">
+                                          {
+                                            owner == "sp" ? 
+                                            <div class="flex justify-end mr-2 mt-1 mb-2">
+                                              <button
+                                                class="focus:outline-none"
+                                                onClick={() => DeletePopUp(item)}
+                                              >
+                                                <p class="text-red-400 ml-3">
+                                                  <RiDeleteBin5Line />
+                                                </p>
+                                              </button>
+                                            </div>
+                                            :
+                                            ""
+                                          }
+                                          </div>
+                                          <div
+                                            class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                            style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                            onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                          >
+                                            <div
+                                              class="inline-flex overflow-hidden"
+                                              style={{ height: "10rem", width: "10rem" }}
+                                            >
+                                              <img
+                                                src={pdfLogo}
+                                                alt=""
+                                                class="h-full w-full"
+                                                style={{ opacity: "0.5" }}
+                                              />
+                                            </div>
+                                            <div class="flex mt-4">
+                                              <div class="w-5/6">
+                                                <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                  {" "}
+                                                  {display_name}{" "}
+                                                </button>
+                                              </div>
+                                              <div class="w-1/6">
+                                                <button class="focus:outline-none">
+                                                  <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                    <MdFileDownload />
+                                                  </div>
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
                                       </div>
-                                      </div>
-                                    )
-                                  }
-                                })
-                              }
-                            </div>
-                              
-                          </div>
-                          <div>
+                                        )
+                                      }
+                                      else if(["msword", "doc", "docx" ,"vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(extension)){
+                                        return(
+                                          <div class="bg-gray-100  shadow rounded-lg">
+                                            {
+                                              owner == "sp" ? 
+                                              <div class="flex justify-end mr-2 mt-1 mb-2">
+                                                <button
+                                                  class="focus:outline-none"
+                                                  onClick={() => DeletePopUp(item)}
+                                                >
+                                                  <p class="text-red-400 ml-3">
+                                                    <RiDeleteBin5Line />
+                                                  </p>
+                                                </button>
+                                              </div>
+                                              :
+                                              ""
+                                            }
+                                          <div
+                                            class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                            style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                            onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                          >
+                                            <div
+                                              class="inline-flex overflow-hidden"
+                                              style={{ height: "10rem", width: "10rem" }}
+                                            >
+                                              <img
+                                                src={docxLogo}
+                                                alt=""
+                                                class="h-full w-full"
+                                                style={{ opacity: "0.5" }}
+                                              />
+                                            </div>
+                                            <div class="flex mt-4">
+                                              <div class="w-5/6">
+                                                <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                  {" "}
+                                                  {display_name}{" "}
+                                                </button>
+                                              </div>
+                                              <div class="w-1/6">
+                                                <button class="focus:outline-none">
+                                                  <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                    <MdFileDownload />
+                                                  </div>
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          </div>
+                                        )
+                                      }
+                                      else if(["jpeg", "png", "jpg", "gif"].includes(extension)){
+                                        return(
+                                          <div class="bg-gray-100  shadow rounded-lg">
+                                            {
+                                              owner == "sp" ? 
+                                              <div class="flex justify-end mr-2 mt-1 mb-2">
+                                                <button
+                                                  class="focus:outline-none"
+                                                  onClick={() => DeletePopUp(item)}
+                                                >
+                                                  <p class="text-red-400 ml-3">
+                                                    <RiDeleteBin5Line />
+                                                  </p>
+                                                </button>
+                                              </div>
+                                              :
+                                              ""
+                                            }
+                                          <div
+                                            class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                            style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                            onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                          >
+                                            <div
+                                              class="inline-flex overflow-hidden"
+                                              style={{ height: "10rem", width: "10rem" }}
+                                            >
+                                              <img
+                                                src={imageLogo}
+                                                alt=""
+                                                class="h-full w-full"
+                                                style={{ opacity: "0.5" }}
+                                              />
+                                            </div>
+                                            <div class="flex mt-4">
+                                              <div class="w-5/6">
+                                                <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                  {" "}
+                                                  {display_name}{" "}
+                                                </button>
+                                              </div>
+                                              <div class="w-1/6">
+                                                <button class="focus:outline-none">
+                                                  <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                    <MdFileDownload />
+                                                  </div>
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          </div>
+                                        )
+                                      }
+                                      else if(["csv", "xml", "xls", "xlsm", "xlsx"].includes(extension)){
+                                        return(
+                                          <div class="bg-gray-100  shadow rounded-lg">
+                                            {
+                                              owner == "sp" ? 
+                                              <div class="flex justify-end mr-2 mt-1 mb-2">
+                                                <button
+                                                  class="focus:outline-none"
+                                                  onClick={() => DeletePopUp(item)}
+                                                >
+                                                  <p class="text-red-400 ml-3">
+                                                    <RiDeleteBin5Line />
+                                                  </p>
+                                                </button>
+                                              </div>
+                                              :
+                                              ""
+                                            }
+                                          <div
+                                            class={`flex flex-col items-center justify-center bg-gray-100 ${owner == "sp" ? "" : "pt-8"} px-4 pb-4`}
+                                            style={{ maxWidth: "15rem", cursor: "pointer" }}
+                                            onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}
+                                          >
+                                            <div
+                                              class="inline-flex overflow-hidden"
+                                              style={{ height: "10rem", width: "10rem" }}
+                                            >
+                                              <img
+                                                src={dataFileLogo}
+                                                alt=""
+                                                class="h-full w-full"
+                                                style={{ opacity: "0.5" }}
+                                              />
+                                            </div>
+                                            <div class="flex mt-4">
+                                              <div class="w-5/6">
+                                                <button onClick={() => handleFileOpen(item.split("/").slice(-1)[0])}>
+                                                  {" "}
+                                                  {display_name}{" "}
+                                                </button>
+                                              </div>
+                                              <div class="w-1/6">
+                                                <button class="focus:outline-none">
+                                                  <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                    <MdFileDownload />
+                                                  </div>
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          </div>
+                                        )
+                                      }
+
+                                    }
+                                  })
+                                }
+                              </div>
+                            {/* div for the related files of service providers ends */}
+                          {/* div for the related files ends from here  */}
+                        </div>
+                          {/* Div for adding the documents beigns from here */}
+                        <div class="w-1/12">
+                          <div class="flex flex-col items-end">
                             <label for="profileImage"> 
                               <a class="h-12 w-auto px-5 py-2 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg" style={{cursor: "pointer"}}>
-                              <em class="fa fa-upload"></em> Add Documents</a>
+                              <em class="fa fa-upload"></em> Add Files</a>
                             </label> 
                             <input type="file" name="profileImage" 
                               id="profileImage" style={{display: "none"}} 
@@ -1371,9 +1706,10 @@ const ViewCaseDetailsSP = (props) => {
                               onChange={e => handleFileUpload(e)}
                               accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                               />
-                          </div>
+                            </div>
+                        </div>
+                          {/* Div for adding the documents removed from here */}
                       </div>
-                    </nav>
                   </div>
                   :
                   activeTab == "intro" ?
@@ -1450,7 +1786,7 @@ const ViewCaseDetailsSP = (props) => {
                         _.isEmpty(propsalDetails.files) ? 
                         ""
                         :
-                        <div class="flex gap-6 mt-3">
+                        <div class="flex gap-6 mt-3 flex-wrap">
                         {
                           propsalDetails.files.map((item) => {
                             var filename = item.split("/").slice(-1)[0]
@@ -1615,6 +1951,12 @@ const ViewCaseDetailsSP = (props) => {
                     <div class="mt-4">
                       <GoogleDriveRelatedFiles caseTitle={caseDetails.title} userName={userName}/>
                     </div>
+                :
+                  activeTab == "transactions" ? 
+                  <SPCaseTransactions />
+                :
+                  activeTab == "timers" ? 
+                  <CaseTimers />
                   :
                     <div>
                       <CaseAssignment />
@@ -1628,6 +1970,7 @@ const ViewCaseDetailsSP = (props) => {
                 userId={caseDetails.logged_in_user_id.$oid}
                 username={caseDetails.logged_in_user_name}
                 room={caseDetails._id.$oid}
+                refresh_page={refreshPage}
               ></ChatClientSide>
             )}
           </div>

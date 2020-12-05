@@ -241,7 +241,7 @@ const GoogleDriveRelatedFiles = (props) => {
                             <button class="bg-green-600 text-white px-3 py-2 mx-2 focus:outline-none" onClick={() => OpenModalCreateGoogleFile("spreadsheet")}>Create Google Sheets</button>
                         </div>
                     }
-                    <div class="flex gap-6 mt-8">
+                    <div class="flex gap-6 mt-8 flex-wrap">
                         {
                             googleFiles.length >= 1 ?
                                 googleFiles.map((item, index) => {

@@ -53,6 +53,8 @@ import ChildAccountListStorageReducer from './ChildAccountListStorageReducer';
 import RequestCompletionReducer from './RequestCompletionReducer';
 import ConfirmCompletionReducer from './ConfirmCompletionReducer';
 import FinalPaymentTransferReducer from './FinalPaymentTransferReducer';
+import CaseListStorageReducer from './CaseTImersListStorageReducer';
+import TransactionsCaseListReducer from './TransactionsListStorageReducer';
 
 const rootReducer =  combineReducers({
     // list of all the reducers
@@ -109,7 +111,9 @@ const rootReducer =  combineReducers({
     ChildAccountListStorageResponse: ChildAccountListStorageReducer,
     RequestCompletionResponse: RequestCompletionReducer,
     ConfirmCompletionResponse: ConfirmCompletionReducer,
-    FinalPaymentTransferResponse: FinalPaymentTransferReducer
+    FinalPaymentTransferResponse: FinalPaymentTransferReducer,
+    CaseListStorageResponse: CaseListStorageReducer,
+    TransactionsCaseListResponse: TransactionsCaseListReducer
 })
 
 export default rootReducer

@@ -21,6 +21,7 @@ import AddEmployee from "../employee_management/Add_employee";
 import EmployeeDetails from "../employee_management/Employee_details";
 import EmployeeRoles from "../employee_management/Roles_employee";
 import ViewEmployees from "../employee_management/View_employees";
+import SPTransactions from "../payments/SP_Transactions";
 import ProfileSetting from "../Profile_setting";
 import AddService from "../service_management/Add_Service";
 import EditService from "../service_management/Edit_service";
@@ -62,6 +63,8 @@ const SPCAContent = () => {
                 <Route exact path="/user/create-intake-form" component={NewCreateIntakeForm} />
                 <Route exact path="/user/intake-form/list" component={ClientIntakeFormList} />
                 <Route exact path="/user/client/intake-form-send/:id" component={SendIntakeForm} />
+
+                <Route exact path="/user/transactions" component={SPTransactions} />
             </Switch>
         </div>
     )

@@ -2,6 +2,10 @@ import React from "react"
 import {Link} from "react-router-dom"
 
 const NavAccount = () => {
+    const handleLanguageChange = e => {
+        localStorage.setItem("lang", e.target.value)
+        window.location.reload()
+    }
     return(
         <div>
                 <nav class="flex items-center justify-between flex-wrap bg- p-6 bg-white">
@@ -21,6 +25,15 @@ const NavAccount = () => {
                             
                         </div>
                         <div>
+                            <select
+                                class="form-select bg-white text-sm mx-2 py-1 px-3 text-black border-black focus:outline-none"
+                                style={{marginRight: "3rem"}}
+                                defaultValue={localStorage.getItem("lang")}
+                                onChange={e => handleLanguageChange(e)}
+                            >
+                                <option value="en">English</option>
+                                <option value="de">German</option>
+                            </select>
                             <Link to="/user/register">
                                 <p class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-black hover:border-transparent hover:text-white hover:bg-black mt-4 lg:mt-0">Sign Up</p>
                             </Link>

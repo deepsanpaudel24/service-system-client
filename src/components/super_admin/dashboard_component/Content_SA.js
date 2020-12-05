@@ -11,6 +11,7 @@ import EmployeeRoles from "../employee_management/Roles_employee";
 import ViewEmployees from "../employee_management/View_employees";
 import PeopleDetails from "../people_mangement/People_details";
 import Proposals from "../case_management/Proposals";
+import SATransactions from "../payments/Transactions";
 
 const SAContent = () => {
     return(
@@ -28,6 +29,8 @@ const SAContent = () => {
                 <Route exact path="/sadmin/people/add" component={AddPeoples} />
                 <Route exact path="/sadmin/people/:id" component={PeopleDetails} />
                 <Route exact path='/sadmin/proposals/:id' component={Proposals} />
+
+                <Route exact path="/sadmin/transactions" component={SATransactions} />
             </Switch>
         </div>
     )

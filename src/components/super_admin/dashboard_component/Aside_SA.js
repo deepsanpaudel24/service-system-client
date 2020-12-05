@@ -9,7 +9,7 @@ import {
   SidebarContent,
 } from 'react-pro-sidebar';
 import { Link } from "react-router-dom";
-import { FaTachometerAlt, FaGem, FaUsers, FaGithub } from 'react-icons/fa';
+import { FaTachometerAlt, FaGem, FaUsers, FaRegListAlt } from 'react-icons/fa';
 
 const SAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
   return (
@@ -47,6 +47,7 @@ const SAAside = ({ collapsed, toggled, handleToggleSidebar }) => {
             <MenuItem icon={<FaGem />}><Link to="/sadmin/cases">Cases</Link></MenuItem>
             <MenuItem icon={<FaUsers />}><Link to="/sadmin/employees">Employees</Link></MenuItem>
             <MenuItem icon={<FaUsers />}><Link to="/sadmin/peoples">Accounts</Link></MenuItem>
+            <MenuItem icon={<FaRegListAlt />}><Link to="/sadmin/transactions">Transactions</Link></MenuItem>
           </Menu>
         </SidebarContent>
 

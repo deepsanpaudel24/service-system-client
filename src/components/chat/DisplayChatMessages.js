@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import download from "downloadjs";
+import {VscFile, VscFileMedia} from "react-icons/vsc"
 
 const DisplayChatMessages = (props) => {
   const { allMessages, currentUserId, caseId } = props;
@@ -81,46 +82,60 @@ const DisplayChatMessages = (props) => {
       let dir = url.pathname.split("/");
       let file_name = dir.slice(-1)[0];
       let file_extension = file_name.split(".")[1].toLowerCase();
-
+      if (file_name.length < 12){
+        var display_name = file_name
+      }
+      else {
+        var display_name = file_name.slice(0,12) + " ..."
+      }
       if (image_type_list.includes(file_extension)) {
         element_key = _id.$oid;
         element = (
-          <>
-            {/* <p>{sender}:</p> */}
-            {/* getting file name from message */}
-            <button onClick={() => handleFileOpen(file_name)}>
-              {file_name}
+          <div class="message bg-blue-500 text-white text-md p-2 self-end my-2 rounded-md shadow ml-3">
+            <button class="px-2 my-1 focus:outline-none" onClick={() => handleFileOpen(file_name)}>
+              <span class="flex">
+                <VscFileMedia class="my-1 mr-1"/>
+                {display_name}
+              </span>
             </button>
-
-            {/* <a
-              class="bg-gray-100 self-end my-1"
-              href={message}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img src={message} alt={file_name} width="20%" height="20%" />
-            </a> */}
-            {/* <i>{created_at}</i> */}
-          </>
+          </div>
         );
       } else {
         element_key = _id.$oid;
         element = (
           <>
-            {/* <b>{sender}:</b> */}
-            <button onClick={() => handleFileOpen(file_name)}>
-              {file_name}
-            </button>
-
-            {/* <a
-              class="bg-gray-100 self-end my-1"
-              href={message}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {file_name}
-            </a> */}
-            {/* <i>{created_at}</i> */}
+            {
+              currentUserId === senderId.$oid ? 
+                <div class="message bg-blue-500 text-white text-md p-2 self-end my-2 rounded-md shadow ml-3">
+                  <button class="px-2 my-1 focus:outline-none" onClick={() => handleFileOpen(file_name)}>
+                    <span class="flex">
+                      <VscFile class="my-1 mr-1"/>
+                      {display_name}
+                    </span>
+                  </button>
+                </div>
+                :
+                <>
+                  <p class="text-xs text-gray-600 px-2 mt-2">
+                    {sender}{" "}
+                    {current_date.getDate() == message_date.getDate()
+                      ? TimeConverter(message_date)
+                      : message_date.getDate() +
+                        "-" +
+                        months[message_date.getMonth()] +
+                        "-" +
+                        message_date.getFullYear()}
+                  </p>
+                    <div class="message bg-white text-gray-700 text-md p-2 self-start my-2 rounded-md shadow ml-3">
+                    <button class="px-2 my-1 focus:outline-none" onClick={() => handleFileOpen(file_name)}>
+                      <span class="flex">
+                        <VscFile class="my-1 mr-1"/>
+                        {display_name}
+                      </span>
+                    </button>
+                  </div>
+                </>
+            }
           </>
         );
       }
@@ -149,10 +164,6 @@ const DisplayChatMessages = (props) => {
               </div>
             </>
           )}
-
-          {/* <p>
-            <b>{sender}:</b> {message} <i>{created_at}</i>
-          </p> */}
         </>
       );
     }

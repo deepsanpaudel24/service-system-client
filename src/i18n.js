@@ -1,7 +1,10 @@
 import { initReactI18next } from "react-i18next";
 import i18n from "i18next";
 let resources;
-let language = "en";
+var language = "en"
+if (localStorage.getItem("lang") !== null){
+  language = localStorage.getItem("lang");
+}
 
 import(`./locales/${language}/translations.json`).then((resp) => {
   resources = {

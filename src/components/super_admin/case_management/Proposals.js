@@ -35,14 +35,6 @@ const Proposals = (props) => {
     return (
         <div>
             <div class="px-4 sm:px-8">
-                <div class="flex">
-                    <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Proposals</p></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5"></div>
-                    <div class="w-1/5">
-                    </div>
-                </div>
                 <div class="py-8">
                     {
                         tableLoading ? 
@@ -68,6 +60,10 @@ const Proposals = (props) => {
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Fee
+                                            </th>
+                                            <th
+                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                                Advance
                                             </th>
                                             <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -104,6 +100,14 @@ const Proposals = (props) => {
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             {
                                                                 <p>{item.rate}/{item.rateType}</p>
+                                                            }
+                                                        </td>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                            {
+                                                                item.hasOwnProperty('paymentType') && item.paymentType == "advance-payment" ? 
+                                                                <p>{item.advancePayment} %</p>
+                                                                :
+                                                                <p>-</p>
                                                             }
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
