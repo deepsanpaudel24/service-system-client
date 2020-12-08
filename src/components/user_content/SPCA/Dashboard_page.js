@@ -170,7 +170,7 @@ const Dashboard = () => {
             </p>
             <p>
               Your account will expire on <b>{UserDetails["expiryDate"]}. </b>{" "}
-              You need to get annual subscription for uninterrupted service.
+              You need to get subscription for uninterrupted service.
             </p>
           </div>
           <div>

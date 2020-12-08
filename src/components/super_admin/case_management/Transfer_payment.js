@@ -19,6 +19,7 @@ const TransferPayment = (props) => {
     const [admin_stripe_currency, setAdmin_stripe_currency] = useState("")
     const [admin_stripe_balance, setAdmin_stripe_balance] = useState("")
     const [sp_stripe_account_id, setSp_stripe_account_id] = useState("")
+    const [conversionRate, setConversionRate] = useState(null)
     const dispatch = useDispatch();
     const response = useSelector((state) => state.FinalPaymentTransferResponse);
 
@@ -41,7 +42,7 @@ const TransferPayment = (props) => {
             setAdmin_stripe_balance(data['admin_stripe_balance'])
             setSp_stripe_account_id(data['sp_stripe_account'])
             setTotal_payable_amount_converted(data['total_payable_amount_converted'])
-
+            setConversionRate(data['conversion_rate'])
         })
         .catch((error) => {
             console.log(error.response)
@@ -72,7 +73,10 @@ const TransferPayment = (props) => {
             'clientName':clientname,
             'spId':spid,
             'spName':spname,
-            'total_payable_amount_converted': total_payable_amount_converted
+            'total_payable_amount_converted': total_payable_amount_converted,
+            'conversion_rate': conversionRate,
+            'commission_rate': commission_rate,
+            'application_fee': application_fee
         }
         const config = {
             method: 'post',

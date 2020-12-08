@@ -26,6 +26,7 @@ export const UpdateProfileSetting = (data) => async dispatch => {
                 type: "UPDATE_PROFILE_SETTING_SUCCESS",
                 payload: res.data
             })
+            localStorage.setItem("lang", data['language'])
 
         })
         .catch((error) => {

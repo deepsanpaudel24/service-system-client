@@ -28,6 +28,7 @@ import { ReplyCaseRequestResponseReset } from "../../actions/case_management/Rep
 
 // IMPORTS FOR THE TIMER  
 import Timer from "react-compound-timer";
+
 import { UploadContractPaperResponseReset } from "../../actions/case_management/UploadContractPaperAction";
 import { RequestCompletionDispatcher } from "../../actions/case_management/RequestCompletionAction";
 import CaseTimers from "./Case_Timers";
@@ -56,6 +57,8 @@ const ViewCaseDetailsSP = (props) => {
   const [ShowTimer, setShowTimer] = useState(false)
 
   const [confirmUploadContract, setConfirmUploadContract] = useState(false)
+
+  const [hasForwardedProposal, setHasForwardedProposal] = useState(false)
 
   const dispatch = useDispatch();
   const response = useSelector((state) => state.AddTimerResponse);
@@ -172,6 +175,7 @@ const ViewCaseDetailsSP = (props) => {
     axios(config2)
     .then((res) => {
       setProposalDetails(res.data)
+      setHasForwardedProposal(true)
     })
     .catch((error) => {
       console.log(error.response)
@@ -269,7 +273,6 @@ const ViewCaseDetailsSP = (props) => {
     var urlvalues = string.toString().split("/");
     var d = new Date(parseInt(startingTime))
     var s = new Date(Date.now())
-    console.log('stopping time', s)
     var data = {
         "title": caseDetails.title,
         "startingTime": startingTime,
@@ -348,14 +351,6 @@ const ViewCaseDetailsSP = (props) => {
   }, []);
 
 
-  const handleSendContract = () => {
-    // redirect to a page with the form where service provider can upload the contract paper 
-    // and send it to the client
-    var string = document.location.pathname;
-    var urlvalues = string.toString().split("/");
-    props.history.push('/user/case/send/contract/'+ urlvalues[3])
-  }
-
   const getTotalTimeWored = async () => {
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");
@@ -364,7 +359,7 @@ const ViewCaseDetailsSP = (props) => {
       url: "/api/v1/total-time/" + urlvalues[3],
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
+        "Authorization": "Bearer " + localStorage.getItem("access_token"),
       },
     };
     const getTotalTime = async () => {
@@ -389,14 +384,6 @@ const ViewCaseDetailsSP = (props) => {
   const handleAskIfBillable = () => {
     setShowIfBillable(true);
   };
-
-  const handleViewContract = () => {
-    var string = document.location.pathname
-    var urlvalues = string.toString().split('/')
-    return(
-        props.history.push("/user/contract/" + urlvalues[3])
-    )
-  }
 
   // allowed file types
   const fileTypes = [
@@ -684,7 +671,7 @@ const ViewCaseDetailsSP = (props) => {
                       </p>
                     </div>
                     <div class="w-1/5 flex justify-end">
-                      {caseDetails.status == "On-progress" || caseDetails.status == "Confirm-Completion" ? (
+                      {caseDetails.status == "On-progress" ? (
                         timerResponse.data["start"] ? (
                           <button class="focus:outline-none">
                             <div
@@ -730,7 +717,20 @@ const ViewCaseDetailsSP = (props) => {
                             </div>
                           </button>
                         </Link>
-                      ) : caseDetails.status == "Contract-Waiting" ? (
+                      )
+                      :
+                      caseDetails.status == "Proposal-Forwarded" && !hasForwardedProposal ? (
+                        <Link to={`/user/case/reply/${caseDetails._id.$oid}`}>
+                          <button class="focus:outline-none">
+                            <div
+                              class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg"
+                            >
+                              Make Proposal
+                            </div>
+                          </button>
+                        </Link>
+                      ) 
+                      : caseDetails.status == "Contract-Waiting" ? (
                         <Link to= {`/user/case/send/contract/${caseDetails._id.$oid}`}>
                           <button class="focus:outline-none">
                             <div
@@ -766,14 +766,19 @@ const ViewCaseDetailsSP = (props) => {
                       <p class="ml-3 mr-10 text-base text-black">
                         {caseDetails.requestedDate}
                       </p>
+                      {/* caseDetails.status == "Proposal-Forwarded" && !hasForwardedProposal */}
                       STATUS{" "}
                       {caseDetails.status == "Forwarded" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
                           RECEIVED
                         </p>
-                      ) : caseDetails.status == "Proposal-Forwarded" ? (
+                      ) : caseDetails.status == "Proposal-Forwarded" && hasForwardedProposal ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
                           PROPOSAL FORWARDED
+                        </p>
+                      ) : caseDetails.status == "Proposal-Forwarded" && !hasForwardedProposal ? (
+                        <p class="ml-3 mr-10 text-base text-blue-600">
+                          RECEIVED
                         </p>
                       ) : caseDetails.status == "Contract-Waiting" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
@@ -830,9 +835,13 @@ const ViewCaseDetailsSP = (props) => {
                           <p class="ml-3 mr-10 text-base text-blue-600">
                             RECEIVED
                           </p>
-                        ) : caseDetails.status == "Proposal-Forwarded" ? (
+                        ) : caseDetails.status == "Proposal-Forwarded" && hasForwardedProposal ? (
                           <p class="ml-3 mr-10 text-base text-blue-600">
                             PROPOSAL FORWARDED
+                          </p>
+                        ) : caseDetails.status == "Proposal-Forwarded" && !hasForwardedProposal ? (
+                          <p class="ml-3 mr-10 text-base text-blue-600">
+                            RECEIVED
                           </p>
                         ) : caseDetails.status == "Contract-Waiting" ? (
                           <p class="ml-3 mr-10 text-base text-blue-600">
@@ -889,9 +898,13 @@ const ViewCaseDetailsSP = (props) => {
                             <p class="ml-3 mr-10 text-base text-blue-600">
                               RECEIVED
                             </p>
-                          ) : caseDetails.status == "Proposal-Forwarded" ? (
+                          ) : caseDetails.status == "Proposal-Forwarded" && hasForwardedProposal ? (
                             <p class="ml-3 mr-10 text-base text-blue-600">
                               PROPOSAL FORWARDED
+                            </p>
+                          ) : caseDetails.status == "Proposal-Forwarded" && !hasForwardedProposal ? (
+                            <p class="ml-3 mr-10 text-base text-blue-600">
+                              RECEIVED
                             </p>
                           ) : caseDetails.status == "Contract-Waiting" ? (
                             <p class="ml-3 mr-10 text-base text-blue-600">
@@ -1223,6 +1236,7 @@ const ViewCaseDetailsSP = (props) => {
                         <div class="w-11/12">
                           {/* div for the related files start from here */}
                             {/* div for the related files of Clients starts*/}
+                            <p class="font-bold mb-4">Files from client</p>
                               <div class="flex gap-6 flex-wrap">
                                 {
                                   caseDetails.files.map((item) => {
@@ -1456,7 +1470,7 @@ const ViewCaseDetailsSP = (props) => {
                                 }
                               </div>
                             {/* div for the related files of Clients ends */}
-
+                            <p class="font-bold mt-4">Your Files</p>
                             {/* div for the related files of service providers starts */}
                             <div class="flex gap-6 my-4 flex-wrap">
                                 {

@@ -10,7 +10,7 @@ import { SendEmailConfirmationDispatcher } from "../actions/SendEmailConfirmatio
 import { withTranslation } from 'react-i18next';
 import { Redirect } from "react-router-dom";
 
-const Register = ({t}) => {
+const Register = ({t}, props) => {
     //create state
     const[email, setEmail] = useState("")
     const[password, setPassword] = useState("")

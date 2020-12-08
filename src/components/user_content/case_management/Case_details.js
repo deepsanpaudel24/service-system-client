@@ -92,6 +92,32 @@ const ViewCaseDetailsClient = (props) => {
 
   useEffect(() => {}, [caseDetails]);
 
+  // function to refresh the page data 
+  const refreshPage = () => {
+    var string = document.location.pathname;
+    var urlvalues = string.toString().split("/");
+    const config = {
+      method: "get",
+      url: "/api/v1/case/" + urlvalues[3],
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+      },
+    };
+    axios(config)
+      .then((res) => {
+        setCaseDetails(res.data["case_details"]);
+        setPageLoaoding(false);
+        var tagslist = res.data["case_details"]["caseTags"]
+          .toString()
+          .split(",");
+        setCaseTags(tagslist);
+        dispatch(CaseDetailsStorageDispatcher(res.data));
+      })
+      .catch((error) => {
+        setPageLoaoding(false);
+      });
+  }
+
   // ************************************* Stripe Checkout Integration Event handler ********************************
 
   // Event handler for the checkout form of stripe 
@@ -704,9 +730,10 @@ const ViewCaseDetailsClient = (props) => {
                   <div>
                   <div class="flex ">
                       {/* div for the realted files list beigns here */}
-                      <div class="w-4/5">
+                      <div class="w-11/12">
                         {/* div for the related files start from here */}
                           {/* div for the related files of Clients starts*/}
+                          <p class="font-bold mb-4">Files from service provider</p>
                             <div class="flex gap-6 flex-wrap">
                               {
                                 caseDetails.files.map((item) => {
@@ -942,6 +969,7 @@ const ViewCaseDetailsClient = (props) => {
                           {/* div for the related files of Clients ends */}
 
                           {/* div for the related files of service providers starts */}
+                          <p class="font-bold mt-4">Your Files</p>
                           <div class="flex gap-6 my-4 flex-wrap">
                               {
                                 caseDetails.files.map((item) => {
@@ -1178,11 +1206,11 @@ const ViewCaseDetailsClient = (props) => {
                         {/* div for the related files ends from here  */}
                       </div>
                         {/* Div for adding the documents beigns from here */}
-                      <div class="w-1/5">
+                      <div class="w-1/12">
                         <div class="flex flex-col items-end">
                           <label for="profileImage"> 
                             <a class="h-12 w-auto px-5 py-2 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg" style={{cursor: "pointer"}}>
-                            <em class="fa fa-upload"></em> Add Documents</a>
+                            <em class="fa fa-upload"></em> Add Files</a>
                           </label> 
                           <input type="file" name="profileImage" 
                             id="profileImage" style={{display: "none"}} 
@@ -1218,6 +1246,7 @@ const ViewCaseDetailsClient = (props) => {
           userId={caseDetails.logged_in_user_id.$oid}
           username={caseDetails.logged_in_user_name}
           room={caseDetails._id.$oid}
+          refresh_page={refreshPage}
         ></ChatClientSide>
       )}
     </div>

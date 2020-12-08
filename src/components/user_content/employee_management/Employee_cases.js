@@ -295,13 +295,13 @@ const EmployeeCases = (props) => {
         // or making the filter active if it is inactive now
         if(activeCompletedFilter) {
             setActiveCompletedFilter(false)
-            var result = filters_value.filter(item => item.status !== "Completed");
+            var result = filters_value.filter(item => item.status !== "Closed");
             handleFilter( result )
             setFilters( result )
         }
         else {
             setActiveCompletedFilter(true)
-            filters_value.push({"status": "Completed" })
+            filters_value.push({"status": "Closed" })
             handleFilter( filters_value )
             setFilters( filters_value )
         }
@@ -335,7 +335,7 @@ const EmployeeCases = (props) => {
                                     onClick={() => handleCompletedFilter()}
                                 >
                                     <div class={`rounded-full text-sm px-3 py-1 ${activeCompletedFilter ? "bg-blue-500 text-white": ""}`}>
-                                        Completed
+                                        Closed
                                     </div>
                                 </div>
                             </div>
@@ -497,12 +497,52 @@ const EmployeeCases = (props) => {
                                                                     <span class="relative">Signed Contract Paper Received</span>
                                                                 </span>
                                                                 :
+                                                                item.status == "Awaiting-Advance-Payment" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Awaiting Advance payment</span>
+                                                                </span>
+                                                                :
                                                                 item.status == "On-progress" ?
                                                                 <span
                                                                     class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
                                                                     <span class="relative">On-progress</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Request-Completion" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Completion Requested</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Confirm-Completion" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Awaiting Final Installment</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Client-Final-Installment-Paid" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Platform Received Final Payment</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "Closed" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Closed</span>
                                                                 </span>
                                                                 :
                                                                 <span

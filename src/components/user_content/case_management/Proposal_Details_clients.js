@@ -13,7 +13,6 @@ import { MdFileDownload } from "react-icons/md";
 import download from "downloadjs";
 
 const ViewProposalDetailsClient = (props) => {
-    const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
     const [proposalDetails, setProposalDetails] = useState([])
     const [pageLoading, setPageLoading] = useState(true)
     const dispatch = useDispatch()
@@ -32,7 +31,6 @@ const ViewProposalDetailsClient = (props) => {
         axios(config)
         .then((res) => {
             setProposalDetails(res.data)
-            console.log("Propsal Details", res.data)
             setPageLoading(false)
         })
         .catch((error) => {
@@ -120,7 +118,7 @@ const ViewProposalDetailsClient = (props) => {
             )
         }
         return(
-            <div>
+            <div class="my-4">
                 <button 
                     class="hover:bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
                     type="button" 
@@ -128,14 +126,6 @@ const ViewProposalDetailsClient = (props) => {
                     onClick={() => handleAccept()}
                 >
                     Accept
-                </button>
-                <button 
-                    class="hover:bg-red-500 text-white font-bold mx-4 py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                    type="button" 
-                    style={{backgroundColor: "#FF0000"}}
-                    onClick={() => handleDeclined()}
-                >
-                    Decline
                 </button>
             </div>
         )

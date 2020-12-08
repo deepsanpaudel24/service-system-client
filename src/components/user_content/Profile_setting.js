@@ -13,12 +13,14 @@ import CreatableSelect from 'react-select/creatable';
 import {PulseLoader} from "react-spinners";
 import VideoPlayer from "./video_player/VideoPlayer";
 import { MdFileUpload } from "react-icons/md";
+import SubscriptionCheckout from "./payments/Subscription_Checkout";
 
 const ProfileSetting = (props) => {
     // declaring a global variables
     var scToSend = ""
     var datePreferencesToSend = ""
     var currencyPreferencesToSend = ""
+    var languagePreferencesToSend = ""
     const [fileNameToShow, setFileNameToShow] = useState([])  
     const [showNameField, setShowNameField] = useState(false)
     const [name, setName] = useState("")
@@ -35,6 +37,9 @@ const ProfileSetting = (props) => {
     const [serviceCategoriesDefaultValue, setServiceCategoriesDefaultValue] = useState([])
     const [datePreferences, setDatePreferences] = useState("")
     const [currencyPreferences, setCurrencyPreferences] = useState("")
+    const [language, setLanguage] = useState("en")
+
+    const [remainingDays, setRemainingDays] = useState(null)
 
     const [fileToSend, setFileToSend] = useState([])
     const [IntroText, setIntroText] = useState("")
@@ -79,6 +84,9 @@ const ProfileSetting = (props) => {
                 setServiceCategoriesDefaultValue(array)
                 setCurrencyPreferences(res.data['currency_preferences'])
                 setDatePreferences(res.data['date_preferences'])
+                if (res.data['language']){
+                    setLanguage(res.data['language'])
+                }
                 setProfileDetailsLoading(false)
                 if(res.data.hasOwnProperty('intro_video')){
                     setShowVideoForm(false)
@@ -86,6 +94,11 @@ const ProfileSetting = (props) => {
                 if(res.data.hasOwnProperty('intro_text')){
                     setShowIntroForm(false)
                 }
+                var current_date = new Date();
+                var exp_date = new Date(res.data['expiryDate']);
+                var diff = Math.abs(exp_date - current_date);
+                var diffDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                setRemainingDays(diffDays);
             })
             .catch((error) => {
                 
@@ -101,6 +114,9 @@ const ProfileSetting = (props) => {
             setServiceCategories(response.data['service_categories'])
             setCurrencyPreferences(response.data['currency_preferences'])
             setDatePreferences(response.data['date_preferences'])
+            if (response.data['language']){
+                setLanguage(response.data['language'])
+            }
             setProfileDetailsLoading(false)
             if(response.data.hasOwnProperty('intro_video')){
                 setShowVideoForm(false)
@@ -108,6 +124,11 @@ const ProfileSetting = (props) => {
             if(response.data.hasOwnProperty('intro_text')){
                 setShowIntroForm(false)
             }
+            var current_date = new Date();
+            var exp_date = new Date(response.data['expiryDate']);
+            var diff = Math.abs(exp_date - current_date);
+            var diffDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            setRemainingDays(diffDays);
         }
         // To check if the user has linked google account 
         var config2 = {
@@ -170,8 +191,8 @@ const ProfileSetting = (props) => {
     const activeBasicInfoTab = () => {
         setActiveTab("basic_info")
     }
-    const activeBillingInfoTab = () => {
-        setActiveTab("billing_info")
+    const activeSubscriptionTab = () => {
+        setActiveTab("subscription_info")
     }
     const activeIntroTab = () => {
         setActiveTab("Intro")
@@ -382,6 +403,11 @@ const ProfileSetting = (props) => {
         currencyPreferencesToSend = e.target.value
     }
 
+    const handleLanguage = e => {
+        //setCurrencyPreferences(e.target.value)
+        languagePreferencesToSend = e.target.value
+    }
+
     const handleDatePreferences = e => {
         //setCurrencyPreferences(e.target.value)
         datePreferencesToSend = e.target.value
@@ -403,6 +429,15 @@ const ProfileSetting = (props) => {
         dispatch(UpdateProfileSetting(data))
         setShowAlert(true)
         setCurrencyPreferences(currencyPreferencesToSend)
+    }
+
+    const submitLanguagePreferences = () => {
+        var data = {
+            "language": languagePreferencesToSend
+        }
+        dispatch(UpdateProfileSetting(data))
+        setShowAlert(true)
+        setLanguage(languagePreferencesToSend)
     }
 
     const OpenVideoUploader = () => {
@@ -492,6 +527,52 @@ const ProfileSetting = (props) => {
                             <button
                                 onClick={() => {
                                     submitCurrencyPreferences();
+                                    onClose();
+                                }}
+                                class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-red-700 border-red-700 hover:border-transparent hover:text-white hover:bg-red-700 mt-4 lg:mt-0"
+                            >
+                                Update it!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+              )
+            },
+            title: 'Confirm to submit'
+        })
+    }
+
+    const OpenModalLanguage = (type) => {
+        confirmAlert({
+            customUI: ({ onClose }) => {
+              return (
+                <div className="bg-white shadow border rounded px-4 py-4 mx-auto max-w-lg" style={{minHeight: "15rem", minWidth: "30rem"}}>
+                    <h1 class="text-3xl text-blue-600 px-4">Choose your prefered language</h1>
+                    <hr class="border-gray-300 my-4" />
+                    <div class= "px-4">
+                        <div class="items-center text-black px-4 py-3 mb-3" role="alert">
+                            <label class="block text-black text-md mb-2" for="name">
+                                Language Preferences
+                            </label>
+                            <select
+                                class="shadow appearance-none border rounded w-full mb-5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                defaultValue={language}
+                                onChange={e => handleLanguage(e)}
+                            >
+                                <option value="en">English</option>
+                                <option value="de">German</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-end mx-3">
+                            <button 
+                                onClick={onClose} 
+                                class="focus:outline-none inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-gray-600 hover:text-black hover:bg-gray-200 mt-4 lg:mt-0"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    submitLanguagePreferences();
                                     onClose();
                                 }}
                                 class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-red-700 border-red-700 hover:border-transparent hover:text-white hover:bg-red-700 mt-4 lg:mt-0"
@@ -757,23 +838,32 @@ const ProfileSetting = (props) => {
                                         <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
                                     </li>
                                     <li class="mr-1">
-                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Introduction</button>
-                                    </li>
-                                </ul>
-                            :
-                            activeTab == "billing_info" ?
-                                <ul class="flex border-b">
-                                    <li class="mr-1">
-                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
+                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeSubscriptionTab()}>Subscription</button>
                                     </li>
                                     <li class="mr-1">
                                         <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Introduction</button>
                                     </li>
                                 </ul>
                             :
+                            activeTab == "subscription_info" ?
                                 <ul class="flex border-b">
                                     <li class="mr-1">
                                         <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
+                                    </li>
+                                    <li class="-mb-px mr-1">
+                                        <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeSubscriptionTab()}>Subscription</button>
+                                    </li>
+                                    <li class="mr-1">
+                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Introduction</button>
+                                    </li>
+                                </ul>
+                            :
+                                <ul class="flex border-b">
+                                    <li class="mr-1">
+                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeBasicInfoTab()}>Basic Information</button>
+                                    </li>
+                                    <li class="mr-1">
+                                        <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activeSubscriptionTab()}>Subscription</button>
                                     </li>
                                     <li class="-mb-px mr-1">
                                         <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activeIntroTab()}>Introduction</button>
@@ -940,6 +1030,21 @@ const ProfileSetting = (props) => {
                                     </div>
                                 </div>
                                 <div class="mt-8 mb-8">
+                                    <div class="flex items-center">
+                                        <div class="w-1/5">
+                                            <p class="text-base text-gray-600">
+                                                LANGUAGE
+                                            </p>
+                                        </div>
+                                        <div class="w-3/5">
+                                            {!_.isEmpty(language) ? language == "en" ? "English": "German" : "NOT SET"}
+                                            <button class="focus:outline-none ml-3 my-4" onClick={() => OpenModalLanguage()}>
+                                                <p class="text-blue-400 mx-6"><FaEdit /></p>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-8 mb-8">
                                     {
                                         haveGoogleCredentials ? 
                                         <div class="flex items-center">
@@ -967,8 +1072,22 @@ const ProfileSetting = (props) => {
                                 </div>
                             </div>
                             :
-                            activeTab == "billing_info" ?
-                            "billing"
+                            activeTab == "subscription_info" ?
+                            <div>
+                                <div class="flex items-center mx-2 my-4">
+                                    <div class="w-1/5">
+                                        <p class="text-base text-gray-600">
+                                            SUBSCRIPTION EXPIRY
+                                        </p>
+                                    </div>
+                                    <div class="w-3/5">
+                                        {!_.isEmpty(profileDetails.expiryDate) ? profileDetails.expiryDate : "NOT SET"}
+                                    </div>
+                                </div>
+                                <div class="flex my-4 items-center">
+                                    <SubscriptionCheckout />
+                                </div>
+                            </div>
                             :
                             <div class="flex mb-4">
                                 <div class="w-3/5 ml-5">

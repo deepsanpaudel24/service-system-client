@@ -28,6 +28,26 @@ const HomePage = (props) => {
         .catch((error) => {
             props.history.push("/user/login")
         })
+
+        const config2 = {
+            method: "get",
+            url: "/api/v1/user/profile-details",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("access_token"),
+            },
+        };
+        axios(config2)
+        .then((res) => {
+            if (res.data['language']){
+                localStorage.setItem("lang", res.data['language'])
+            }
+            else {
+                localStorage.setItem("lang", "en")
+            }
+        })
+        .catch((error) => {});
+
     }, [])
 
     useEffect(() => {

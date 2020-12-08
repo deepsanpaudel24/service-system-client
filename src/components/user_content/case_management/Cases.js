@@ -357,13 +357,13 @@ const ViewCasesClient = (props) => {
         // or making the filter active if it is inactive now
         if(activeCompletedFilter) {
             setActiveCompletedFilter(false)
-            var result = filters_value.filter(item => item.status !== "Completed");
+            var result = filters_value.filter(item => item.status !== "Closed");
             handleFilter( result )
             setFilters( result )
         }
         else {
             setActiveCompletedFilter(true)
-            filters_value.push({"status": "Completed" })
+            filters_value.push({"status": "Closed" })
             handleFilter( filters_value )
             setFilters( filters_value )
         }

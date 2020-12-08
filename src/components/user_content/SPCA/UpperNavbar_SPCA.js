@@ -19,6 +19,9 @@ const SPCANavbar = () => {
     const [sendFirstNotification, setSendFirstNotification] = useState(true)
     const [numberOfNotifications, setNumberOfNotifications] = useState(0);
 
+    //Alert to ask the user to close the timer before they logout.
+    const [showCloseTimerInfo, setShowCloseTimerInfo] = useState(false)
+
     const dispatch = useDispatch()
     const logoutResponse = useSelector(state => state.logoutUserResponse)
     const timerResponse = useSelector(state => state.TimerActionResponse)
@@ -67,22 +70,26 @@ const SPCANavbar = () => {
 
     const handleNotificationClick = (notification_id) => {
         setShowNotifications(false)
-        console.log(notification_id, "notification id")
         dispatch(NotificationChangeStatusDispacther(notification_id))
     }
 
-
-
     const handleLogout = () => {
-        dispatch(LogoutUser())
+        if(timerResponse.data['start']){
+            setShowCloseTimerInfo(true)
+            setShowOptions(false)
+            setShowNotifications(false)
+        }
+        else {
+            dispatch(LogoutUser())
+        }
     }
 
     const LogoutUserResponse = (props) => {
-      if(!_.isEmpty(logoutResponse.data)){
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('refresh_token')
-        window.location.reload(true)
-      }
+        if(!_.isEmpty(logoutResponse.data)){
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+            window.location.reload(true)
+        }
     }
 
     const handleShowOptions = () => {
@@ -110,7 +117,10 @@ const SPCANavbar = () => {
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                         {
                             timerResponse.data['start'] ? 
-                                <Link to={`/user/case/${timerResponse.data['caseId']}`}><p class="text-white text-xl mx-4 mt-1"><BsFillStopwatchFill /></p></Link>
+                                timerResponse.data['caseId'] ?
+                                    <Link to={`/user/case/${timerResponse.data['caseId']}`}><p class="text-white text-xl mx-4 mt-1"><BsFillStopwatchFill /></p></Link>
+                                :
+                                    <Link to={`/user/tasks/${timerResponse.data['taskId']}`}><p class="text-white text-xl mx-4 mt-1"><BsFillStopwatchFill /></p></Link>
                             :
                                 ""
                         }
@@ -196,6 +206,23 @@ const SPCANavbar = () => {
             </div>
             </nav>
             <div class="container max-w-full py-4">
+                <div class="">
+                    { 
+                        showCloseTimerInfo ? 
+                            timerResponse.data['start'] ?
+                            <div class="shadow-md bg-red-100 border-l-4 border-orange-500 text-orange-700 p-4 mx-4 mb-2" role="alert">
+                                <p class="font-bold">Be Warned</p>
+                                <p>Your timer is active now. Inorder to save the timer record you need to close it before you sign out.</p>
+                            </div>
+                            :
+                            <div class="shadow-md bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mx-4 mb-2" role="alert">
+                                <p class="font-bold">Timer saved. You can sign out now.</p>
+                                {/* <p>Your timer record is now saved and you can sign out.</p> */}
+                            </div>
+                        :
+                        ""
+                    }
+                </div>
                 <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mx-4 " style={{minHeight: "53rem"}}>
                     <SPCAContent />
                 </div>
