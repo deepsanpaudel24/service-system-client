@@ -3,8 +3,10 @@ import axios from "axios";
 import {PulseLoader} from "react-spinners";
 import './styles/App.scss';
 import SALayout from "./dashboard_component/Layout_SA";
+import { useHistory } from "react-router";
 
-const SAHomePage = (props) => {
+const SAHomePage = () => {
+    const history = useHistory();
     const [userType, setUserType] = useState("NR")      // NR is used for Not Received User Type
     const [collapsed, setCollapsed] = useState(false)
 
@@ -21,7 +23,7 @@ const SAHomePage = (props) => {
             setUserType(res.data['user_type'])
         })
         .catch((error) => {
-            props.history.push("/user/login")
+            history.push("/user/login")
         })
     }, [])
 

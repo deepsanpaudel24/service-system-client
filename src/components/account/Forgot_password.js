@@ -6,9 +6,10 @@ import NavAccount from "./Nav"
 import ForgotPasswordIcon  from "../../images/forgot_password.png"
 
 import {ResetPassword} from "../actions/AccountAction"
+import { withTranslation } from "react-i18next";
 
 
-const ForgotPassword = () => {
+const ForgotPassword = ({t}) => {
     const [email, setEmail] = useState("")
     const [emailError, setEmailError] = useState("")
     const [showEmailBatch, setShowEmailBatch] = useState(true)
@@ -47,7 +48,8 @@ const ForgotPassword = () => {
                     type="button" 
                     disabled
                 >
-                    Loading ...
+                    {t("Loading ...")}
+                   
                 </button>
             )
         }
@@ -57,7 +59,7 @@ const ForgotPassword = () => {
                 type="button" 
                 onClick={() => handleForgotPassword()}
             >
-                Submit
+                {t("submit")}
             </button>
         )
 
@@ -83,8 +85,8 @@ const ForgotPassword = () => {
                 <form>
                     <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
                         {showEmailConfirmationMessage()}
-                        <p class="text-3xl my-5" style={{textAlign: "center"}}>Forgot Password ?</p>
-                        <p class="text-gray-500 text-xs italic">Fill up your email to get the link to recover your account.</p>
+                        <p class="text-3xl my-5" style={{textAlign: "center"}}>{t("forgot_password")}</p>
+                        <p class="text-gray-500 text-xs italic">{t("recover_email_info")}</p>
                         <div class="flex mb-4">
                             <div class="w-1/5  h-15"></div>
                             <div class="w-3/5 h-15">
@@ -94,7 +96,7 @@ const ForgotPassword = () => {
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                                Email
+                            {t("email")}
                             </label>
                             {
                                 emailError == "" ?
@@ -126,7 +128,7 @@ const ForgotPassword = () => {
                     </div>
                 </form>
                 <p class="text-center text-gray-500 text-xs">
-                    &copy;2020 service system. All rights reserved.
+                        &copy;{t("copyright")}
                 </p>
             </div>
         </div>
@@ -134,4 +136,4 @@ const ForgotPassword = () => {
 
 }
 
-export default ForgotPassword
+export default withTranslation() (ForgotPassword);

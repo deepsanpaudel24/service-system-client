@@ -1,5 +1,11 @@
 import React from "react";
-import {Redirect, Route, Link, BrowserRouter as Router, Switch} from 'react-router-dom';
+import {
+  Redirect,
+  Route,
+  Link,
+  BrowserRouter as Router,
+  Switch,
+} from "react-router-dom";
 import ViewCasesSA from "../case_management/Cases";
 import ViewCaseDetailsSA from "../case_management/Case_details";
 import ChangePassword from "../Change_password";
@@ -14,26 +20,34 @@ import Proposals from "../case_management/Proposals";
 import SATransactions from "../payments/Transactions";
 
 const SAContent = () => {
-    return(
-        <div>
-            <Switch>
-                <Route exact path='/sadmin/change-password' component={ChangePassword} />
-                <Route exact path='/sadmin/employees' component={ViewEmployees} />
-                <Route exact path='/sadmin/add-employee' component={AddEmployee} />
-                <Route exact path='/sadmin/employee/:id' component={EmployeeDetails} />
-                <Route exact path='/sadmin/employee/roles/:id' component={EmployeeRoles} />
-                <Route exact path='/sadmin/cases' component={ViewCasesSA} />
-                <Route exact path='/sadmin/case/:id' component={ViewCaseDetailsSA} />
+  return (
+    <div>
+      <Switch>
+        <Route
+          exact
+          path="/sadmin/change-password"
+          component={ChangePassword}
+        />
+        <Route exact path="/sadmin/employees" component={ViewEmployees} />
+        <Route exact path="/sadmin/add-employee" component={AddEmployee} />
+        <Route exact path="/sadmin/employee/:id" component={EmployeeDetails} />
+        <Route
+          exact
+          path="/sadmin/employee/roles/:id"
+          component={EmployeeRoles}
+        />
+        <Route exact path="/sadmin/cases" component={ViewCasesSA} />
+        <Route exact path="/sadmin/case/:id" component={ViewCaseDetailsSA} />
 
-                <Route exact path='/sadmin/peoples' component={Peoples} />
-                <Route exact path="/sadmin/people/add" component={AddPeoples} />
-                <Route exact path="/sadmin/people/:id" component={PeopleDetails} />
-                <Route exact path='/sadmin/proposals/:id' component={Proposals} />
+        <Route exact path="/sadmin/peoples" component={Peoples} />
+        <Route exact path="/sadmin/people/add" component={AddPeoples} />
+        <Route exact path="/sadmin/people/:id" component={PeopleDetails} />
+        <Route exact path="/sadmin/proposals/:id" component={Proposals} />
 
-                <Route exact path="/sadmin/transactions" component={SATransactions} />
-            </Switch>
-        </div>
-    )
-}
+        <Route exact path="/sadmin/transactions" component={SATransactions} />
+      </Switch>
+    </div>
+  );
+};
 
-export default SAContent
+export default SAContent;
