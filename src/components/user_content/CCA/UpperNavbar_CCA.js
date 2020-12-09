@@ -7,6 +7,7 @@ import _ from "lodash";
 import CCAContent from "./Content_CCA";
 import { NotificationChangeStatusDispacther } from "../../actions/notifications/Notification_change_status_action";
 import { MdNotificationsNone } from 'react-icons/md';
+import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
 
 const CCANavbar = () => {
     const [showOptions, setShowOptions] = useState(false)
@@ -161,8 +162,7 @@ const CCANavbar = () => {
                     <div class="ml-3 relative">
                     <div>
                         <button onClick={() => handleShowOptions()} class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-white transition duration-150 ease-in-out" id="user-menu" aria-label="User menu" aria-haspopup="true">
-                        <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
-                        </button>
+                        <img class="h-8 w-8 rounded-full" src={ProfilePicAvatar}/></button>
                     </div>
                     {
                         showOptions ? 

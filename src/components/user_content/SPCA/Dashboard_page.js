@@ -3,8 +3,11 @@ import { GrStripe } from "react-icons/gr";
 import { HiInformationCircle } from "react-icons/hi";
 import axios from "axios";
 import SubscriptionCheckout from "../payments/Subscription_Checkout";
+import { withTranslation } from "react-i18next";
+import { useHistory } from "react-router";
 
-const Dashboard = () => {
+const Dashboard = ({ t }) => {
+  const history = useHistory();
   const [UserDetails, setUserDetails] = useState([]);
   const [expiryDate, setExpiryDate] = useState();
   const [remainingDays, setRemainingDays] = useState();
@@ -47,19 +50,17 @@ const Dashboard = () => {
     };
     axios(config2)
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         if (res.data.hasOwnProperty("showOnboard")) {
           setShowOnBoard(res.data["showOnboard"]);
           setStripeDetailsSubmited(false);
-
         } else {
-            if (!res.data["details_submitted"]){
-                setStripeOnboardUrlForIncomplete(res.data["url"]);
-                setStripeDetailsSubmited(res.data["details_submitted"]);
-                console.log(res.data["url"]);
-            }
+          if (!res.data["details_submitted"]) {
+            setStripeOnboardUrlForIncomplete(res.data["url"]);
+            setStripeDetailsSubmited(res.data["details_submitted"]);
+            console.log(res.data["url"]);
+          }
         }
-        
       })
       .catch((error) => {
         console.log(error);
@@ -98,10 +99,7 @@ const Dashboard = () => {
             <p class=" text-2xl mr-1">
               <HiInformationCircle />
             </p>
-            <p>
-              You need to onboard on stripe through this platform inorder to
-              receive payments from your clients.
-            </p>
+            <p>{t("stripe_onboard_info")}</p>
           </div>
           <div>
             <button
@@ -110,7 +108,7 @@ const Dashboard = () => {
             >
               <div class="flex w-auto px-3 py-2 flex items-center justify-center bg-indigo-600 text-white shadow-md hover:shadow-lg">
                 <span>
-                  <p class="font-bold">Onboard with stripe</p>
+                  <p class="font-bold">{t("onboard_with_stripe")}</p>
                 </span>
                 <span class="ml-2">
                   <p class="text-xl">
@@ -133,10 +131,7 @@ const Dashboard = () => {
             <p class=" text-2xl mr-1">
               <HiInformationCircle />
             </p>
-            <p>
-              Your stripe account information is not completed.Please continue
-              to on-board for receiving payments from your clients.
-            </p>
+            <p>{t("stripe_acc_info_not_completed")}</p>
           </div>
           <div>
             <button
@@ -145,7 +140,7 @@ const Dashboard = () => {
             >
               <div class="flex w-auto px-3 py-2 flex items-center justify-center bg-indigo-600 text-white shadow-md hover:shadow-lg">
                 <span>
-                  <p class="font-bold">Continue On-boarding</p>
+                  <p class="font-bold">{t("continue_onboarding")}</p>
                 </span>
                 <span class="ml-2">
                   <p class="text-xl">
@@ -169,8 +164,8 @@ const Dashboard = () => {
               <HiInformationCircle />
             </p>
             <p>
-              Your account will expire on <b>{UserDetails["expiryDate"]}. </b>{" "}
-              You need to get subscription for uninterrupted service.
+              {t("acc_expire_on")} <b>{UserDetails["expiryDate"]}. </b>{" "}
+              {t("get_subscription_info")}
             </p>
           </div>
           <div>
@@ -184,4 +179,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default withTranslation()(Dashboard);

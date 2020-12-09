@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import EmpAvatar from "../../../images/emp_avatar.jpg";
 import ClientNonCaseIntakeFormDetails from "./Client_NonCase_intake_form";
 import ClientCases from "./Client_case_list";
+import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
 
 const ClientDetails = (props) => {
   const [clientDetails, setClientDetails] = useState([]);
@@ -106,8 +107,7 @@ const ClientDetails = (props) => {
                 <img
                   style={{ height: "7em" }}
                   class="rounded-full"
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                  alt=""
+                  src={ProfilePicAvatar}
                 />
                 <div
                   class="ml-5 y-5"

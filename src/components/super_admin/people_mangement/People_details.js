@@ -14,6 +14,7 @@ import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
 
 const PeopleDetails = ({ t }) => {
   const history = useHistory();
@@ -237,8 +238,7 @@ const PeopleDetails = ({ t }) => {
                 <img
                   style={{ height: "7em" }}
                   class="rounded-full"
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                  alt=""
+                  src={ProfilePicAvatar}
                 />
                 <div
                   class="ml-5 y-5"

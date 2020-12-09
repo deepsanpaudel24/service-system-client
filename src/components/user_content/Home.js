@@ -8,8 +8,10 @@ import CSLayout from "./CS/Layout_CS";
 import SPSLayout from "./SPS/Layout_SPS";
 import SPCAeLayout from "./SPCAe/Layout_SPCAe";
 import CCAeLayout from "./CCAe/Layout_CCAe";
+import { useHistory } from "react-router";
 
-const HomePage = (props) => {
+const HomePage = () => {
+    const history = useHistory();
     const [userType, setUserType] = useState("NR")      // NR is used for Not Received User Type
     const [collapsed, setCollapsed] = useState(false)
 
@@ -26,7 +28,7 @@ const HomePage = (props) => {
             setUserType(res.data['user_type'])
         })
         .catch((error) => {
-            props.history.push("/user/login")
+            history.push("/user/login")
         })
 
         const config2 = {

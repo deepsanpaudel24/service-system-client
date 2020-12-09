@@ -17,6 +17,7 @@ import {
 } from "../../actions/people_mangement/PeopleListStorage";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
 
 const Peoples = ({ t }) => {
   const history = useHistory();
@@ -706,8 +707,7 @@ const Peoples = ({ t }) => {
                                 <Link to={`/sadmin/people/${item._id.$oid}`}>
                                   <img
                                     class="w-full h-full rounded-full"
-                                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                                    alt=""
+                                    src={ProfilePicAvatar}
                                   />
                                 </Link>
                               </div>

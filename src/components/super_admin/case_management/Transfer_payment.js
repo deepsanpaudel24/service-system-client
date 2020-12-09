@@ -22,6 +22,9 @@ const TransferPayment = (props) => {
     const [admin_stripe_balance, setAdmin_stripe_balance] = useState("")
     const [sp_stripe_account_id, setSp_stripe_account_id] = useState("")
     const [conversionRate, setConversionRate] = useState(null)
+
+    const [canAcceptTransfer, setCanAcceptTransfer] = useState(true)
+    const [onboardMissingMsg, setOnboardMissingMsg] = useState("")
     const dispatch = useDispatch();
     const response = useSelector((state) => state.FinalPaymentTransferResponse);
 
@@ -48,6 +51,20 @@ const TransferPayment = (props) => {
         })
         .catch((error) => {
             console.log(error.response)
+        })
+
+        // To check if the service provider can accept the payment 
+        const config2 = {
+          method: 'get',
+          url: '/api/v1/sadmin/check-sp-stripe/' + spid
+        }
+        axios(config2)
+        .then((res) => {
+          setCanAcceptTransfer(true)
+        })
+        .catch((error) => {
+          setCanAcceptTransfer(false)
+          setOnboardMissingMsg(error.response['data']['message'])
         })
     }, [])
 
@@ -213,18 +230,31 @@ const TransferPayment = (props) => {
 
   return (
     <div>
-      {TransferLoading ? (
+      { TransferLoading ? (
         <div class="">
           <PulseLoader size={10} color={"#6DADE3"} loading={true} />
         </div>
-      ) : (
+      ) 
+      :
+      canAcceptTransfer ?  
+      (
         <button
           class="bg-blue-600 text-white px-3 py-2"
           onClick={() => OpenPaymentReleaseModal()}
         >
           {t("release_payment")}
         </button>
-      )}
+      )
+      :
+      (
+        <div
+          class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mb-4"
+          role="alert"
+        >
+          <p class="font-bold">{onboardMissingMsg}</p>
+        </div>
+      )
+    }
     </div>
   );
 };

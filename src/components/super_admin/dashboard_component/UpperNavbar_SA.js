@@ -9,6 +9,7 @@ import { NotificationChangeStatusDispacther } from "../../actions/notifications/
 import { MdNotificationsNone } from "react-icons/md";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
 
 const SANavbar = ({ t }) => {
   const history = useHistory();
@@ -199,8 +200,7 @@ const SANavbar = ({ t }) => {
                   >
                     <img
                       class="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt=""
+                      src={ProfilePicAvatar}
                     />
                   </button>
                 </div>
@@ -231,13 +231,6 @@ const SANavbar = ({ t }) => {
                         >
                           {t("change_password")}
                         </Link>
-                        <a
-                          href="#"
-                          class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-                          role="menuitem"
-                        >
-                          {t("account_setting")}
-                        </a>
                         <div class="border-t border-gray-200"></div>
                         <button
                           type="submit"

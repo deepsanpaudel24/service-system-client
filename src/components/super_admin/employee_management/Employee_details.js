@@ -8,6 +8,7 @@ import EmpAvatar from "../../../images/emp_avatar.jpg";
 import EmployeeCases from "./Employee_cases";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
 
 const EmployeeDetails = ({ t }) => {
   const history = useHistory();
@@ -43,7 +44,7 @@ const EmployeeDetails = ({ t }) => {
     dispatch(AddEmployeeResponseReset());
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");
-    return history.push("/user/employee/roles/" + urlvalues[3]);
+    return history.push("/sadmin/employee/roles/" + urlvalues[3]);
   };
 
   return (
@@ -76,8 +77,7 @@ const EmployeeDetails = ({ t }) => {
                 <img
                   style={{ height: "7em" }}
                   class="rounded-full"
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                  alt=""
+                  src={ProfilePicAvatar}
                 />
                 <div
                   class="ml-5 y-5"

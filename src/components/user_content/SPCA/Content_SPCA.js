@@ -42,6 +42,7 @@ const SPCAContent = () => {
 
                 <Route exact path='/user/cases' component={ViewCasesSP} />
                 <Route exact path='/user/case/:id' render={() => ( <ViewCaseDetailsSP isAuthed={true} /> )}/>
+                
                 <Route exact path='/user/case/reply/:id' component={ReplyCaseRequest} />
                 <Route exact path='/user/case/send/contract/:id' component={UploadContractPaper} />
                 <Route exact path='/user/contract/:id' component={ContractDetails} />

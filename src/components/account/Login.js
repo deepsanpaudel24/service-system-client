@@ -43,6 +43,7 @@ const Login = ({ t }) => {
     };
     axios(config)
       .then((res) => {
+        localStorage.setItem("lang", res.data['lang'])
         if (res.data["user_type"] == "SA" || res.data["user_type"] == "SAe") {
           history.push("/sadmin/home");
         } else if (res.data["user_type"] == "UVU") {

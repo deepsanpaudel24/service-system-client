@@ -41,7 +41,7 @@ const NavAccount = ({t}) => {
           <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
             <div class="text-sm lg:flex-grow"></div>
             <div>
-              <select
+              {/* <select
                 class="form-select bg-white text-sm mx-2 py-1 px-3 text-black border-black focus:outline-none"
                 style={{ marginRight: "3rem" }}
                 defaultValue={localStorage.getItem("lang")}
@@ -49,7 +49,7 @@ const NavAccount = ({t}) => {
               >
                 <option value="en">English</option>
                 <option value="de">German</option>
-              </select>
+              </select> */}
               <Link to="/user/register">
                 <p class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-black hover:border-transparent hover:text-white hover:bg-black mt-4 lg:mt-0">
                   {t("sign_up")}
@@ -63,6 +63,17 @@ const NavAccount = ({t}) => {
             </div>
           </div>
         </nav>
+        <div class="fixed bottom-2 right-0 flex flex-col items-end">
+                <select
+                    class="form-select bg-orange-100 text-sm py-1 text-black border-black focus:outline-none"
+                    style={{marginRight: "1.7rem"}}
+                    defaultValue={localStorage.getItem("lang")}
+                    onChange={e => handleLanguageChange(e)}
+                >
+                    <option value="en">English</option>
+                    <option value="de">German</option>
+                </select>
+            </div>
       </div>
     );
 }
