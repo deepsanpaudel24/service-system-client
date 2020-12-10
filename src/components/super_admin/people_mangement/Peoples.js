@@ -566,18 +566,6 @@ const Peoples = ({ t }) => {
                 </div>
                 <div
                   class="flex text-xs inline-flex items-center leading-sm mt-4 mr-4 bg-white border text-blue-700 rounded-full cursor-pointer"
-                  onClick={() => handleCSFilter()}
-                >
-                  <div
-                    class={`rounded-full text-sm px-3 py-1 ${
-                      activeCSFilter ? "bg-blue-500 text-white" : ""
-                    }`}
-                  >
-                    {t("client_single")}
-                  </div>
-                </div>
-                <div
-                  class="flex text-xs inline-flex items-center leading-sm mt-4 mr-4 bg-white border text-blue-700 rounded-full cursor-pointer"
                   onClick={() => handleSPCAFilter()}
                 >
                   <div
@@ -586,18 +574,6 @@ const Peoples = ({ t }) => {
                     }`}
                   >
                     {t("sp_admin")}
-                  </div>
-                </div>
-                <div
-                  class="flex text-xs inline-flex items-center leading-sm mt-4 mr-4 bg-white border text-blue-700 rounded-full cursor-pointer"
-                  onClick={() => handleSPSFilter()}
-                >
-                  <div
-                    class={`rounded-full text-sm px-3 py-1 ${
-                      activeSPSFilter ? "bg-blue-500 text-white" : ""
-                    }`}
-                  >
-                    {t("sp_single")}
                   </div>
                 </div>
               </div>

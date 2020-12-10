@@ -13,7 +13,7 @@ import { useHistory } from "react-router";
 const SetupUserType = ({t}) => {
     const history = useHistory();
     const [stepOneType, setStepOneType] = useState("C")
-    const [stepTwoType, setStepTwoType] = useState("S")
+    const [stepTwoType, setStepTwoType] = useState("CA")
     const [userType, setUserType] = useState("NR")      // NR is used for Not Received User Type
     const [formStep, setFormStep] = useState("1")
     const dispatch = useDispatch()
@@ -45,9 +45,9 @@ const SetupUserType = ({t}) => {
         setStepOneType(e.target.value)
     }
 
-    const handleStepTwoType = (e) => {
-        setStepTwoType(e.target.value)
-    }
+    // const handleStepTwoType = (e) => {
+    //     setStepTwoType(e.target.value)
+    // }
 
     const handleStepOneSubmit = () => {
         setFormStep("2")
@@ -171,76 +171,17 @@ const SetupUserType = ({t}) => {
                           </label>
                         </div>
                         <div class="flex justify-between my-2">
-                          <button
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            type="button"
-                            onClick={() => handleStepOneSubmit()}
-                          >
-                            {t("continue")}
-                          </button>
+                          <div class="flex justify-between my-2">
+                            {showData()}
+                          </div>
                         </div>
                       </div>
                       <div class="w-1/6  h-15"></div>
                     </div>
-                  ) : (
-                    <div class="flex mb-4">
-                      <div class="w-1/6  h-15"></div>
-                      <div class="w-2/6  h-15">
-                        <img src={UserTypeIcon} alt="Select user type" />
-                      </div>
-                      <div class="w-2/6 h-12 my-10">
-                        <p class="text-3xl mt-5 mb-4">
-                          {t("select_user_type")}
-                        </p>
-                        <p class="text-1xl mt-5 mb-10 text-gray-500 text-s italic">
-                          {t("is_this_account_for_a_company")}
-                        </p>
-                        <div class="flex items-center mr-4 mb-4">
-                          <input
-                            id="radio1"
-                            type="radio"
-                            name="radio"
-                            class="hidden"
-                            value="CA"
-                            onClick={(e) => {
-                              handleStepTwoType(e);
-                            }}
-                          />
-                          <label
-                            for="radio1"
-                            class="flex items-center cursor-pointer"
-                          >
-                            <span class="w-4 h-4 inline-block mr-1 rounded-full border border-grey"></span>
-                            {t("i_am_company_admin")}
-                          </label>
-                        </div>
-                        <div class="flex items-center mr-4 mb-4">
-                          <input
-                            id="radio2"
-                            type="radio"
-                            name="radio"
-                            class="hidden"
-                            value="S"
-                            onClick={(e) => {
-                              handleStepTwoType(e);
-                            }}
-                            checked
-                          />
-                          <label
-                            for="radio2"
-                            class="flex items-center cursor-pointer"
-                          >
-                            <span class="w-4 h-4 inline-block mr-1 rounded-full border border-grey"></span>
-                            {t("i_am_single_user")}
-                          </label>
-                        </div>
-                        <div class="flex justify-between my-2">
-                          {showData()}
-                        </div>
-                      </div>
-                      <div class="w-1/6  h-15"></div>
-                    </div>
-                  )}
+                  ) 
+                  : 
+                  ""
+                  }
                 </div>
               </form>
             </div>

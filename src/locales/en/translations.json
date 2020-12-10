@@ -325,5 +325,6 @@
    "caps_proposal_sent_on":"PROPOSAL SENT ON",
    "caps_proposed_fee":"PROPOSED FEE",
    "files_from_client":"Files from client",
-   "clients":"Clients"  
+   "clients":"Clients",
+   "caps_total_cases": "Total Cases"  
 }
