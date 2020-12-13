@@ -47,7 +47,7 @@ const ViewProposalDetailsClient = (props) => {
         var urlvalues = string.toString().split("/");
         let config = {
           method: "post",
-          url: "/static/allFiles/" + filename,
+          url: "/api/v1/static/allFiles/" + filename,
           headers: {
             Authorization: "Bearer " + localStorage.getItem("access_token"),
             "Content-Type": "application/json; application/octet-stream",

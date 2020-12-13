@@ -331,7 +331,7 @@ const ViewCaseDetailsSP = (props) => {
     var urlvalues = string.toString().split("/");
     let config = {
       method: "post",
-      url: "/static/allFiles/" + filename,
+      url: "/api/v1/static/allFiles/" + filename,
       headers: {
         "Content-Type": "application/json; application/octet-stream",
       },

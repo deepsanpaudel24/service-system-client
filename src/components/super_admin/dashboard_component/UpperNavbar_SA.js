@@ -75,9 +75,7 @@ const SANavbar = ({ t }) => {
 
   const LogoutUserResponse = () => {
     if (!_.isEmpty(logoutResponse.data)) {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      window.location.reload(true);
+      history.push("/user/login")
     }
   };
 

@@ -39,33 +39,40 @@ const Login = ({ t }) => {
   const resetPasswordResponse = useSelector(
     (state) => state.resetPasswordResponse
   );
+  const logoutResponse = useSelector((state) => state.logoutUserResponse);
 
   useLayoutEffect(() => {
-    const config = {
-      method: "get",
-      url: "/api/v1/user/validity",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
-      },
-    };
-    axios(config)
-      .then((res) => {
-        localStorage.setItem("lang", res.data['lang'])
-        if (res.data["user_type"] == "SA" || res.data["user_type"] == "SAe") {
-          history.push("/sadmin/home");
-        } else if (res.data["user_type"] == "UVU") {
-          history.push("/user/setup/user-type");
-        } else if (!res.data["profile_detailed_completion"]) {
-          history.push("/user/setup/profile/details");
-        } else if (!res.data["profile_basic_completion"]) {
-          history.push("/user/setup/profile/basic");
-        } else {
-          history.push("/user/home");
-        }
-      })
-      .catch((error) => {
-        setShowLoginForm(true);
-      });
+    if (!_.isEmpty(logoutResponse.data)){
+      window.location.reload()
+    }
+    else {
+      const config = {
+        method: "get",
+        url: "/api/v1/user/validity",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config)
+        .then((res) => {
+          localStorage.setItem("lang", res.data['lang'])
+          if (res.data["user_type"] == "SA" || res.data["user_type"] == "SAe") {
+            history.push("/sadmin/home");
+          } else if (res.data["user_type"] == "UVU") {
+            history.push("/user/setup/user-type");
+          } else if (!res.data["profile_detailed_completion"]) {
+            history.push("/user/setup/profile/details");
+          } else if (!res.data["profile_basic_completion"]) {
+            history.push("/user/setup/profile/basic");
+          } else {
+            history.push("/user/home");
+          }
+        })
+        .catch((error) => {
+          setShowLoginForm(true);
+        });
+    }
+    
   }, []);
 
   useEffect(() => {}, [showLoginForm]);

@@ -2,7 +2,8 @@ import { initReactI18next } from "react-i18next";
 import i18n from "i18next";
 let resources;
 var language = "en"
-if (localStorage.getItem("lang") !== null){
+var lang_list = ["en", "de"]
+if (localStorage.getItem("lang") !== null && lang_list.includes(localStorage.getItem("lang"))){
   language = localStorage.getItem("lang");
 }
 

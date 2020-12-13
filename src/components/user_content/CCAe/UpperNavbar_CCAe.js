@@ -8,8 +8,10 @@ import { NotificationChangeStatusDispacther } from "../../actions/notifications/
 import { MdNotificationsNone } from 'react-icons/md';
 import SPCAeContent from "./Content_CCAe";
 import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
+import { useHistory } from "react-router";
 
 const CCAeNavbar = () => {
+    const history = useHistory();
     const [showOptions, setShowOptions] = useState(false)
     // For notification modules
     const [showNotifications, setShowNotifications] = useState(false)
@@ -72,11 +74,9 @@ const CCAeNavbar = () => {
     }
 
     const LogoutUserResponse = (props) => {
-      if(!_.isEmpty(logoutResponse.data)){
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('refresh_token')
-        window.location.reload(true)
-      }
+        if (!_.isEmpty(logoutResponse.data)) {
+            history.push("/user/login")
+          }
     }
 
     const handleShowOptions = () => {

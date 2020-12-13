@@ -8,8 +8,10 @@ import CCAContent from "./Content_CCA";
 import { NotificationChangeStatusDispacther } from "../../actions/notifications/Notification_change_status_action";
 import { MdNotificationsNone } from 'react-icons/md';
 import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
+import { useHistory } from "react-router";
 
 const CCANavbar = () => {
+    const history = useHistory();
     const [showOptions, setShowOptions] = useState(false)
 
     // For notification modules
@@ -75,11 +77,9 @@ const CCANavbar = () => {
     }
 
     const LogoutUserResponse = (props) => {
-      if(!_.isEmpty(logoutResponse.data)){
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('refresh_token')
-        window.location.reload(true)
-      }
+        if (!_.isEmpty(logoutResponse.data)) {
+            history.push("/user/login")
+          }
     }
 
     const handleShowOptions = () => {
