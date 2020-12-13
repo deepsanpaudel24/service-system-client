@@ -1,25 +1,25 @@
 // Action Types
-export const CASES_LIST_STORAGE_FAIL =   'CASES_LIST_STORAGE_FAIL'
-export const CASES_LIST_STORAGE_SUCCESS = 'CASES_LIST_STORAGE_SUCCESS'
-export const CASES_LIST_STORAGE_RESPONSE_RESET = 'CASES_LIST_STORAGE_RESPONSE_RESET'
+export const CASES_TIMERS_LIST_STORAGE_FAIL =   'CASES_TIMERS_LIST_STORAGE_FAIL'
+export const CASES_TIMERS_LIST_STORAGE_SUCCESS = 'CASES_TIMERS_LIST_STORAGE_SUCCESS'
+export const CASES_TIMERS_LIST_STORAGE_RESPONSE_RESET = 'CASES_TIMERS_LIST_STORAGE_RESPONSE_RESET'
 
 
-export const CaseListStorageDispatcher = (data) => dispatch => {
+export const CaseTimersListStorageDispatcher = (data) => dispatch => {
     try {
         dispatch({
-            type: "CASES_LIST_STORAGE_SUCCESS",
+            type: "CASES_TIMERS_LIST_STORAGE_SUCCESS",
             payload: data,
         })
     }
     catch (e) {
         dispatch({
-            type: "CASES_LIST_STORAGE_FAIL"
+            type: "CASES_TIMERS_LIST_STORAGE_FAIL"
         })
     }
 }
 
-export const CaseListStorageResponseReset = () => dispatch => {
+export const CaseTimersListStorageResponseReset = () => dispatch => {
     dispatch({
-        type: "CASES_LIST_STORAGE_RESPONSE_RESET"
+        type: "CASES_TIMERS_LIST_STORAGE_RESPONSE_RESET"
     })
 }

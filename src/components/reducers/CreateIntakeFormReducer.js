@@ -3,6 +3,7 @@ import {
   CREATE_INTAKE_FORM_FAIL,
   CREATE_INTAKE_FORM_SERVER_FAIL,
   CREATE_INTAKE_FORM_SUCESS,
+  CREATE_INTAKE_FORM_RESPONSE_RESET
 } from "../actions/form_generator/CreateIntakeFormAction";
 
 const DefaultState = {
@@ -39,6 +40,14 @@ const CreateIntakeFormReducer = (state = DefaultState, action) => {
         loading: false,
         serverErrorMsg: action.serverErrorMsg,
       };
+    case CREATE_INTAKE_FORM_RESPONSE_RESET:
+      return {
+        ...state,
+        loading: false,
+        data: [],
+        errorMsg: "",
+        serverErrorMsg: "",
+      }
     default:
       return state;
   }

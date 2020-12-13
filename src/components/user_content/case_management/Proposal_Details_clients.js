@@ -221,7 +221,9 @@ const ViewProposalDetailsClient = (props) => {
                                     </div>
                                     {
                         _.isEmpty(proposalDetails.files) ? 
-                        ""
+                        <div class="my-4">
+                          <p class="text-gray-600">No files were attached with this proposals</p>
+                        </div>
                         :
                         <div class="flex gap-6 mt-3">
                         {

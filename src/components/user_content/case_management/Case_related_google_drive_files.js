@@ -104,7 +104,7 @@ const GoogleDriveRelatedFiles = (props) => {
         axios(config)
         .then((res) => {
             setGoogleFileCreateLoading(false)
-            window.open(res.data['redirect_to']);
+            window.open(res.data['redirect_to'],"_self");
         })
         .catch((error) => {
             setGoogleFileCreateLoading(false)

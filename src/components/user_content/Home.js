@@ -4,8 +4,6 @@ import {PulseLoader} from "react-spinners";
 import './styles/App.scss';
 import SPCALayout from "./SPCA/Layout_SPCA";
 import CCALayout from "./CCA/Layout_CCA";
-import CSLayout from "./CS/Layout_CS";
-import SPSLayout from "./SPS/Layout_SPS";
 import SPCAeLayout from "./SPCAe/Layout_SPCAe";
 import CCAeLayout from "./CCAe/Layout_CCAe";
 import { useHistory } from "react-router";
@@ -74,21 +72,11 @@ const HomePage = () => {
                         <div>
                             <SPCALayout />
                         </div>
-                    :
-                        userType == "SPS" ?
-                            <div>
-                                <SPSLayout />
-                            </div>
                         :
                             userType == "CCA" ?
                                 <div>
                                     <CCALayout />
                                 </div>
-                            :
-                                userType == "CS" ?
-                                    <div>
-                                        <CSLayout />
-                                    </div>
                                 :
                                     userType == "SPCAe" ?
                                         <div>

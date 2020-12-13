@@ -5,14 +5,22 @@ import {PulseLoader} from "react-spinners";
 import _, { add } from "lodash";
 import validator from "validator";
 import { EditServiceDispatcher} from "../../actions/service_management/EditServiceAction";
+import folderEmptyIcon from "../../../images/folder_empty.png";
 
 const EditService = (props) => {
     const [pageLoading ,setPageLoaoding] = useState(true)
     const [serviceTitle, setServiceTitle] = useState("")
+    const [serviceTitleError, setServiceTitleError] = useState("")
     const [rateType, setRateType]  = useState("")
+    const [rateTypeError, setRateTypeError]  = useState("")
     const [rate, setRate] = useState(0)
+    const [rateError, setRateError] = useState(0)
     const [avgTimeTaken, setAvgTimeTaken] = useState("")
+    const [avgTimeTakenError, setAvgTimeTakenError] = useState("")
     const [serviceDetails, setServiceDetails] = useState([])
+
+    const [detailsNotFound, setDetailsNotFound] = useState(false)
+
     const dispatch = useDispatch()
     const response = useSelector(state => state.ServiceEditResponse)
 
@@ -29,7 +37,6 @@ const EditService = (props) => {
         axios(config)
         .then((res) => {
             setServiceDetails(res.data)
-            console.log(res.data['rateType'])
             setServiceTitle(res.data['title'])
             setRateType(res.data['rateType'])
             setRate(res.data['rate'])
@@ -38,6 +45,7 @@ const EditService = (props) => {
         })
         .catch((error) => {
             setPageLoaoding(false)
+            setDetailsNotFound(true)
         })
     }, [])
 
@@ -55,10 +63,6 @@ const EditService = (props) => {
 
     const handleRateChange = e => {
         setRate(e.target.value)
-    }
-
-    const handleAvgTimeTaken = e => {
-        setAvgTimeTaken(e.target.value)
     }
 
     const dataValidator = () => {
@@ -128,9 +132,16 @@ const EditService = (props) => {
     
     return (
         <div class="flex mb-4">
-            <div class="w-3/5 ml-5">
-                <form>
-                    <p class="text-3xl my-3">Add Service</p>
+            {
+                detailsNotFound ? 
+                <div>
+                  <p class="mx-3 text-gray-700 text-md">Sorry, no details found.</p>
+                  <img src={folderEmptyIcon} style={{ width: "60%"}}/>
+                </div>
+                :
+                <div class="w-3/5 ml-5">
+                    <form>
+                    <p class="text-3xl my-3">Edit Service</p>
                     {showServerError()}
                     {confirmServiceRegister()}
                     <div class="mt-6 mb-3" >
@@ -138,13 +149,28 @@ const EditService = (props) => {
                             Service Title
                         </label>
                         <div>
-                            <input 
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="service_title" 
-                                type="text"
-                                value={serviceTitle}
-                                onChange={e => handleServiceTitle(e)}
-                            />
+                            {
+                                serviceTitleError == "" ? 
+                                <input 
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="service_title" 
+                                    type="text"
+                                    defaultValue={serviceTitle}
+                                    onChange={e => handleServiceTitle(e)}
+                                />
+                                :
+                                <div>
+                                    <input
+                                        class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        id="service_title_error"
+                                        type="text"
+                                        defaultValue={serviceTitle}
+                                        onChange={e => handleServiceTitle(e)}
+                                    />
+                                    <p class="text-red-500 text-xs italic">{serviceTitleError}</p>
+                                </div>
+                            }
+                            
                         </div>
                     </div>
                     <div class="mt-6 mb-3" >
@@ -152,14 +178,30 @@ const EditService = (props) => {
                             Rate Type
                         </label>
                         <div>
-                            <select 
-                                    onChange={e => handleRateType(e)}
+                            {
+                                rateTypeError == "" ?
+                                <select 
                                     value={rateType}
+                                    onChange={e => handleRateType(e)}
                                     class="shadow block appearance-none text-gray-700 w-full bg-white border px-3 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline">
                                     <option value="">choose ...</option>
                                     <option value="hourly">Hourly fee</option>
                                     <option value="flatFee">Flat fee</option>
-                            </select>
+                                </select>
+                                :
+                                <div>
+                                    <select 
+                                        value={rateType}
+                                        onChange={e => handleRateType(e)}
+                                        class="shadow block appearance-none text-gray-700 w-full bg-white border border-red-500 px-3 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline">
+                                        <option value="">choose ...</option>
+                                        <option value="hourly">Hourly fee</option>
+                                        <option value="flatFee">Flat fee</option>
+                                    </select>
+                                    <p class="text-red-500 text-xs italic">{rateTypeError}</p>
+                                </div>
+                            }
+                            
                         </div>
                     </div>
                     {
@@ -169,13 +211,27 @@ const EditService = (props) => {
                                     Hourly Rate (USD)
                                 </label>
                                 <div>
-                                    <input 
-                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                        id="hourly-fee" 
-                                        type="number"
-                                        value={rate}
-                                        onChange={e => handleRateChange(e)}
-                                    />
+                                    {
+                                        rateError == ""? 
+                                        <input 
+                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            id="hourly-fee" 
+                                            type="number"
+                                            value={rate}
+                                            onChange={e => handleRateChange(e)}
+                                        />
+                                        :
+                                        <div>
+                                            <input
+                                                class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                id="hourly-fee"
+                                                type="number"
+                                                value={rate}
+                                                onChange={e => handleRateChange(e)}
+                                            />
+                                            <p class="text-red-500 text-xs italic">{rateError}</p>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         :
@@ -185,38 +241,39 @@ const EditService = (props) => {
                                         Flat Fee (USD)
                                     </label>
                                     <div>
-                                        <input 
-                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                            id="flat-fee" 
-                                            type="number"
-                                            valu={rate}
-                                            onChange={e => handleRateChange(e)}
-                                        />
+                                        {
+                                            rateError == ""? 
+                                            <input 
+                                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                id="flat-fee" 
+                                                type="number"
+                                                value={rate}
+                                                onChange={e => handleRateChange(e)}
+                                            />
+                                            :
+                                            <div>
+                                                <input
+                                                    class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                    id="flat-fee"
+                                                    type="number"
+                                                    value={rate}
+                                                    onChange={e => handleRateChange(e)}
+                                                />
+                                                <p class="text-red-500 text-xs italic">{rateError}</p>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             :
                             ""
                     }
-                    <div class="mt-6 mb-3" >
-                        <label class="block text-gray-700 text-sm mb-2" for="password">
-                            Average Time Taken (Hours)
-                        </label>
-                        <div>
-                            <input 
-                                class="shadow appearance-none border w-full mr-3 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="hourly-fee" 
-                                type="number"
-                                value={avgTimeTaken}
-                                onChange={e => handleAvgTimeTaken(e)}
-                                />
-                        </div>
-                    </div>
                     <div class="flex justify-start my-5" >
                         {showData()}
                     </div>
                 </form>
-            </div>
-        </div>
+                </div>
+            }
+         </div>
     )
 }
 

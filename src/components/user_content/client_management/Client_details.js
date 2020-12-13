@@ -9,12 +9,16 @@ import EmpAvatar from "../../../images/emp_avatar.jpg";
 import ClientNonCaseIntakeFormDetails from "./Client_NonCase_intake_form";
 import ClientCases from "./Client_case_list";
 import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
+import folderEmptyIcon from "../../../images/folder_empty.png";
 
 const ClientDetails = (props) => {
   const [clientDetails, setClientDetails] = useState([]);
   const [clientDetailsLoading, setClientDetailsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("cases")
   const [numberOfCases, setNumberOfCases] = useState("")
+
+  const [detailsNotFound, setDetailsNotFound] = useState(false)
+
   const dispatch = useDispatch();
   const response = useSelector((state) => state.addEmployeeResponse);
 
@@ -34,7 +38,8 @@ const ClientDetails = (props) => {
         setClientDetailsLoading(false);
       })
       .catch((error) => {
-
+        setClientDetailsLoading(false);
+        setDetailsNotFound(true)
       });
 
       const config2 = {
@@ -100,7 +105,15 @@ const ClientDetails = (props) => {
               </button>
             </div>
           </div>
-        ) : (
+        ) 
+        :
+        detailsNotFound ? 
+        <div>
+          <p class="mx-3 text-gray-700 text-md">Sorry, no details found.</p>
+          <img src={folderEmptyIcon} style={{ width: "60%"}}/>
+        </div>
+        : 
+        (
           <div class="flex">
             <div class="w-4/5">
               <div class="flex">
@@ -144,40 +157,46 @@ const ClientDetails = (props) => {
             </div>
           </div>
         )}
-       
-        <div class="pt-8 pb-5">
-          {
-            activeTab == "cases" ? 
-              <ul class="flex border-b">
-                  <li class="-mb-px mr-1">
-                      <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => handleCaseTab()}>Cases</button>
-                  </li>
-                  <li class="mr-1">
-                      <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => handleIntakeTab()}>Intake form details</button>
-                  </li>
-              </ul>
-            :
-            activeTab == "intake-form-tab" ?
-              <ul class="flex border-b">
-                  <li class="mr-1">
-                      <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => handleCaseTab()}>Cases</button>
-                  </li>
-                  <li class="-mb-px mr-1">
-                      <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => handleIntakeTab()}>Intake form details</button>
-                  </li>
-              </ul>
-            :
-            ""
-          }
-        </div>
         {
-          activeTab == "cases" ? 
-            <ClientCases props={props} />
-          :
-          activeTab == "intake-form-tab" ?
-          <ClientNonCaseIntakeFormDetails />
-          :
+          detailsNotFound ? 
           ""
+          :
+          <div>
+            <div class="pt-8 pb-5">
+              {
+                activeTab == "cases" ? 
+                  <ul class="flex border-b">
+                      <li class="-mb-px mr-1">
+                          <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => handleCaseTab()}>Cases</button>
+                      </li>
+                      <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => handleIntakeTab()}>Intake form details</button>
+                      </li>
+                  </ul>
+                :
+                activeTab == "intake-form-tab" ?
+                  <ul class="flex border-b">
+                      <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => handleCaseTab()}>Cases</button>
+                      </li>
+                      <li class="-mb-px mr-1">
+                          <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => handleIntakeTab()}>Intake form details</button>
+                      </li>
+                  </ul>
+                :
+                ""
+              }
+            </div>
+            {
+              activeTab == "cases" ? 
+                <ClientCases props={props} />
+              :
+              activeTab == "intake-form-tab" ?
+              <ClientNonCaseIntakeFormDetails />
+              :
+              ""
+            }
+          </div>
         }
       </div>
     </div>

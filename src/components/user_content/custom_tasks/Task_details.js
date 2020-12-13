@@ -6,6 +6,7 @@ import _ from "lodash";
 import { AddTimerDispatcher, AddTimerResponseReset } from "../../actions/TimerAction";
 import { TimerDispatcher } from "../../actions/Timer_management/TimerAction";
 import Timer from "react-compound-timer";
+import folderEmptyIcon from "../../../images/folder_empty.png";
 
 const TaskDetails = (props) => {
     const [taskDetails, settaskDetails] = useState([])
@@ -18,6 +19,8 @@ const TaskDetails = (props) => {
     const [billable, setBillable] = useState(false)
     const [InitialTimerValue, setInitialTimerValue] = useState(0)
     const [ShowTimer, setShowTimer] = useState(false)
+
+    const [detailsNotFound, setDetailsNotFound] = useState(false)
 
     const dispatch = useDispatch()
     const response = useSelector(state => state.AddTimerResponse)
@@ -40,6 +43,7 @@ const TaskDetails = (props) => {
         })
         .catch((error) => {
             setPageLoaoding(false)
+            setDetailsNotFound(true)
         })
     }, [])
 
@@ -193,6 +197,12 @@ const TaskDetails = (props) => {
                                     loading={true}
                                 />
                             </div>
+                        </div>
+                    :
+                    detailsNotFound ? 
+                        <div>
+                            <p class="mx-3 text-gray-700 text-md">Sorry, no details found.</p>
+                            <img src={folderEmptyIcon} style={{ width: "60%"}}/>
                         </div>
                     :
                         <div>

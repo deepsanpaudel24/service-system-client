@@ -29,9 +29,11 @@ const Clients = (props) => {
   const [activeVerfiedFilter, setActiveVerifiedFilter] = useState(false);
   const [activeUnverfiedFilter, setActiveUnverifiedFilter] = useState(false);
 
+  const [showAddedAlert, setShowAddedAlert] = useState(false)
+
   const dispatch = useDispatch();
   const response2 = useSelector((state) => state.ClientListStorageResponse);
-
+  const response = useSelector(state => state.ClientRegisterResponse)
   // gets authorized client
   useLayoutEffect(() => {
     const config = {
@@ -41,28 +43,48 @@ const Clients = (props) => {
         Authorization: "Bearer " + localStorage.getItem("access_token"),
       },
     };
-    if (response2.data.hasOwnProperty(1)) {
+    if (!_.isEmpty(response.data)){
+      dispatch(AddClientResponseReset())
+      setShowAddedAlert(true)
+      axios(config)
+      .then((res) => {
+        setClients(res.data["clients"]);
+        setTableLoading(false);
+        setTotalRecords(res.data["total_records"]);
+        var page = res.data["page"];
+        dispatch(
+          ClientListStorageDispatcher({
+            [page]: res.data["clients"],
+            total_records: res.data["total_records"],
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
+    }
+    else if (response2.data.hasOwnProperty(1)) {
       var clientList = response2.data[1];
       setClients(clientList);
       setTableLoading(false);
       setTotalRecords(response2.data["total_records"]);
     } else {
       axios(config)
-        .then((res) => {
-          setClients(res.data["clients"]);
-          setTableLoading(false);
-          setTotalRecords(res.data["total_records"]);
-          var page = res.data["page"];
-          dispatch(
-            ClientListStorageDispatcher({
-              [page]: res.data["clients"],
-              total_records: res.data["total_records"],
-            })
-          );
-        })
-        .catch((error) => {
-          console.log(error.response);
-        });
+      .then((res) => {
+        setClients(res.data["clients"]);
+        setTableLoading(false);
+        setTotalRecords(res.data["total_records"]);
+        var page = res.data["page"];
+        dispatch(
+          ClientListStorageDispatcher({
+            [page]: res.data["clients"],
+            total_records: res.data["total_records"],
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
     }
   }, []);
 
@@ -304,7 +326,7 @@ const Clients = (props) => {
 
   return (
     <div>
-      <div class=" px-4 sm:px-8">
+      <div class=" px-4">
         <div class="flex">
           <div class="w-1/5">
             <p class="text-3xl my-3" style={{ textAlign: "left" }}>
@@ -360,6 +382,17 @@ const Clients = (props) => {
             </div>
           </div>
         </nav>
+        {
+            showAddedAlert ?
+            <div
+                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4"
+                role="alert"
+            >
+                <p class="font-bold">Clients added sucessfully</p>
+            </div>
+            :
+            "" 
+        }
         <div class="py-4">
           {tableLoading ? (
             <div class="animate-pulse flex space-x-4">

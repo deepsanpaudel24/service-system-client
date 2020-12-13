@@ -39,9 +39,13 @@ const ViewEmployees = (props) => {
   const [activeVerfiedFilter, setActiveVerifiedFilter] = useState(false);
   const [activeUnverfiedFilter, setActiveUnverifiedFilter] = useState(false);
 
+  const [showConfirmAlert, setShowConfirmAlert] = useState(false)
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false)
+
   const dispatch = useDispatch();
   const response = useSelector((state) => state.EmployeeRemoveResponse);
   const response2 = useSelector((state) => state.EmployeeListStorageResponse);
+  const response3 = useSelector((state) => state.addEmployeeResponse);
 
   useLayoutEffect(() => {
     const config = {
@@ -51,12 +55,10 @@ const ViewEmployees = (props) => {
         Authorization: "Bearer " + localStorage.getItem("access_token"),
       },
     };
-    if (response2.data.hasOwnProperty(1)) {
-      var empList = response2.data[1];
-      setEmployees(empList);
-      setTableLoading(false);
-      setTotalRecords(response2.data["total_records"]);
-    } else {
+    if (!_.isEmpty(response3.data)){
+      setShowConfirmAlert(true)
+      dispatch(EmployeesListStorageResponseReset())
+      dispatch(AddEmployeeResponseReset())
       axios(config)
         .then((res) => {
           setEmployees(res.data["employees"]);
@@ -71,7 +73,31 @@ const ViewEmployees = (props) => {
           );
         })
         .catch((error) => {
-          console.log(error.response);
+          //console.log(error.response);
+        });
+    }
+    else if (response2.data.hasOwnProperty(1) && _.isEmpty(response.data) ) {
+      var empList = response2.data[1];
+      setEmployees(empList);
+      setTableLoading(false);
+      setTotalRecords(response2.data["total_records"]);
+    } else {
+      dispatch(EmployeesListStorageResponseReset())
+      axios(config)
+        .then((res) => {
+          setEmployees(res.data["employees"]);
+          setTableLoading(false);
+          setTotalRecords(res.data["total_records"]);
+          var page = res.data["page"];
+          dispatch(
+            EmployeesListStorageDispatcher({
+              [page]: res.data["employees"],
+              total_records: res.data["total_records"],
+            })
+          );
+        })
+        .catch((error) => {
+          //console.log(error.response);
         });
     }
   }, []);
@@ -307,10 +333,25 @@ const ViewEmployees = (props) => {
 
   // *********************************************************************** //
 
+  // ********************* Function to send the delete request begins*******************//
   const handleConfirmDelete = (id) => {
-    // dispatch action to delete the item with the id parameter
+    // dispatch action to delete the item with the id parameter, id is the employees's $oid
     dispatch(RemoveEmployeeDispatcher(id));
+    
+    dispatch(EmployeesListStorageResponseReset());
+    dispatch(RemoveEmployeeResponseReset())
+    
+    setShowConfirmAlert(false)  // to remove the alert of employee added if present
+    setShowDeleteAlert(true)  // to place the alert of employee deleted 
+    window.location.reload(true)
+    
   };
+
+  useEffect(() => {
+
+  }, [employees])
+
+  // ********************* Function to send the delete request ends *******************//
 
   const showServerError = () => {
     if (!_.isEmpty(response.serverErrorMsg)) {
@@ -323,27 +364,6 @@ const ViewEmployees = (props) => {
           <p>{response.serverErrorMsg}</p>
         </div>
       );
-    }
-  };
-
-  const confirmRemovedEmployee = () => {
-    if (!_.isEmpty(response.data)) {
-      const config = {
-        method: "get",
-        url: "/api/v1/user/employee/list",
-        headers: {
-          Authorization: "Bearer" + localStorage.getItem("access_token"),
-        },
-      };
-      axios(config)
-        .then((res) => {
-          setEmployees(res.data);
-          setTableLoading(false);
-          dispatch(RemoveEmployeeResponseReset());
-        })
-        .catch((error) => {
-          console.log(error.response);
-        });
     }
   };
 
@@ -422,8 +442,7 @@ const ViewEmployees = (props) => {
 
   return (
     <div>
-      <div class=" px-4 sm:px-8">
-        {console.log("redux value ", response2.data)}
+      <div class=" px-4">
         <div class="flex">
           <div class="w-1/5">
             <p class="text-3xl my-3" style={{ textAlign: "left" }}>
@@ -481,7 +500,28 @@ const ViewEmployees = (props) => {
         </nav>
         <div class="py-3">
           {showServerError()}
-          {confirmRemovedEmployee()}
+          {
+            showConfirmAlert ?
+            <div
+              class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-1"
+              role="alert"
+            >
+              <p class="font-bold">{t("employee_added_successfully")}</p>
+            </div>
+            :
+            "" 
+        }
+        {
+          showDeleteAlert ?
+          <div
+            class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-1"
+            role="alert"
+          >
+            <p class="font-bold">{t("employee_deleted_successfully")}</p>
+          </div>
+          :
+          "" 
+        }
           {tableLoading ? (
             <div class="animate-pulse flex space-x-4">
               <div class="flex-1 space-y-4 py-1">

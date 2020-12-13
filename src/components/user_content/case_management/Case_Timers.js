@@ -3,9 +3,8 @@ import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import _ from "lodash";
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import { ServicesListStorageDispatcher, ServicesListStorageResponseReset } from "../../actions/service_management/ServicesListStorage";
 import Pagination from "../Pagination";
-import { CaseListStorageDispatcher, CaseListStorageResponseReset } from "../../actions/case_management/CaseTimersListStorage";
+import {CaseTimersListStorageDispatcher, CaseTimersListStorageResponseReset } from "../../actions/case_management/CaseTimersListStorage";
 
 const CaseTimers = (props) => {
     const [services, setServices] = useState([])
@@ -24,11 +23,10 @@ const CaseTimers = (props) => {
     const [activeNonBillableFilter, setactiveNonBillableFilter] = useState(false)
 
     const dispatch = useDispatch()
-    const response = useSelector(state => state.ServiceRemoveResponse)
-    const response2 = useSelector(state => state.SerivceListStorageResponse)
+    const response = useSelector(state => state.CaseTimersListStorageResponse)
 
     useLayoutEffect(() => {
-        dispatch(CaseListStorageResponseReset())
+        dispatch(CaseTimersListStorageResponseReset())
         var string = document.location.pathname;
         var urlvalues = string.toString().split("/");
         
@@ -39,25 +37,17 @@ const CaseTimers = (props) => {
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
           }
-        if(response2.data.hasOwnProperty(1)){
-            var serviceList = response2.data[1]
-            setServices(serviceList)
-            setTableLoading(false)
-            setTotalRecords(response2.data['total_records'])
-        }
-        else {
-            axios(config)
-            .then((res) => {
-                    setServices(res.data['timers'])
-                    setTableLoading(false)
-                    setTotalRecords(res.data['total_records'])
-                    var page = res.data['page']
-                    dispatch(CaseListStorageDispatcher({[page]: res.data['timers'], 'total_records': res.data['total_records']}))
-            })
-            .catch((error) => {
-                console.log(error.response)
-            })
-        }
+        axios(config)
+        .then((res) => {
+                setServices(res.data['timers'])
+                setTableLoading(false)
+                setTotalRecords(res.data['total_records'])
+                var page = res.data['page']
+                dispatch(CaseTimersListStorageDispatcher({[page]: res.data['timers'], 'total_records': res.data['total_records']}))
+        })
+        .catch((error) => {
+            console.log(error.response)
+        })
     }, [])
   
     useEffect(() => {
@@ -68,7 +58,7 @@ const CaseTimers = (props) => {
         var string = document.location.pathname;
         var urlvalues = string.toString().split("/");
         // send reset dispatch request to redux
-        dispatch(CaseListStorageResponseReset())
+        dispatch(CaseTimersListStorageResponseReset())
         setPage(1)
         setTableLoading(true)
         var defaultPage = 1
@@ -90,7 +80,7 @@ const CaseTimers = (props) => {
             var page = res.data['page']
             reduxResponse[page]= res.data['timers']
             reduxResponse['total_records'] = res.data['total_records']
-            dispatch(CaseListStorageDispatcher(reduxResponse))
+            dispatch(CaseTimersListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
             console.log("response error of search", error.response)
@@ -156,8 +146,8 @@ const CaseTimers = (props) => {
                 }
             }
         }
-        if(response2.data.hasOwnProperty(value)){
-            var serviceList = response2.data[value]
+        if(response.data.hasOwnProperty(value)){
+            var serviceList = response.data[value]
             setServices(serviceList)
         }
         else {
@@ -166,11 +156,11 @@ const CaseTimers = (props) => {
                 setServices(res.data['timers'])
                 setTableLoading(false)
                 setTotalRecords(res.data['total_records'])
-                var reduxResponse = response2.data
+                var reduxResponse = response.data
                 var page = res.data['page']
                 reduxResponse[page]= res.data['timers']
                 reduxResponse['total_records'] = res.data['total_records']
-                dispatch(CaseListStorageDispatcher(reduxResponse))
+                dispatch(CaseTimersListStorageDispatcher(reduxResponse))
             })
             .catch((error) => {
                 console.log(error.response)
@@ -183,7 +173,7 @@ const CaseTimers = (props) => {
         var string = document.location.pathname;
         var urlvalues = string.toString().split("/");
         // send reset dispatch request to redux
-        dispatch(CaseListStorageResponseReset())
+        dispatch(CaseTimersListStorageResponseReset())
         setPage(1)
         setSearchKeyword(e.target.value)
         setTableLoading(true)
@@ -211,7 +201,7 @@ const CaseTimers = (props) => {
             var page = res.data['page']
             reduxResponse[page]= res.data['timers']
             reduxResponse['total_records'] = res.data['total_records']
-            dispatch(CaseListStorageDispatcher(reduxResponse))
+            dispatch(CaseTimersListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
             console.log("response error of search", error.response)
@@ -224,7 +214,7 @@ const CaseTimers = (props) => {
         var string = document.location.pathname;
         var urlvalues = string.toString().split("/");
         // send reset dispatch request to redux
-        dispatch(CaseListStorageResponseReset())
+        dispatch(CaseTimersListStorageResponseReset())
         setPage(1)
         setTableLoading(true)
         setSortingKey("")
@@ -251,7 +241,7 @@ const CaseTimers = (props) => {
             var page = res.data['page']
             reduxResponse[page]= res.data['timers']
             reduxResponse['total_records'] = res.data['total_records']
-            dispatch(CaseListStorageDispatcher(reduxResponse))
+            dispatch(CaseTimersListStorageDispatcher(reduxResponse))
         })
         .catch((error) => {
             console.log("response error of search", error.response)

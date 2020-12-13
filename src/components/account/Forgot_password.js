@@ -8,6 +8,8 @@ import ForgotPasswordIcon  from "../../images/forgot_password.png"
 import {ResetPassword} from "../actions/AccountAction"
 import { withTranslation } from "react-i18next";
 
+import { PulseLoader } from "react-spinners";
+
 
 const ForgotPassword = ({t}) => {
     const [email, setEmail] = useState("")
@@ -43,14 +45,7 @@ const ForgotPassword = ({t}) => {
         
         if(response.loading){
             return (
-                <button 
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                    type="button" 
-                    disabled
-                >
-                    {t("Loading ...")}
-                   
-                </button>
+                <PulseLoader size={10} color={"#6DADE3"} loading={true} />
             )
         }
         return (

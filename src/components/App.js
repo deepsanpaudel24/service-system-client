@@ -26,6 +26,7 @@ import ClientPasswordSetup from './account/Client_password_setup';
 import ProfileSetupPreferences from './account/Profile_setup_preferences';
 import SocketTest from './SocketTest';
 import PeoplePasswordSetup from './account/People_password_setup';
+import ConfirmRegistration from './account/Confirm_registration';
 
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
@@ -42,6 +43,7 @@ function App() {
           <Switch>
             <Route exact path={"/"} component={Landing} />
             <Route path={"/user/register"} component={Register} />
+            <Route path={"/confirm-registration/:token"} component={ConfirmRegistration} />
             <Route path={"/user/login"} component={Login} />
             <Route path={"/user/forgot-password"} component={ForgotPassword} />
             <Route path={'/user/reset-password/:token'} component={ResetPassword} />

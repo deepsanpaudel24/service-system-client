@@ -22,6 +22,7 @@ import { MdFileUpload } from "react-icons/md";
 import SubscriptionCheckout from "./payments/Subscription_Checkout";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import ProfilePicAvatar from "../../images/profile_pic_avatar2.png";
 
 const ProfileSetting = (props) => {
   const { t } = props;
@@ -42,6 +43,7 @@ const ProfileSetting = (props) => {
   const [showPersonalNumberField, setShowPersonalNumberField] = useState(false);
   const [personalNumber, setPersonalNumber] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [showRevokeAlert, setShowRevokeAlert] = useState(false);
   const [serviceCategories, setServiceCategories] = useState([]);
   const [
     serviceCategoriesDefaultValue,
@@ -180,9 +182,6 @@ const ProfileSetting = (props) => {
     var config = {
       method: "get",
       url: "/api/v1/authorize",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
-      },
     };
     axios(config)
       .then((res) => {
@@ -194,6 +193,33 @@ const ProfileSetting = (props) => {
   // To revoke google account
   const handleRevokeGoogleAccount = () => {
     //send revoke request
+    const config = {
+      method: "delete",
+      url: "/api/v1/revoke-google"
+    }
+    axios(config)
+    .then((res) => {
+      // show the confirmation alert
+      setShowRevokeAlert(true)
+      // To check if the user has linked google account
+      var config2 = {
+        method: "get",
+        url: "/api/v1/google-credentials-details",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config2)
+        .then((res) => {
+          setHaveGoogleCredentials(true);
+        })
+        .catch((error) => {
+          setHaveGoogleCredentials(false);
+        });
+    })
+    .catch((error) => {
+      // show the revoke failed alert
+    })
   };
   const activeBasicInfoTab = () => {
     setActiveTab("basic_info");
@@ -733,6 +759,16 @@ const ProfileSetting = (props) => {
         ) : (
           ""
         )}
+        {showRevokeAlert ? (
+          <div
+            class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4"
+            role="alert"
+          >
+            <p class="font-bold">{t("google_revoked_sucessfully")}</p>
+          </div>
+        ) : (
+          ""
+        )}
         {profileDetailsLoading ? (
           <div class="animate-pulse flex space-x-4">
             <div class="w-4/5">
@@ -750,16 +786,15 @@ const ProfileSetting = (props) => {
         ) : (
           <div class="flex">
             <div class="w-5/5">
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <img
                   style={{ height: "7em" }}
                   class="rounded-full"
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                  alt=""
+                  src={ProfilePicAvatar}
                 />
                 <div
-                  class="ml-5 y-5"
-                  style={{ marginTop: "1.5em", marginLeft: "2em" }}
+                  class="y-5"
+                  style={{ marginTop: "1.5em", marginLeft: "1em" }}
                 >
                   {showNameField ? (
                     <div class="flex">
@@ -804,7 +839,7 @@ const ProfileSetting = (props) => {
                     {showAddressField ? (
                       <form onSubmit={SubmitAddress}>
                         <input
-                          class="shadow appearance-none border rounded ml-6 w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          class="shadow appearance-none border w-auto rounded ml-6 w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                           id="label"
                           type="text"
                           defaultValue={address}
@@ -812,39 +847,32 @@ const ProfileSetting = (props) => {
                         />
                       </form>
                     ) : (
-                      <p class="ml-6 text-base text-black">{address}</p>
+                      <p class="ml-4 text-base text-black">{address}</p>
                     )}
                     {showAddressField ? (
                       <button
                         class="focus:outline-none"
                         onClick={() => handleShowAddressField(false)}
                       >
-                        <p class="text-red-400 mx-6 text-lg">
+                        <p class="text-red-400 mx-3 text-lg">
                           <VscClose />
                         </p>
                       </button>
                     ) : (
                       <button
-                        class="focus:outline-none ml-3 mr-10 "
+                        class="focus:outline-none ml-3 mr-6 "
                         onClick={() => handleShowAddressField(true)}
                       >
-                        <p class="text-blue-400 mx-6">
+                        <p class="text-blue-400 mx-3">
                           <FaEdit />
                         </p>
                       </button>
                     )}
-                    {t("caps_joined_on")}
-                    <p class="ml-6 text-base text-black">
-                      {profileDetails["createdDate"]}
-                    </p>
-                    <span class="focus:outline-none ml-3 mr-10 ">
-                      <p class="text-blue-400 mx-6"></p>
-                    </span>
                     {t("caps_contact_number")}
                     {showContactField ? (
                       <form onSubmit={SubmitContact}>
                         <input
-                          class="shadow appearance-none border rounded ml-6 w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          class="shadow appearance-none border rounded ml-3 w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                           id="label"
                           type="text"
                           defaultValue={contact}
@@ -852,27 +880,33 @@ const ProfileSetting = (props) => {
                         />
                       </form>
                     ) : (
-                      <p class="ml-6 text-base text-black">{contact}</p>
+                      <p class="ml-3 text-base text-black">{contact}</p>
                     )}
                     {showContactField ? (
                       <button
                         class="focus:outline-none"
                         onClick={() => handleShowContactField(false)}
                       >
-                        <p class="text-red-400 mx-6 text-lg">
+                        <p class="text-red-400 mx-3 text-lg">
                           <VscClose />
                         </p>
                       </button>
                     ) : (
                       <button
-                        class="focus:outline-none ml-3 mr-10 "
+                        class="focus:outline-none ml-3 mr-6 "
                         onClick={() => handleShowContactField(true)}
                       >
-                        <p class="text-blue-400 mx-6">
+                        <p class="text-blue-400 mx-3">
                           <FaEdit />
                         </p>
                       </button>
                     )}
+                    {t("caps_joined_on")}
+                    <p class="ml-4 text-base text-black">
+                      {profileDetails["createdDate"]}
+                    </p>
+                    <span class="focus:outline-none ml-3 mr-6 ">
+                    </span>
                   </p>
                 </div>
               </div>
@@ -905,7 +939,7 @@ const ProfileSetting = (props) => {
                     class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
                     onClick={() => activeIntroTab()}
                   >
-                    {t("introduction")}
+                    {t("intro")}
                   </button>
                 </li>
               </ul>
@@ -932,7 +966,7 @@ const ProfileSetting = (props) => {
                     class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
                     onClick={() => activeIntroTab()}
                   >
-                    {t("introduction")}
+                    {t("intro")}
                   </button>
                 </li>
               </ul>
@@ -959,7 +993,7 @@ const ProfileSetting = (props) => {
                     class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none"
                     onClick={() => activeIntroTab()}
                   >
-                    {t("introduction")}
+                    {t("intro")}
                   </button>
                 </li>
               </ul>
@@ -970,12 +1004,12 @@ const ProfileSetting = (props) => {
               <div style={{ marginLeft: "0.5rem" }}>
                 <div class="mb-8">
                   <div class="flex items-center">
-                    <div class="w-1/5">
+                    <div class="w-2/6">
                       <p class="text-base text-gray-600">
                         {t("caps_service_categories")}
                       </p>
                     </div>
-                    <div class="w-3/5">
+                    <div class="w-4/6">
                       {!_.isEmpty(serviceCategories)
                         ? serviceCategories.map((item) => {
                             return (
@@ -1004,12 +1038,12 @@ const ProfileSetting = (props) => {
                   <div class="mt-8 mb-8">
                     {showRegistrationField ? (
                       <div class="flex">
-                        <div class="w-1/5">
+                        <div class="w-2/6">
                           <p class="text-base text-gray-600">
                             {t("caps_registration_number")}
                           </p>
                         </div>
-                        <div>
+                        <div lass="w-4/6">
                           <form onSubmit={SubmitRegistration}>
                             <input
                               class="shadow appearance-none border rounded w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -1033,12 +1067,12 @@ const ProfileSetting = (props) => {
                       </div>
                     ) : (
                       <div class="flex items-center">
-                        <div class="w-1/5">
+                        <div class="w-2/6">
                           <p class="text-base text-gray-600">
                             {t("caps_registration_number")}
                           </p>
                         </div>
-                        <div class="w-3/5">
+                        <div class="w-4/6">
                           {registrationNumber}
                           <button
                             class="focus:outline-none ml-3 my-4"
@@ -1059,12 +1093,12 @@ const ProfileSetting = (props) => {
                   <div class="mt-8 mb-8">
                     {showPersonalNumberField ? (
                       <div class="flex">
-                        <div class="w-1/5">
+                        <div class="w-2/6">
                           <p class="text-base text-gray-600">
                             {t("caps_personal_number")}
                           </p>
                         </div>
-                        <div>
+                        <div class="w-4/6">
                           <form onSubmit={SubmitPersonalNumber}>
                             <input
                               class="shadow appearance-none border rounded w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -1088,12 +1122,12 @@ const ProfileSetting = (props) => {
                       </div>
                     ) : (
                       <div class="flex items-center">
-                        <div class="w-1/5">
+                        <div class="w-2/6">
                           <p class="text-base text-gray-600">
                             {t("caps_personal_number")}
                           </p>
                         </div>
-                        <div class="w-3/5">
+                        <div class="w-4/6">
                           {personalNumber}
                           <button
                             class="focus:outline-none ml-3 my-4"
@@ -1112,12 +1146,12 @@ const ProfileSetting = (props) => {
                 )}
                 <div class="mt-8 mb-8">
                   <div class="flex items-center">
-                    <div class="w-1/5">
+                    <div class="w-2/6">
                       <p class="text-base text-gray-600">
                         {t("caps_date_format")}
                       </p>
                     </div>
-                    <div class="w-3/5">
+                    <div class="w-4/6">
                       {!_.isEmpty(datePreferences)
                         ? datePreferences == "dmy"
                           ? "DD-MM-YYYY"
@@ -1138,12 +1172,12 @@ const ProfileSetting = (props) => {
                 </div>
                 <div class="mt-8 mb-8">
                   <div class="flex items-center">
-                    <div class="w-1/5">
+                    <div class="w-2/6">
                       <p class="text-base text-gray-600">
                         {t("caps_currency_preferences")}
                       </p>
                     </div>
-                    <div class="w-3/5">
+                    <div class="w-4/6">
                       {!_.isEmpty(currencyPreferences)
                         ? currencyPreferences == "usd"
                           ? "USD"
@@ -1164,12 +1198,12 @@ const ProfileSetting = (props) => {
                 </div>
                 <div class="mt-8 mb-8">
                   <div class="flex items-center">
-                    <div class="w-1/5">
+                    <div class="w-2/6">
                       <p class="text-base text-gray-600">
                         {t("caps_language")}
                       </p>
                     </div>
-                    <div class="w-3/5">
+                    <div class="w-4/6">
                       {!_.isEmpty(language)
                         ? language == "en"
                           ? "English"
@@ -1189,14 +1223,14 @@ const ProfileSetting = (props) => {
                 <div class="mt-8 mb-8">
                   {haveGoogleCredentials ? (
                     <div class="flex items-center">
-                      <div class="w-1/5">
+                      <div class="w-2/6">
                         <p class="text-base text-gray-600">
                           {t("caps_linked_with_google")}
                         </p>
                       </div>
-                      <div class="w-3/5">
+                      <div class="w-4/6">
                         <button
-                          class=" mr-10 text-base text-blue-500"
+                          class=" mr-10 text-base text-blue-500 focus:outline-none"
                           onClick={() => handleRevokeGoogleAccount()}
                         >
                           {t("caps_revoke")}?
@@ -1205,14 +1239,14 @@ const ProfileSetting = (props) => {
                     </div>
                   ) : (
                     <div class="flex items-center">
-                      <div class="w-1/5">
+                      <div class="w-2/6">
                         <p class="text-base text-gray-600">
                           {t("caps_not_linked_with_google")}
                         </p>
                       </div>
-                      <div class="w-3/5">
+                      <div class="w-4/6">
                         <button
-                          class=" mr-10 text-base text-blue-500"
+                          class=" mr-10 text-base text-blue-500 focus:outline-none"
                           onClick={() => handleLinkGoogleAccount()}
                         >
                           {t("caps_link")}?
@@ -1225,12 +1259,12 @@ const ProfileSetting = (props) => {
             ) : activeTab == "subscription_info" ? (
               <div>
                 <div class="flex items-center mx-2 my-4">
-                  <div class="w-1/5">
+                  <div class="w-2/6">
                     <p class="text-base text-gray-600">
                       {t("caps_subs_expiry")}
                     </p>
                   </div>
-                  <div class="w-3/5">
+                  <div class="w-4/6">
                     {!_.isEmpty(profileDetails.expiryDate)
                       ? profileDetails.expiryDate
                       : "NOT SET"}

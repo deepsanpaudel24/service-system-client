@@ -9,6 +9,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import { RemoveServiceDispatcher, RemoveServiceResponseReset } from "../../actions/service_management/RemoveServiceAction";
 import { ServicesListStorageDispatcher, ServicesListStorageResponseReset } from "../../actions/service_management/ServicesListStorage";
 import Pagination from "../Pagination";
+import { EDITServiceResponseReset } from "../../actions/service_management/EditServiceAction";
 
 const Services = (props) => {
     const [services, setServices] = useState([])
@@ -26,9 +27,14 @@ const Services = (props) => {
     const [activeHourlyFilter, setActiveHourlyFilter] = useState(false)
     const [activeFlatFeeFilter, setActiveFlatFeeFilter] = useState(false)
 
+    const [showAddedAlert, setShowAddedAlert] = useState(false)
+    const [showEditedAlert, setShowEditedAlert] = useState(false)
+
     const dispatch = useDispatch()
     const response = useSelector(state => state.ServiceRemoveResponse)
     const response2 = useSelector(state => state.SerivceListStorageResponse)
+    const response3 = useSelector(state => state.ServiceRegisterReponse)
+    const response4 = useSelector(state => state.ServiceEditResponse)
 
     useLayoutEffect(() => {
         const config = {
@@ -38,7 +44,39 @@ const Services = (props) => {
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
           }
-        if(response2.data.hasOwnProperty(1)){
+        if (!_.isEmpty(response3.data)){
+            dispatch(AddServiceResponseReset())
+            setShowEditedAlert(false)
+            setShowAddedAlert(true)
+            axios(config)
+            .then((res) => {
+                setServices(res.data['services'])
+                setTableLoading(false)
+                setTotalRecords(res.data['total_records'])
+                var page = res.data['page']
+                dispatch(ServicesListStorageDispatcher({[page]: res.data['services'], 'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+        else if (!_.isEmpty(response4.data)){
+            dispatch(EDITServiceResponseReset())
+            setShowEditedAlert(true)
+            setShowAddedAlert(false)
+            axios(config)
+            .then((res) => {
+                setServices(res.data['services'])
+                setTableLoading(false)
+                setTotalRecords(res.data['total_records'])
+                var page = res.data['page']
+                dispatch(ServicesListStorageDispatcher({[page]: res.data['services'], 'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+        else if(response2.data.hasOwnProperty(1)){
             var serviceList = response2.data[1]
             setServices(serviceList)
             setTableLoading(false)
@@ -47,11 +85,11 @@ const Services = (props) => {
         else {
             axios(config)
             .then((res) => {
-                    setServices(res.data['services'])
-                    setTableLoading(false)
-                    setTotalRecords(res.data['total_records'])
-                    var page = res.data['page']
-                    dispatch(ServicesListStorageDispatcher({[page]: res.data['services'], 'total_records': res.data['total_records']}))
+                setServices(res.data['services'])
+                setTableLoading(false)
+                setTotalRecords(res.data['total_records'])
+                var page = res.data['page']
+                dispatch(ServicesListStorageDispatcher({[page]: res.data['services'], 'total_records': res.data['total_records']}))
             })
             .catch((error) => {
                 console.log(error.response)
@@ -292,6 +330,7 @@ const Services = (props) => {
     const handleConfirmDelete = (id) => {
         // dispatch action to delete the item with the id parameter
         dispatch(RemoveServiceDispatcher(id))
+        window.location.reload()
     }
 
     const showServerError = () => {
@@ -302,28 +341,6 @@ const Services = (props) => {
                     <p>{response.serverErrorMsg}</p>
                 </div>
             )
-        }
-    }
-  
-    const confirmRemovedService = () => {
-        if(!_.isEmpty(response.data)){
-            const config = {
-                method: 'get',
-                url: '/api/v1/services',
-                headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                  }
-              }
-              axios(config)
-              .then((res) => {
-                  console.log(res.data)
-                  setServices(res.data)
-                  setTableLoading(false)
-                  dispatch(RemoveServiceResponseReset())
-              })
-              .catch((error) => {
-                  console.log(error.response)
-              })
         }
     }
 
@@ -388,7 +405,7 @@ const Services = (props) => {
 
     return (
         <div>
-            <div class=" px-4 sm:px-8">
+            <div class="px-4">
                 <div class="flex">
                     <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Services</p></div>
                     <div class="w-3/5"></div>
@@ -430,9 +447,30 @@ const Services = (props) => {
                         </div>
                     </div>
                 </nav>
+                {
+                    showAddedAlert ?
+                    <div
+                        class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4"
+                        role="alert"
+                    >
+                        <p class="font-bold">Service added sucessfully</p>
+                    </div>
+                    :
+                    "" 
+                }
+                {
+                    showEditedAlert ?
+                    <div
+                        class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4"
+                        role="alert"
+                    >
+                        <p class="font-bold">Service edited sucessfully</p>
+                    </div>
+                    :
+                    "" 
+                }
                 <div class="py-8">
                     {showServerError()}
-                    {confirmRemovedService()}
                     {
                         tableLoading ? 
                             <div class="animate-pulse flex space-x-4">
@@ -451,11 +489,6 @@ const Services = (props) => {
                                                             onClick={() => handleSorting("rateType")}
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                             Rate
-                                                        </th>
-                                                        <th
-                                                            onClick={() => handleSorting("averageTimeTaken")}
-                                                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                            Average Time Taken
                                                         </th>
                                                         <th
                                                             class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -496,11 +529,6 @@ const Services = (props) => {
                                                 Rate
                                             </th>
                                             <th
-                                                onClick={() => handleSorting("averageTimeTaken")}
-                                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                                Average Time Taken
-                                            </th>
-                                            <th
                                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Status
                                             </th>
@@ -518,20 +546,17 @@ const Services = (props) => {
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
-                                                                    <p class="text-gray-900 whitespace-no-wrap">
-                                                                        {item.title}
-                                                                    </p>
+                                                                    <Link to={`/user/edit-service/${item._id.$oid}`}>
+                                                                        <p class="text-blue-700 whitespace-no-wrap">
+                                                                            {item.title}
+                                                                        </p>
+                                                                    </Link>
                                                                 </div>
                                                             </div>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-gray-900 whitespace-no-wrap">
-                                                                ${item.rate} - {item.rateType}
-                                                            </p>
-                                                        </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            <p class="text-gray-900 whitespace-no-wrap">
-                                                                {item.averageTimeTaken} hours
+                                                                {item.rate} usd - {item.rateType}
                                                             </p>
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">

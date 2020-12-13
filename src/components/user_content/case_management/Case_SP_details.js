@@ -13,6 +13,7 @@ import pdfLogo from "../../../images/pdf-Icon.png";
 import docxLogo from "../../../images/docx-Icon.png";
 import dataFileLogo from "../../../images/dataFile-Icon.png";
 import imageLogo from "../../../images/image-Icon.png";
+import folderEmptyIcon from "../../../images/folder_empty.png";
 import { TimerDispatcher } from "../../actions/Timer_management/TimerAction";
 import VideoPlayer from "../video_player/VideoPlayer";
 import { MdFileDownload } from "react-icons/md";
@@ -36,17 +37,15 @@ import SPCaseTransactions from "./SP_Case_transactions";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 
+
 const ViewCaseDetailsSP = (props) => {
   const history = useHistory();
   const { t } = props;
-  const [ServerDomain, setServerDomain] = useState("http://127.0.0.1:5000/")
   const [caseDetails, setCaseDetails] = useState([]);
-  const [replyStatus, setReplyStatus] = useState(false);
   const [pageLoading, setPageLoaoding] = useState(true);
   const [caseTags, setCaseTags] = useState([]);
   const [propsalDetails, setProposalDetails] = useState([]);
   const [proposalSentConfirm, setProposalSentConfirm] = useState(false);
-  const [fileToSend, setFileToSend] = useState([]);
   const [totalTimeWorked, setTotalTimeWorked] = useState();
   const [startingTime, setStartingTime] = useState("");
   const [stoppingTime, setStoppingTime] = useState(null);
@@ -61,8 +60,11 @@ const ViewCaseDetailsSP = (props) => {
   const [ShowTimer, setShowTimer] = useState(false)
 
   const [confirmUploadContract, setConfirmUploadContract] = useState(false)
+  const [confirmContractAlert, setConfirmContractAlert] = useState(false)
 
   const [hasForwardedProposal, setHasForwardedProposal] = useState(false)
+
+  const [caseNotFound, setCaseNotFound] = useState(false)
 
   const dispatch = useDispatch();
   const response = useSelector((state) => state.AddTimerResponse);
@@ -73,11 +75,14 @@ const ViewCaseDetailsSP = (props) => {
   const response3 = useSelector(state => state.ConfirmContractResponse)
   const response4 = useSelector(state => state.RequestCompletionResponse)
 
+  var spFilesCount = 0;
+  var clientFilesCount = 0;
+
   useLayoutEffect(() => {
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");
 
-    if(_.isEmpty(CaseDetailsResponse.data) || !_.isEmpty(response3.data)){
+    if(_.isEmpty(CaseDetailsResponse.data)){
       const config = {
         method: "get",
         url: "/api/v1/case-sp/" + urlvalues[3],
@@ -94,6 +99,31 @@ const ViewCaseDetailsSP = (props) => {
           dispatch(CaseDetailsStorageDispatcher(res.data))
         })
         .catch((error) => {
+          setCaseNotFound(true)
+          setPageLoaoding(false);
+        });
+    }
+    else if(!_.isEmpty(response3.data)){
+      // setConfirmContractAlert(true)
+      setConfirmContractAlert(true)
+
+      const config = {
+        method: "get",
+        url: "/api/v1/case-sp/" + urlvalues[3],
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config)
+        .then((res) => {
+          setCaseDetails(res.data);
+          setPageLoaoding(false);
+          var tagslist = res.data["caseTags"].toString().split(",");
+          setCaseTags(tagslist);
+          dispatch(CaseDetailsStorageDispatcher(res.data))
+        })
+        .catch((error) => {
+          setCaseNotFound(true)
           setPageLoaoding(false);
         });
     }
@@ -116,6 +146,7 @@ const ViewCaseDetailsSP = (props) => {
           dispatch(CaseDetailsStorageDispatcher(res.data))
         })
         .catch((error) => {
+          setCaseNotFound(true)
           setPageLoaoding(false);
         });
     }
@@ -138,6 +169,7 @@ const ViewCaseDetailsSP = (props) => {
           dispatch(CaseDetailsStorageDispatcher(res.data))
         })
         .catch((error) => {
+          setCaseNotFound(true)
           setPageLoaoding(false);
         });
     }
@@ -158,6 +190,7 @@ const ViewCaseDetailsSP = (props) => {
           dispatch(CaseDetailsStorageDispatcher(res.data))
         })
         .catch((error) => {
+          setCaseNotFound(true)
           setPageLoaoding(false);
         });
     }
@@ -458,6 +491,7 @@ const ViewCaseDetailsSP = (props) => {
             dispatch(CaseDetailsStorageDispatcher(res.data))
           })
           .catch((error) => {
+            setCaseNotFound(true)
             setPageLoaoding(false);
           });
       })
@@ -487,6 +521,7 @@ const ViewCaseDetailsSP = (props) => {
         dispatch(CaseDetailsStorageDispatcher(res.data))
       })
       .catch((error) => {
+        setCaseNotFound(true)
         setPageLoaoding(false);
       });
   }
@@ -524,6 +559,7 @@ const ViewCaseDetailsSP = (props) => {
           dispatch(CaseDetailsStorageDispatcher(res.data))
         })
         .catch((error) => {
+          setCaseNotFound(true)
           setPageLoaoding(false);
         });
     })
@@ -561,7 +597,7 @@ const ViewCaseDetailsSP = (props) => {
     return (
         <div>
             <div>
-    <button class="bg-blue-600 text-white px-3 py-2" onClick={() => handleRequestCompletion()}>{t("request_completion")}</button>
+              <button class="bg-blue-600 text-white px-3 py-2" onClick={() => handleRequestCompletion()}>{t("request_completion")}</button>
             </div>
         </div>
     )
@@ -648,12 +684,35 @@ const ViewCaseDetailsSP = (props) => {
               <PulseLoader size={10} color={"#6DADE3"} loading={true} />
             </div>
           </div>
-        ) : (
+        ) 
+        :
+        caseNotFound ?
+        (
+          <div>
+            <p class="mx-3">No case details found for this case.</p>
+            <img src={folderEmptyIcon} />
+          </div>
+        )
+        : 
+        (
           <div>
             <div class="max-w-sm w-full lg:max-w-full lg:flex">
               <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                 <div class="mb-8">
                   {showTimerAddedConfirm()}
+                  {
+                    confirmContractAlert ?
+                    <div
+                      class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4"
+                      role="alert"
+                    >
+                      <p class="font-bold">
+                        {t("contract_paper_confirmed_successfully")}
+                      </p>
+                    </div>
+                    :
+                    ""
+                  }
                   {confirmUploadContract ? (
                     <div
                       class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4"
@@ -788,10 +847,6 @@ const ViewCaseDetailsSP = (props) => {
                       <p class="ml-3 mr-10 text-base text-black">
                         {caseDetails.budgetClient}
                       </p>
-                      {t("caps_case_req_on")}
-                      <p class="ml-3 mr-10 text-base text-black">
-                        {caseDetails.requestedDate}
-                      </p>
                       {/* caseDetails.status == "Proposal-Forwarded" && !hasForwardedProposal */}
                       {t("caps_status")}{" "}
                       {caseDetails.status == "Forwarded" ? (
@@ -852,10 +907,6 @@ const ViewCaseDetailsSP = (props) => {
                       {t("caps_fee")}{" "}
                       <p class="ml-3 mr-10 text-base text-black">
                         {caseDetails.rate}/ {caseDetails.rateType}
-                      </p>
-                      {t("caps_case_req_on")}
-                      <p class="ml-3 mr-10 text-base text-black">
-                        {caseDetails.requestedDate}
                       </p>
                       {t("caps_status")}{" "}
                       {caseDetails.status == "Forwarded" ? (
@@ -921,10 +972,7 @@ const ViewCaseDetailsSP = (props) => {
                       <p class="ml-3 mr-10 text-base text-black">
                         {caseDetails.rate}/ {caseDetails.rateType}
                       </p>
-                      {t("caps_case_requested_on")}
-                      <p class="ml-3 mr-10 text-base text-black">
-                        {caseDetails.requestedDate}
-                      </p>
+                      
                       {t("caps_status")}{" "}
                       {caseDetails.status == "Forwarded" ? (
                         <p class="ml-3 mr-10 text-base text-blue-600">
@@ -975,7 +1023,7 @@ const ViewCaseDetailsSP = (props) => {
                         </p>
                       ) : (
                         <p class="ml-3 mr-10 text-base text-green-600">
-                          ON-PROGRESS{t("caps_on_progress")}
+                          {t("caps_on_progress")}
                         </p>
                       )}
                       {t("caps_total_time_worked")}
@@ -992,6 +1040,10 @@ const ViewCaseDetailsSP = (props) => {
                         class="flex mt-5 text-base text-gray-600"
                         style={{ marginTop: "2em" }}
                       >
+                        {t("caps_case_requested_on")}
+                      <p class="ml-3 mr-10 text-base text-black">
+                        {caseDetails.requestedDate}
+                      </p>
                         {t("caps_client")}{" "}
                         <p class="ml-3 mr-10 text-base text-black">
                           {caseDetails.clientName}
@@ -1284,7 +1336,7 @@ const ViewCaseDetailsSP = (props) => {
                           class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
                           onClick={() => activeProposalTab()}
                         >
-                          {t("my_proposal")}
+                          {t("my_proposals")}
                         </button>
                       </li>
                       <li class="-mb-px mr-1">
@@ -1335,7 +1387,7 @@ const ViewCaseDetailsSP = (props) => {
                           class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
                           onClick={() => activeIntroTab()}
                         >
-                          {t("client_intro")}
+                          {t("clients_intro")}
                         </button>
                       </li>
                       <li class="mr-1">
@@ -1343,7 +1395,7 @@ const ViewCaseDetailsSP = (props) => {
                           class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
                           onClick={() => activeProposalTab()}
                         >
-                          {t("my_proposal")}
+                          {t("my_proposals")}
                         </button>
                       </li>
                       <li class="mr-1">
@@ -1402,7 +1454,7 @@ const ViewCaseDetailsSP = (props) => {
                           class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
                           onClick={() => activeProposalTab()}
                         >
-                          {t("my_proposal")}
+                          {t("my_proposals")}
                         </button>
                       </li>
                       <li class="mr-1">
@@ -1461,7 +1513,7 @@ const ViewCaseDetailsSP = (props) => {
                           class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
                           onClick={() => activeProposalTab()}
                         >
-                          {t("my_proposal")}
+                          {t("my_proposals")}
                         </button>
                       </li>
                       <li class="mr-1">
@@ -1521,6 +1573,7 @@ const ViewCaseDetailsSP = (props) => {
                               .toLowerCase();
                             var owner = filename.split(".").slice(-2)[0];
                             if (owner == "c") {
+                              clientFilesCount = clientFilesCount + 1;
                               if (extension == "pdf") {
                                 return (
                                   <div class="bg-gray-100  shadow rounded-lg">
@@ -1816,7 +1869,16 @@ const ViewCaseDetailsSP = (props) => {
                                 );
                               }
                             }
-                          })}
+                          })
+                          }
+                          {
+                            clientFilesCount == 0 ?
+                            <div class="my-4">
+                              <p class="text-gray-600">No files from clients as of now.</p>
+                            </div>
+                            :
+                            ""
+                          }
                         </div>
                         {/* div for the related files of Clients ends */}
                         <p class="font-bold mt-4">{t("your_files")}</p>
@@ -1835,6 +1897,7 @@ const ViewCaseDetailsSP = (props) => {
                               .toLowerCase();
                             var owner = filename.split(".").slice(-2)[0];
                             if (owner == "sp") {
+                              spFilesCount = spFilesCount + 1
                               if (extension == "pdf") {
                                 return (
                                   <div class="bg-gray-100  shadow rounded-lg">
@@ -2130,7 +2193,16 @@ const ViewCaseDetailsSP = (props) => {
                                 );
                               }
                             }
-                          })}
+                          })
+                          }
+                          {
+                            spFilesCount == 0 ?
+                            <div class="my-4">
+                              <p class="text-gray-600">No files uploaded from your side as of now.</p>
+                            </div>
+                            :
+                            ""
+                          }
                         </div>
                         {/* div for the related files of service providers ends */}
                         {/* div for the related files ends from here  */}
@@ -2475,7 +2547,7 @@ const ViewCaseDetailsSP = (props) => {
                   <CaseTimers />
                 ) : (
                   <div>
-                    <CaseAssignment />
+                    <CaseAssignment user_type="spca"/>
                   </div>
                 )}
               </div>

@@ -440,7 +440,7 @@ const ViewCasesemp = (props) => {
                                             cases.map((item, index) => {
                                                 return(
                                                     <tr>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '15em', minWidth: '22em'}}>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '22em', minWidth: '22em'}}>
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
                                                                     <p class="text-blue-700">
@@ -449,7 +449,7 @@ const ViewCasesemp = (props) => {
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '12em'}}>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '15em', minWidth: '12em'}}>
                                                             {
                                                                 item.status == "Requested" ?
                                                                 <span

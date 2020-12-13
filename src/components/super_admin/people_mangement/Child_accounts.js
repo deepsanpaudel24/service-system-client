@@ -583,7 +583,7 @@ const ChildAccounts = ({ t }) => {
                                   aria-hidden
                                   class="absolute inset-0 bg-green-200 opacity-50 rounded-full"
                                 ></span>
-                                <span class="relative">{t("verefied")}</span>
+                                <span class="relative">{t("verified")}</span>
                               </span>
                             ) : (
                               <span class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
@@ -591,7 +591,7 @@ const ChildAccounts = ({ t }) => {
                                   aria-hidden
                                   class="absolute inset-0 bg-red-200 opacity-50 rounded-full"
                                 ></span>
-                                <span class="relative">{t("unverefied")}</span>
+                                <span class="relative">{t("unverified")}</span>
                               </span>
                             )}
                           </td>

@@ -7,6 +7,7 @@ import { SaveIntakeFormDispatcher } from "../../actions/form_generator/SaveIntak
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { FormBuilder } from "./FormBuilder";
+import folderEmptyIcon from "../../../images/folder_empty.png";
 
 const CreateIntakeForm = () => {
   const [formFields, setFormFields] = useState([]); // store the formfields from database form firsttime with axiso request
@@ -19,6 +20,10 @@ const CreateIntakeForm = () => {
   //when any field is edited it set these two states
   const [editingMode, setEditingMode] = useState(false);
   const [editingFieldIndex, setEditingFieldIndex] = useState(null);
+
+  const [detailsNotFound, setDetailsNotFound] = useState(false)
+
+  const [showEditedAlert, setShowEditedAlert] = useState(false)
   const dispatch = useDispatch();
   // const response = useSelector((state) => state.ProfileDetailsResponse);
 
@@ -38,7 +43,7 @@ const CreateIntakeForm = () => {
         setRequestMethodDecider("put");
       })
       .catch((error) => {
-        console.log(error.response);
+        setDetailsNotFound(true)
       });
   }, []);
   useEffect(() => {}, []);
@@ -89,6 +94,7 @@ const CreateIntakeForm = () => {
       formTitle: "form1",
     };
     dispatch(SaveIntakeFormDispatcher(data, urlvalues[4]));
+    setShowEditedAlert(true)
     setShowSaveChangeButton(false);
   };
 
@@ -175,123 +181,144 @@ const CreateIntakeForm = () => {
   };
 
   return (
-    <div class="mb-4">
-      <p class="text-3xl mt-3 mb-6">Client Intake Form</p>
-      <div class="flex ">
-        {/* Form Display div */}
-        <div class="w-2/5">
-          <p class="text-xl text-gray-700 mb-2">Form Builder</p>
-          <div class="border-dashed border-2 border-gray-300  px-5 py-3">
-            {/* Displaying formfields that are first time fetched form database */}
-            {formFields.map((field, index) => {
-              return (
-                <div>
-                  <div class="mt-3 mb-3">
-                    <div class="relative flex items-center justify-between">
-                      <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                        <label class="block text-gray-700 text-sm">
-                          {field.label}
-                        </label>
-                      </div>
-                      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                        <label class="block text-gray-700 text-sm">
-                          <button
-                            class="focus:outline-none"
-                            onClick={() => handleEdit(index)}
-                          >
-                            <p class="text-blue-400">
-                              <FaEdit />
-                            </p>
-                          </button>
-                          <button
-                            class="focus:outline-none"
-                            onClick={() => handleDelete(index)}
-                          >
-                            <p class="text-red-400 ml-3">
-                              <RiDeleteBin5Line />
-                            </p>
-                          </button>
-                        </label>
+    <div>
+      {
+        detailsNotFound ? 
+        <div>
+          <p class="mx-3 text-gray-700 text-md">Sorry, no details found.</p>
+          <img src={folderEmptyIcon} style={{ width: "60%"}}/>
+        </div>
+        :
+        <div class="mb-4">
+          <p class="text-3xl mt-3 mb-6">Client Intake Form</p>
+          {
+              showEditedAlert ?
+              <div
+                  class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4"
+                  role="alert"
+              >
+                  <p class="font-bold">Form updates saved sucessfully</p>
+              </div>
+              :
+              "" 
+          }
+          <div class="flex ">
+            {/* Form Display div */}
+            <div class="w-2/5">
+              <p class="text-xl text-gray-700 mb-2">Form Builder</p>
+              <div class="border-dashed border-2 border-gray-300  px-5 py-3">
+                {/* Displaying formfields that are first time fetched form database */}
+                {formFields.map((field, index) => {
+                  return (
+                    <div>
+                      <div class="mt-3 mb-3">
+                        <div class="relative flex items-center justify-between">
+                          <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                            <label class="block text-gray-700 text-sm">
+                              {field.label}
+                            </label>
+                          </div>
+                          <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                            <label class="block text-gray-700 text-sm">
+                              <button
+                                class="focus:outline-none"
+                                onClick={() => handleEdit(index)}
+                              >
+                                <p class="text-blue-400">
+                                  <FaEdit />
+                                </p>
+                              </button>
+                              <button
+                                class="focus:outline-none"
+                                onClick={() => handleDelete(index)}
+                              >
+                                <p class="text-red-400 ml-3">
+                                  <RiDeleteBin5Line />
+                                </p>
+                              </button>
+                            </label>
+                          </div>
+                        </div>
+                        {field.type == "textarea" ? (
+                          <Textarea field={field}></Textarea>
+                        ) : field.type == "select" ? (
+                          <Select field={field} options={field.options}></Select>
+                        ) : (
+                          <AnyField field={field.type}></AnyField>
+                        )}
                       </div>
                     </div>
-                    {field.type == "textarea" ? (
-                      <Textarea field={field}></Textarea>
-                    ) : field.type == "select" ? (
-                      <Select field={field} options={field.options}></Select>
-                    ) : (
-                      <AnyField field={field.type}></AnyField>
+                  );
+                })}
+
+                {/* Display fields that are set in state by formBuilder */}
+
+                {/* Reason for doing this: while editing the any field it set  it's properties 
+                on state and render the html for label and input type in editing mode which is unnecessary,
+                and doing this conditon prevent redering.
+                */}
+
+                {editingMode
+                  ? ""
+                  : formBuilderLabel && (
+                      <label class="block text-gray-700 text-sm" for="label">
+                        {formBuilderLabel}
+                      </label>
                     )}
-                  </div>
-                </div>
-              );
-            })}
 
-            {/* Display fields that are set in state by formBuilder */}
-
-            {/* Reason for doing this: while editing the any field it set  it's properties 
-            on state and render the html for label and input type in editing mode which is unnecessary,
-            and doing this conditon prevent redering.
-            */}
-
-            {editingMode
-              ? ""
-              : formBuilderLabel && (
+                {/* {formBuilderLabel && (
                   <label class="block text-gray-700 text-sm" for="label">
                     {formBuilderLabel}
                   </label>
+                )} */}
+
+                {editingMode ? (
+                  ""
+                ) : formBuilderInputType && formBuilderInputType == "textarea" ? (
+                  <Textarea field={formBuilderInputType}></Textarea>
+                ) : formBuilderInputType == "select" ? (
+                  <Select field={formBuilderInputType} options={options}></Select>
+                ) : formBuilderInputType == "text" ||
+                  formBuilderInputType == "number" ? (
+                  <AnyField field={formBuilderInputType}></AnyField>
+                ) : (
+                  ""
                 )}
 
-            {/* {formBuilderLabel && (
-              <label class="block text-gray-700 text-sm" for="label">
-                {formBuilderLabel}
-              </label>
-            )} */}
+                {/* End of formfields map */}
+                <button
+                  class="mt-4 mb-3 w-full border-dashed border-2 border-gray-300 hover:bg-gray-100 flex text-gray-500 font-bold py-2 px-4 rounded focus:outline-none"
+                  onClick={() => handleAddNewField()}
+                >
+                  <FaPlus class="mt-1 mr-2" />
+                  Add Field
+                </button>
+              </div>
+              {showSaveChangesButton && (
+                <div class="flex justify-start my-5">{showSaveButton()}</div>
+              )}
+            </div>
 
-            {editingMode ? (
-              ""
-            ) : formBuilderInputType && formBuilderInputType == "textarea" ? (
-              <Textarea field={formBuilderInputType}></Textarea>
-            ) : formBuilderInputType == "select" ? (
-              <Select field={formBuilderInputType} options={options}></Select>
-            ) : formBuilderInputType == "text" ||
-              formBuilderInputType == "number" ? (
-              <AnyField field={formBuilderInputType}></AnyField>
-            ) : (
-              ""
+            {/* THIS BELOW CODE IS FOR FORM BUILDER */}
+            <div class="w-1/5"></div>
+            {showBuilder && (
+              <FormBuilder
+                options={options}
+                label={formBuilderLabel}
+                inputType={formBuilderInputType}
+                labelChange={labelChange}
+                inputTypeChange={inputTypeChange}
+                selectFieldOptionsChange={selectFieldOptionsChange}
+                selectFieldOptionsAdd={selectFieldOptionsAdd}
+                selectFieldOptionsRemove={selectFieldOptionsRemove}
+                saveFormBuilder={saveFormBuilder}
+              ></FormBuilder>
             )}
-
-            {/* End of formfields map */}
-            <button
-              class="mt-4 mb-3 w-full border-dashed border-2 border-gray-300 hover:bg-gray-100 flex text-gray-500 font-bold py-2 px-4 rounded focus:outline-none"
-              onClick={() => handleAddNewField()}
-            >
-              <FaPlus class="mt-1 mr-2" />
-              Add Field
-            </button>
           </div>
-          {showSaveChangesButton && (
-            <div class="flex justify-start my-5">{showSaveButton()}</div>
-          )}
+          
+          {/* <pre>{JSON.stringify(formBuilderInputType, null, 2)}</pre> */}
         </div>
-
-        {/* THIS BELOW CODE IS FOR FORM BUILDER */}
-        <div class="w-1/5"></div>
-        {showBuilder && (
-          <FormBuilder
-            options={options}
-            label={formBuilderLabel}
-            inputType={formBuilderInputType}
-            labelChange={labelChange}
-            inputTypeChange={inputTypeChange}
-            selectFieldOptionsChange={selectFieldOptionsChange}
-            selectFieldOptionsAdd={selectFieldOptionsAdd}
-            selectFieldOptionsRemove={selectFieldOptionsRemove}
-            saveFormBuilder={saveFormBuilder}
-          ></FormBuilder>
-        )}
-      </div>
-      
-      {/* <pre>{JSON.stringify(formBuilderInputType, null, 2)}</pre> */}
+      }
     </div>
   );
 };

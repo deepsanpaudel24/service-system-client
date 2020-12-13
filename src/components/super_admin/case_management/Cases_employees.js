@@ -1,22 +1,15 @@
 import React , {useState, useEffect, useLayoutEffect} from "react";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
+import {PulseLoader} from "react-spinners";
 import axios from "axios";
 import _ from "lodash";
-import { NewCaseRequestResponseReset } from "../../actions/case_management/NewCaseRequestAction";
 import { ClientCaseListStorageDispatcher, ClientCaseListStorageResponseReset } from "../../actions/case_management/ClientCasesListStorage";
 import Pagination from "../Pagination";
-import { ForwardCaseRequestDispactherResponseReset } from "../../actions/case_management/ForwardCaseRequestAction";
-import { ProposalAcceptDispatcherResponseReset } from "../../actions/case_management/ProposalAcceptAction";
-import { ConfirmCompletionDispatcherResponseReset } from "../../actions/case_management/ConfirmCompletionAction";
 
-const ViewCasesClient = (props) => {
+const ViewCasesemp = (props) => {
     const [cases, setCases] = useState([])
     const [tableLoading, setTableLoading] = useState(true)
-    const [newCaseRequestConfirm, setNewCaseRequestConfirm] = useState(false)
-    const [confirmCompletionalert, setConfirmCompletionalert] = useState(false)
-    const [confirmProposalAcceptedAlert ,setConfrimProposalAcceptedAlert] = useState(false)
-
     // For sorting 
     const [sortingKey, setSortingKey] = useState(null)
     const [sortingValue, setSortingValue] = useState(null)
@@ -33,85 +26,37 @@ const ViewCasesClient = (props) => {
 
     const dispatch = useDispatch()
     const response = useSelector(state => state.ClientCaseListResponse)
-    const response2 = useSelector(state => state.NewCaseRequestResponse)
-    const response3 = useSelector(state => state.ProposalAcceptResponse)
-    const response4 = useSelector(state => state.ConfirmCompletionResponse)
-    
+    const response2 = useSelector(state => state.UploadContractPaperResponse)
+    const response3 = useSelector(state => state.ConfirmContractResponse)
+
     useLayoutEffect(() => {
         var string = document.location.pathname
         var urlvalues = string.toString().split('/')
         const config = {
             method: 'get',
-            url: '/api/v1/client-cases/'+ page,
+            url: '/api/v1/case-emp/'+ page,
             headers: { 
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
           }
-        if(!_.isEmpty(response2.data)){
-            setNewCaseRequestConfirm(true)
-            dispatch(NewCaseRequestResponseReset())
-            axios(config)
-            .then((res) => {
-                    setCases(res.data['cases'])
-                    setTableLoading(false)
-                    setTotalRecords(res.data['total_records'])
-                    var page = res.data['page']
-                    dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
-            })
-            .catch((error) => {
-                console.log(error.response)
-            })
-        }
-        else if(!_.isEmpty(response4.data)){
-            setConfirmCompletionalert(true)
-            dispatch(ConfirmCompletionDispatcherResponseReset())
-            axios(config)
-            .then((res) => {
-                    setCases(res.data['cases'])
-                    setTableLoading(false)
-                    setTotalRecords(res.data['total_records'])
-                    var page = res.data['page']
-                    dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
-            })
-            .catch((error) => {
-                console.log(error.response)
-            })
-        }
-        else if(!_.isEmpty(response3.data)){
-            setConfrimProposalAcceptedAlert(true)
-            dispatch(ProposalAcceptDispatcherResponseReset())
-            axios(config)
-            .then((res) => {
-                    setCases(res.data['cases'])
-                    setTableLoading(false)
-                    setTotalRecords(res.data['total_records'])
-                    var page = res.data['page']
-                    dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
-            })
-            .catch((error) => {
-                console.log(error.response)
-            })
+        if(response.data.hasOwnProperty(1)){
+            var casesList = response.data[1]
+            setCases(casesList)
+            setTableLoading(false)
+            setTotalRecords(response.data['total_records'])
         }
         else {
-            if(response.data.hasOwnProperty(1)){
-                var casesList = response.data[1]
-                setCases(casesList)
-                setTableLoading(false)
-                setTotalRecords(response.data['total_records'])
-            }
-            else {
-                axios(config)
-                .then((res) => {
-                        setCases(res.data['cases'])
-                        setTableLoading(false)
-                        setTotalRecords(res.data['total_records'])
-                        var page = res.data['page']
-                        dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
-                })
-                .catch((error) => {
-                    console.log(error.response)
-                })
-            }
+            axios(config)
+            .then((res) => {
+                    setCases(res.data['cases'])
+                    setTableLoading(false)
+                    setTotalRecords(res.data['total_records'])
+                    var page = res.data['page']
+                    dispatch(ClientCaseListStorageDispatcher({[page]: res.data['cases'] ,  'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
         }
       }, [])
   
@@ -126,7 +71,7 @@ const ViewCasesClient = (props) => {
         setPage(value)
         const config = {
             method: 'post',
-            url: '/api/v1/client-cases/' + value,
+            url: '/api/v1/case-emp/' + value,
             data: {
                 "keyword": searchKeyword,
                 "filters": filters,
@@ -168,7 +113,7 @@ const ViewCasesClient = (props) => {
         var defaultPage = 1
         const config = {
             method: 'post',
-            url: '/api/v1/client-cases/' + defaultPage,
+            url: '/api/v1/case-emp/' + defaultPage,
             data: {
                 "keyword": searchKeyword,
                 "filters": filters,
@@ -246,7 +191,7 @@ const ViewCasesClient = (props) => {
         setSortingValue(null)
         const config = {
             method: 'post',
-            url: '/api/v1/client-cases/' + defaultPage,
+            url: '/api/v1/case-emp/' + defaultPage,
             data: {
                 "keyword": e.target.value,
                 "filters": filters,
@@ -286,7 +231,7 @@ const ViewCasesClient = (props) => {
         var defaultPage = 1
         const config = {
             method: 'post',
-            url: '/api/v1/client-cases/' + defaultPage,
+            url: '/api/v1/case-emp/' + defaultPage,
             data: {
                 "keyword": searchKeyword,
                 "filters": data,
@@ -369,24 +314,11 @@ const ViewCasesClient = (props) => {
         }
     }
 
-    const handleAdd = () => {
-        dispatch(NewCaseRequestResponseReset())
-        return (
-          props.history.push("/user/create-case-request")
-        )
-    }
-
     return (
         <div>
-            <div class="px-4">
-                <div class="flex min-w-full">
+            <div class="px-4 sm:px-8">
+                <div class="flex">
                     <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Cases</p></div>
-                    <div class="w-3/5"></div>
-                    <div class="w-1/5 flex justify-end">
-                        <button class="focus:outline-none" onClick={() => handleAdd()}>
-                            <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">Add case</div>
-                        </button>
-                    </div>
                 </div>
                 <nav>
                     <div class="">
@@ -397,7 +329,7 @@ const ViewCasesClient = (props) => {
                                     onClick={() => handleRequestedFilter()}
                                 >
                                     <div class={`rounded-full text-sm px-3 py-1 ${activeRequestedFilter ? "bg-blue-500 text-white": ""}`}>
-                                        Forwarded
+                                        Received
                                     </div>
                                 </div>
                                 <div
@@ -413,7 +345,7 @@ const ViewCasesClient = (props) => {
                                     onClick={() => handleCompletedFilter()}
                                 >
                                     <div class={`rounded-full text-sm px-3 py-1 ${activeCompletedFilter ? "bg-blue-500 text-white": ""}`}>
-                                        Completed
+                                    Closed
                                     </div>
                                 </div>
                             </div>
@@ -429,30 +361,6 @@ const ViewCasesClient = (props) => {
                     </div>
                 </nav>
                 <div class="py-4">
-                    { 
-                        newCaseRequestConfirm ?
-                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-                            <p class="font-bold">New case requested successfully</p>
-                        </div>
-                        :
-                        ""
-                    }
-                    { 
-                        confirmCompletionalert ?
-                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-                            <p class="font-bold">Completion request has been confirmed successfully</p>
-                        </div>
-                        :
-                        ""
-                    }
-                    { 
-                        confirmProposalAcceptedAlert ?
-                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-                            <p class="font-bold">Proposal has been accepted successfully</p>
-                        </div>
-                        :
-                        ""
-                    }
                     {
                         tableLoading ? 
                             <div class="animate-pulse flex space-x-4">
@@ -498,7 +406,7 @@ const ViewCasesClient = (props) => {
                             </div>
                         :
                         <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 overflow-x-auto">
-                            <div class="min-w-full shadow rounded-lg overflow-hidden">
+                            <div class="inline-block min-w-full shadow rounded-lg overflow-hidden mt-4">
                                 <table class="min-w-full leading-normal">
                                     <thead>
                                         <tr>
@@ -532,47 +440,55 @@ const ViewCasesClient = (props) => {
                                             cases.map((item, index) => {
                                                 return(
                                                     <tr>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '22em', minWidth: '22em'}}>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '15em', minWidth: '22em'}}>
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
                                                                     <p class="text-blue-700">
-                                                                        <Link to={`/user/case/${item._id.$oid}`}>{item.title}</Link>
+                                                                        <Link to={`/sadmin/case/${item._id.$oid}`}>{item.title}</Link>
                                                                     </p>
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '15em', minWidth: '12em'}}>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '12em'}}>
                                                             {
                                                                 item.status == "Requested" ?
-                                                                <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-gray-900 leading-tight">
-                                                                    <span aria-hidden
-                                                                        class="absolute inset-0 bg-gray-300 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Requested</span>
-                                                                </span>
-                                                                :
-                                                                item.status == "Forwarded" ?
                                                                 <span
                                                                     class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Forwarded</span>
+                                                                    <span class="relative">Requested</span>
                                                                 </span>
                                                                 :
-                                                                item.status == "Proposal-Forwarded" ?
+                                                                item.status == "Forwarded" ? 
                                                                 <span
                                                                     class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
                                                                     <span aria-hidden
-                                                                        class="absolute inset-0 bg-blue-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Proposal Received</span>
+                                                                        class="absolute inset-0 bg-blue-300 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Received</span>
                                                                 </span>
                                                                 :
-                                                                item.status == "Contract-Waiting" ? 
+                                                                item.status == "Proposal-Forwarded" ?
+                                                                    item.proposalStatus && item.proposalStatus == "Declined" ?
+                                                                        <span
+                                                                            class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                                                                            <span aria-hidden
+                                                                                class="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                                                            <span class="relative">Proposal Declined</span>
+                                                                        </span>
+                                                                     :
+                                                                     <span
+                                                                        class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                        <span aria-hidden
+                                                                            class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                        <span class="relative">Proposal Forwarded</span>
+                                                                    </span>
+                                                                :
+                                                                item.status == "Contract-Waiting" ?
                                                                 <span
                                                                     class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Waiting Contract Paper</span>
+                                                                    <span class="relative">Client waiting contract paper</span>
                                                                 </span>
                                                                 :
                                                                 item.status == "Contract-Sent" ?
@@ -580,7 +496,7 @@ const ViewCasesClient = (props) => {
                                                                     class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Contract Paper Received</span>
+                                                                    <span class="relative">Contract Paper Sent</span>
                                                                 </span>
                                                                 :
                                                                 item.status == "Contract-Replied" ?
@@ -588,7 +504,7 @@ const ViewCasesClient = (props) => {
                                                                     class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Signed Contract Paper Sent</span>
+                                                                    <span class="relative">Signed Contract Paper Received</span>
                                                                 </span>
                                                                 :
                                                                 item.status == "Awaiting-Advance-Payment" ?
@@ -596,7 +512,15 @@ const ViewCasesClient = (props) => {
                                                                     class="relative inline-block px-3 py-1 font-semibold text-indigo-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-indigo-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Make Advance Installment</span>
+                                                                    <span class="relative">Awaiting Advance payment</span>
+                                                                </span>
+                                                                :
+                                                                item.status == "On-progress" ?
+                                                                <span
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    <span aria-hidden
+                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">On-progress</span>
                                                                 </span>
                                                                 :
                                                                 item.status == "Request-Completion" ?
@@ -612,7 +536,7 @@ const ViewCasesClient = (props) => {
                                                                     class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Make Final Installment</span>
+                                                                    <span class="relative">Awaiting Final Installment</span>
                                                                 </span>
                                                                 :
                                                                 item.status == "Client-Final-Installment-Paid" ?
@@ -620,7 +544,7 @@ const ViewCasesClient = (props) => {
                                                                     class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                                     <span aria-hidden
                                                                         class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">Final Payment Done</span>
+                                                                    <span class="relative">Platform Received Final Payment</span>
                                                                 </span>
                                                                 :
                                                                 item.status == "Closed" ?
@@ -632,10 +556,10 @@ const ViewCasesClient = (props) => {
                                                                 </span>
                                                                 :
                                                                 <span
-                                                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                                    class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
                                                                     <span aria-hidden
-                                                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                                    <span class="relative">On-progress</span>
+                                                                        class="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                                                    <span class="relative">Proposal Declined</span>
                                                                 </span>
                                                             }
                                                         </td>
@@ -666,7 +590,7 @@ const ViewCasesClient = (props) => {
                                                         </td>
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p class="text-blue-700 whitespace-no-wrap">
-                                                               <Link to={`/user/case/${item._id.$oid}`}>View Details</Link> 
+                                                               <Link to={`/sadmin/case/${item._id.$oid}`}>View Details</Link> 
                                                             </p>
                                                         </td>
                                                     </tr>
@@ -688,4 +612,4 @@ const ViewCasesClient = (props) => {
     )
 }
 
-export default ViewCasesClient
+export default ViewCasesemp

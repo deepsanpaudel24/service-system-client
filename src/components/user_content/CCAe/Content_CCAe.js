@@ -1,6 +1,6 @@
 import React from "react";
-import {Redirect, Route, Link, BrowserRouter as Router, Switch} from 'react-router-dom'
-import ViewCasesClient from "../case_management/Cases";
+import {Redirect, Route, Link, BrowserRouter as Router, Switch} from 'react-router-dom';
+import ViewCasesemp from "../case_management/Cases_employees";
 import ViewCaseDetailsClient from "../case_management/Case_details";
 import ViewCasesProposalClient from "../case_management/Case_propsals_client";
 import ContractDetailsClient from "../case_management/ContractDetailsClient";
@@ -18,7 +18,7 @@ const CCAeContent = () => {
                 <Route exact path='/user/profile-setting' component={ProfileSetting} />
                 <Route exact path='/user/change-password' component={ChangePassword} />
 
-                <Route exact path='/user/cases' component={ViewCasesClient} />
+                <Route exact path='/user/cases' component={ViewCasesemp} />
                 <Route exact path='/user/create-case-request' component={CreateCaseRequest} />
                 <Route exact path='/user/case/:id' component={ViewCaseDetailsClient} />
                 <Route exact path='/user/case/proposals/:id' component={ViewCasesProposalClient} />

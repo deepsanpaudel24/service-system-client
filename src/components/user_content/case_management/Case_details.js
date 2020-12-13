@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { PulseLoader } from "react-spinners";
 import axios from "axios";
 import download from "downloadjs";
@@ -9,7 +8,7 @@ import pdfLogo from "../../../images/pdf-Icon.png";
 import docxLogo from "../../../images/docx-Icon.png";
 import dataFileLogo from "../../../images/dataFile-Icon.png";
 import imageLogo from "../../../images/image-Icon.png";
-import VideoPlayer from "../video_player/VideoPlayer";
+import folderEmptyIcon from "../../../images/folder_empty.png";
 import { MdFileDownload } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { CaseDetailsStorageDispatcher } from "../../actions/case_management/CaseDetailsStorage";
@@ -21,6 +20,7 @@ import ViewCasesProposalClient from "./Case_propsals_client";
 import StripeCheckout from "../payments/Checkout";
 import { ConfirmCompletionDispatcher } from "../../actions/case_management/ConfirmCompletionAction";
 import ClientCaseTransactions from "./Client_Case_Transactions";
+import CaseAssignment from "./Case_Assignment";
 
 const ViewCaseDetailsClient = (props) => {
   const [confirmCompletion, setConfirmCompletion] = useState(false)
@@ -28,12 +28,15 @@ const ViewCaseDetailsClient = (props) => {
   const [caseDetails, setCaseDetails] = useState([]);
   const [caseTags, setCaseTags] = useState([]);
   const [pageLoading, setPageLoaoding] = useState(true);
-  const [propsals, setPropsals] = useState("");
   const [confirmFileUpload, setConfirmFileUpload] = useState(false)
   const [confirmFileRemove, setConfirmFileRemove] = useState(false)
   const [activeTab, setActiveTab] = useState("documents");
+  const [caseNotFound, setCaseNotFound] = useState(false)
   const dispatch = useDispatch();
   const response = useSelector((state) => state.CaseDetailsStorageReponse);
+
+  var spFilesCount = 0;
+  var clientFilesCount = 0;
 
   useLayoutEffect(() => {
     var string = document.location.pathname;
@@ -57,6 +60,7 @@ const ViewCaseDetailsClient = (props) => {
           dispatch(CaseDetailsStorageDispatcher(res.data));
         })
         .catch((error) => {
+          setCaseNotFound(true)
           setPageLoaoding(false);
         });
     } else if (response.data["case_details"]["_id"].$oid !== urlvalues[3]) {
@@ -78,6 +82,7 @@ const ViewCaseDetailsClient = (props) => {
           dispatch(CaseDetailsStorageDispatcher(res.data));
         })
         .catch((error) => {
+          setCaseNotFound(true)
           setPageLoaoding(false);
         });
     } else {
@@ -114,6 +119,7 @@ const ViewCaseDetailsClient = (props) => {
         dispatch(CaseDetailsStorageDispatcher(res.data));
       })
       .catch((error) => {
+        setCaseNotFound(true)
         setPageLoaoding(false);
       });
   }
@@ -158,6 +164,9 @@ const ViewCaseDetailsClient = (props) => {
   const activateTransactionsTab = () => {
     setActiveTab("trasactions");
   };
+  const activateAssignmentTab = () => {
+    setActiveTab("assignment")
+  }
 
   const handleViewContract = () => {
     var string = document.location.pathname;
@@ -236,6 +245,7 @@ const ViewCaseDetailsClient = (props) => {
             dispatch(CaseDetailsStorageDispatcher(res.data));
           })
           .catch((error) => {
+            setCaseNotFound(true)
             setPageLoaoding(false);
           });
       })
@@ -279,6 +289,7 @@ const ViewCaseDetailsClient = (props) => {
             dispatch(CaseDetailsStorageDispatcher(res.data));
           })
           .catch((error) => {
+            setCaseNotFound(true)
             setPageLoaoding(false);
           });
       })
@@ -322,6 +333,7 @@ const ViewCaseDetailsClient = (props) => {
           dispatch(CaseDetailsStorageDispatcher(res.data));
         })
         .catch((error) => {
+          setCaseNotFound(true)
           setPageLoaoding(false);
         });
     })
@@ -392,7 +404,17 @@ const ViewCaseDetailsClient = (props) => {
               <PulseLoader size={10} color={"#6DADE3"} loading={true} />
             </div>
           </div>
-        ) : (
+        ) 
+        :
+        caseNotFound ?
+        (
+          <div>
+            <p class="mx-3 text-gray-700 text-md">Sorry, no details found for this case.</p>
+            <img src={folderEmptyIcon} style={{ width: "60%"}}/>
+          </div>
+        )
+        : 
+        (
           <div>
             <div class="max-w-sm w-full lg:max-w-full lg:flex">
               <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
@@ -671,6 +693,9 @@ const ViewCaseDetailsClient = (props) => {
                           <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateProposalTab()}>Proposals</button>
                       </li>
                       <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateAssignmentTab()}>Assignment</button>
+                      </li>
+                      <li class="mr-1">
                           <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateTransactionsTab()}>Transactions</button>
                       </li>
                     </ul>
@@ -696,6 +721,37 @@ const ViewCaseDetailsClient = (props) => {
                         </button>
                       </li>
                       <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateAssignmentTab()}>Assignment</button>
+                      </li>
+                      <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateTransactionsTab()}>Transactions</button>
+                      </li>
+                    </ul>
+                  )
+                  :
+                  activeTab == "assignment" ? 
+                  (
+                    <ul class="flex border-b">
+                      <li class="mr-1">
+                        <button
+                          class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                          onClick={() => activateDocsTab()}
+                        >
+                          Case Documents
+                        </button>
+                      </li>
+                      <li class="mr-1">
+                        <button
+                          class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                          onClick={() => activateProposalTab()}
+                        >
+                          Proposals
+                        </button>
+                      </li>
+                      <li class="-mb-px mr-1">
+                          <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activateAssignmentTab()}>Assignment</button>
+                      </li>
+                      <li class="mr-1">
                           <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateTransactionsTab()}>Transactions</button>
                       </li>
                     </ul>
@@ -718,6 +774,9 @@ const ViewCaseDetailsClient = (props) => {
                         >
                           Proposals
                         </button>
+                      </li>
+                      <li class="mr-1">
+                          <button class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none" onClick={() => activateAssignmentTab()}>Assignment</button>
                       </li>
                       <li class="-mb-px mr-1">
                           <button class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none" onClick={() => activateTransactionsTab()}>Transactions</button>
@@ -747,6 +806,7 @@ const ViewCaseDetailsClient = (props) => {
                                   var extension = filename.split(".").slice(-1)[0].toLowerCase()
                                   var owner = filename.split(".").slice(-2)[0];
                                   if (owner == "sp"){
+                                    spFilesCount = spFilesCount + 1;
                                     if(extension == "pdf"){
                                       return (
                                         <div class="bg-gray-100  shadow rounded-lg">
@@ -961,9 +1021,16 @@ const ViewCaseDetailsClient = (props) => {
                                         </div>
                                       )
                                     }
-
                                   }
                                 })
+                              }
+                              {
+                                spFilesCount == 0 ?
+                                <div class="my-4">
+                                  <p class="text-gray-600">No files from service provider as of now.</p>
+                                </div>
+                                :
+                                ""
                               }
                             </div>
                           {/* div for the related files of Clients ends */}
@@ -983,6 +1050,7 @@ const ViewCaseDetailsClient = (props) => {
                                   var extension = filename.split(".").slice(-1)[0].toLowerCase()
                                   var owner = filename.split(".").slice(-2)[0];
                                   if (owner == "c"){
+                                    clientFilesCount = clientFilesCount + 1;
                                     if(extension == "pdf"){
                                       return (
                                         <div class="bg-gray-100  shadow rounded-lg">
@@ -1201,8 +1269,17 @@ const ViewCaseDetailsClient = (props) => {
                                   }
                                 })
                               }
+                              {
+                                clientFilesCount == 0 ?
+                                <div class="my-4">
+                                  <p class="text-gray-600">No files uploded from your side as of now</p>
+                                </div>
+                                :
+                                ""
+                              }
                             </div>
                           {/* div for the related files of service providers ends */}
+                          
                         {/* div for the related files ends from here  */}
                       </div>
                         {/* Div for adding the documents beigns from here */}
@@ -1229,6 +1306,13 @@ const ViewCaseDetailsClient = (props) => {
               (
                   <div>
                     <ViewCasesProposalClient />
+                  </div>
+              )
+              : 
+              activeTab == "assignment" ?
+              (
+                  <div>
+                    <CaseAssignment user_type="cca" />
                   </div>
               )
               :

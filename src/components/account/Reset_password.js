@@ -6,6 +6,7 @@ import NavAccount from "./Nav";
 import PasswordStrengthBar from "react-password-strength-bar";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import { PulseLoader } from "react-spinners";
 
 const ResetPassword = ({ t }) => {
   const history = useHistory();
@@ -76,13 +77,7 @@ const ResetPassword = ({ t }) => {
   const showData = () => {
     if (response.loading) {
       return (
-        <button
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="button"
-          disabled
-        >
-          {t("loading")}
-        </button>
+        <PulseLoader size={10} color={"#6DADE3"} loading={true} />
       );
     }
     return (

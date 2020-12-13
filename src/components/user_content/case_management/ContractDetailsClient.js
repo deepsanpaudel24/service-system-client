@@ -23,6 +23,7 @@ const ContractDetailsClient = (props) => {
     const [fileUploaderConfirm, setFileUploaderConfirm] = useState(false)  
     const [fileNameToShow, setFileNameToShow] = useState([])  
     const [fileToSend, setFileToSend] = useState([]);
+    const [formEmptyError, setFormEmptyError] = useState("")
 
     const dispatch = useDispatch()
     const response = useSelector(state => state.ContractDetailsStorageResponse)
@@ -130,13 +131,14 @@ const ContractDetailsClient = (props) => {
     const submitFileUpload = () => {
         // send the put request to contracts collection in the database with the Id
         // then update the collection with the attributes signed files 
-        setFileUploaderLoading(true)
         var string = document.location.pathname;
         var urlvalues = string.toString().split("/");
         if(_.isEmpty(fileToSend)){
-            console.log("Please Upload the required files")
+            setFormEmptyError("Please upload the signed contract paper")
         }
         else {
+            setFormEmptyError("")
+            setFileUploaderLoading(true)
             //send the case request to backend.
             var formData = new FormData();
             for (let file of fileToSend) {
@@ -154,7 +156,7 @@ const ContractDetailsClient = (props) => {
             .then((res) => {
                 setFileUploaderLoading(false)
                 setFileUploaderConfirm(true)
-                setActiveTab("tab1")
+                setActiveTab("tab2")
             })
             .catch((error) => {
                 setFileUploaderLoading(false)
@@ -191,6 +193,14 @@ const ContractDetailsClient = (props) => {
                         <div class="max-w-sm w-full lg:max-w-full lg:flex">
                             <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                                 <div class="mb-8">
+                                {
+                                    formEmptyError == "" ? 
+                                        ""
+                                        :
+                                        <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mb-4" role="alert">
+                                            <p class="font-bold">{formEmptyError}</p>
+                                        </div>
+                                }
                                 { 
                                     fileUploaderConfirm ?
                                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">

@@ -4,6 +4,7 @@ import {PulseLoader} from "react-spinners";
 import './styles/App.scss';
 import SALayout from "./dashboard_component/Layout_SA";
 import { useHistory } from "react-router";
+import SAeLayout from "./SAe/Layout_SAe";
 
 const SAHomePage = () => {
     const history = useHistory();
@@ -50,7 +51,12 @@ const SAHomePage = () => {
                             <SALayout />
                         </div>
                     :
-                        ""
+                        userType == "SAe" ? 
+                            <div>
+                                <SAeLayout />
+                            </div>
+                        :
+                            ""
             }
         </div>
     )

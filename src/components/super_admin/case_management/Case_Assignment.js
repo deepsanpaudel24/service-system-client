@@ -61,50 +61,26 @@ const CaseAssignment = (props) => {
             .catch((error) => {
                 console.log(error.response)
             })
-        }
-        var config2;
-        if(user_type == "spca" ) {
-            config2 = {
-                method: 'get',
-                url: '/api/v1/case-sp/' + urlvalues[3],
-                headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                }
-            } 
-            axios(config2)
-            .then((res) => {
-                console.log(res.data['assigned_employee_list'])
-                var array= []
-                res.data['assigned_employee_list'].map((item, index) => {
-                    array.push(item.$oid)
-                })
-                setCaseAssignmentList(array)
+        } 
+        const config2 = {
+            method: 'get',
+            url: '/api/v1/case/' + urlvalues[3],
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+            }
+        } 
+        axios(config2)
+        .then((res) => {
+            console.log(res.data['case_details']['assigned_employee_list'])
+            var array= []
+            res.data['case_details']['assigned_employee_list'].map((item, index) => {
+                array.push(item.$oid)
             })
-            .catch((error) => {
-                console.log(error.response)
-            })
-        }  
-        else {
-            config2 = {
-                method: 'get',
-                url: '/api/v1/case/' + urlvalues[3],
-                headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                }
-            } 
-            axios(config2)
-            .then((res) => {
-                console.log(res.data['case_details']['assigned_employee_list'])
-                var array= []
-                res.data['case_details']['assigned_employee_list'].map((item, index) => {
-                    array.push(item.$oid)
-                })
-                setCaseAssignmentList(array)
-            })
-            .catch((error) => {
-                console.log(error.response)
-            })
-        }
+            setCaseAssignmentList(array)
+        })
+        .catch((error) => {
+            console.log(error.response)
+        })
       }, [])
   
     useEffect(() => {
@@ -341,6 +317,7 @@ const CaseAssignment = (props) => {
 
     const handleCaseAssignment = (e, id) => {
         setButtonDisabled(false)
+        setShowAlert(false)
         if(e.target.checked){
             // add to the array i.e. caseAssignmentList
             setCaseAssignmentList([...caseAssignmentList, id])

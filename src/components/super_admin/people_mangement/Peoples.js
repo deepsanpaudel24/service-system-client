@@ -22,7 +22,7 @@ import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
 const Peoples = ({ t }) => {
   const history = useHistory();
   const [peoples, setPeoples] = useState([]);
-  const [tableLoading, setTableLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(true);
 
   // For sorting
   const [sortingKey, setSortingKey] = useState(null);
@@ -39,16 +39,38 @@ const Peoples = ({ t }) => {
   const [activeSPCAFilter, setActiveSPCAFilter] = useState(false);
   const [activeSPSFilter, setActiveSPSFilter] = useState(false);
 
+  const [showAddedAlert, setShowAddedAlert] = useState(false);
+
   const dispatch = useDispatch();
   const response = useSelector((state) => state.PeopleDeactivateResponse);
   const response2 = useSelector((state) => state.PeoplesListStorageResponse);
+  const response3 = useSelector((state) => state.PeopleRegisterResponse);
 
   useLayoutEffect(() => {
     const config = {
       method: "get",
       url: "/api/v1/peoples/list/" + page,
     };
-    if (response2.data.hasOwnProperty(1)) {
+    if (!_.isEmpty(response3.data)){
+      setShowAddedAlert(true)
+      axios(config)
+      .then((res) => {
+        setPeoples(res.data["peoples"]);
+        setTableLoading(false);
+        setTotalRecords(res.data["total_records"]);
+        var page = res.data["page"];
+        dispatch(
+          PeoplesListStorageDispatcher({
+            [page]: res.data["peoples"],
+            total_records: res.data["total_records"],
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
+    }
+    else if (response2.data.hasOwnProperty(1)) {
       var peopleList = response2.data[1];
       setPeoples(peopleList);
       setTableLoading(false);
@@ -532,7 +554,7 @@ const Peoples = ({ t }) => {
 
   return (
     <div>
-      <div class="px-4 sm:px-8">
+      <div class="px-4">
         <div class="flex">
           <div class="w-1/5">
             <p class="text-3xl my-3" style={{ textAlign: "left" }}>
@@ -589,6 +611,17 @@ const Peoples = ({ t }) => {
             </div>
           </div>
         </nav>
+        {
+          showAddedAlert ?
+          <div
+            class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-3"
+            role="alert"
+          >
+            <p class="font-bold">{t("people_added_successfully")}</p>
+          </div>
+          :
+          "" 
+        }
         {/* Tags code ends */}
         <div class="py-4">
           {showServerError()}

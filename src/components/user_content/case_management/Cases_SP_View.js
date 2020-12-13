@@ -12,6 +12,7 @@ import Pagination from "../Pagination";
 import { ReplyCaseRequestResponseReset } from "../../actions/case_management/ReplyCaseRequestAction";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import { RequestCompletionDispatcherResponseReset } from "../../actions/case_management/RequestCompletionAction";
 
 const ViewCasesSP = (props) => {
   const history = useHistory();
@@ -32,10 +33,12 @@ const ViewCasesSP = (props) => {
   const [activeOnprogressFilter, setActiveOnprogressFilter] = useState(false);
   const [activeCompletedFilter, setActiveCompletedFilter] = useState(false);
 
+  const [showRequestCompletionAlert, setShowRequestCompletionAlert] = useState(false)
+
   const dispatch = useDispatch();
   const response = useSelector((state) => state.ClientCaseListResponse);
   const response2 = useSelector((state) => state.UploadContractPaperResponse);
-  const response3 = useSelector((state) => state.ConfirmContractResponse);
+  const response3 = useSelector(state => state.RequestCompletionResponse);
   const response4 = useSelector((state) => state.ReplyCaseRequestResponse);
 
   useLayoutEffect(() => {
@@ -67,7 +70,28 @@ const ViewCasesSP = (props) => {
           console.log(error.response);
         });
     }
-    if (response.data.hasOwnProperty(1)) {
+    else if (!_.isEmpty(response3)) {
+      dispatch(RequestCompletionDispatcherResponseReset());
+      // setShowRequestCompletionAlert(true)
+      setShowRequestCompletionAlert(true)
+      axios(config)
+        .then((res) => {
+          setCases(res.data["cases"]);
+          setTableLoading(false);
+          setTotalRecords(res.data["total_records"]);
+          var page = res.data["page"];
+          dispatch(
+            ClientCaseListStorageDispatcher({
+              [page]: res.data["cases"],
+              total_records: res.data["total_records"],
+            })
+          );
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
+    }
+    else if (response.data.hasOwnProperty(1)) {
       var casesList = response.data[1];
       setCases(casesList);
       setTableLoading(false);
@@ -341,8 +365,8 @@ const ViewCasesSP = (props) => {
   };
 
   return (
-    <div>
-      <div class="px-4 sm:px-8">
+    <div class="">
+      <div class="px-4">
         <div class="flex">
           <div class="w-1/5">
             <p class="text-3xl my-3" style={{ textAlign: "left" }}>
@@ -403,6 +427,16 @@ const ViewCasesSP = (props) => {
           </div>
         </nav>
         <div class="py-4">
+            { 
+                showRequestCompletionAlert ?
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4" role="alert">
+                    <p class="font-bold">Request for the case completion made sucessfully.</p>
+                </div>
+                :
+                ""
+            }
+          </div>
+        <div class="py-3">
           {tableLoading ? (
             <div class="animate-pulse flex space-x-4">
               <div class="flex-1 space-y-4 py-1">
@@ -477,7 +511,7 @@ const ViewCasesSP = (props) => {
                         <tr>
                           <td
                             class="px-5 py-5 border-b border-gray-200 bg-white text-sm"
-                            style={{ maxWidth: "15em", minWidth: "22em" }}
+                            style={{ maxWidth: "22em", minWidth: "22em" }}
                           >
                             <div class="flex items-center">
                               <div class="ml-3">
@@ -491,7 +525,7 @@ const ViewCasesSP = (props) => {
                           </td>
                           <td
                             class="px-5 py-5 border-b border-gray-200 bg-white text-sm"
-                            style={{ maxWidth: "12em" }}
+                            style={{maxWidth: '15em', minWidth: '12em'}}
                           >
                             {item.status == "Requested" ? (
                               <span class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
@@ -597,7 +631,7 @@ const ViewCasesSP = (props) => {
                                   class="absolute inset-0 bg-green-200 opacity-50 rounded-full"
                                 ></span>
                                 <span class="relative">
-                                  {t("awaiting_advance_installment")}
+                                  {t("awaiting_final_installment")}
                                 </span>
                               </span>
                             ) : item.status ==

@@ -23,8 +23,11 @@ const Tasks = (props) => {
     const [activeHourlyFilter, setActiveHourlyFilter] = useState(false)
     const [activeFlatFeeFilter, setActiveFlatFeeFilter] = useState(false)
 
+    const [showAddedAlert, setShowAddedAlert] = useState(false)
+
     const dispatch = useDispatch()
     const response2 = useSelector(state => state.CustomTaskListStorageResponse)
+    const response = useSelector(state => state.AddCustomTaskResponse)
     
     useLayoutEffect(() => {
         const config = {
@@ -34,7 +37,22 @@ const Tasks = (props) => {
                 'Authorization': 'Bearer ' + localStorage.getItem('access_token')
               }
           }
-        if(response2.data.hasOwnProperty(1)){
+        if(!_.isEmpty(response.data)){
+            dispatch(AddCustomTaskResponseReset())
+            setShowAddedAlert(true)
+            axios(config)
+            .then((res) => {
+                    setTasks(res.data['tasks'])
+                    setTableLoading(false)
+                    setTotalRecords(res.data['total_records'])
+                    var page = res.data['page']
+                    dispatch(CustomTaskListStorageDispatcher({[page]: res.data['tasks'], 'total_records': res.data['total_records']}))
+            })
+            .catch((error) => {
+                console.log(error.response)
+            })
+        }
+        else if(response2.data.hasOwnProperty(1)){
             var taskList = response2.data[1]
             setTasks(taskList)
             setTableLoading(false)
@@ -291,7 +309,7 @@ const Tasks = (props) => {
 
     return (
         <div>
-            <div class="px-4 sm:px-8">
+            <div class="px-4">
                 <div class="flex min-w-full">
                     <div class="w-1/5"><p class="text-3xl my-3" style={{textAlign: "left"}}>Tasks</p></div>
                     <div class="w-3/5"></div>
@@ -318,6 +336,17 @@ const Tasks = (props) => {
                         </div>
                     </div>
                 </nav>
+                {
+                    showAddedAlert ?
+                    <div
+                        class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4"
+                        role="alert"
+                    >
+                        <p class="font-bold">Custom task added sucessfully</p>
+                    </div>
+                    :
+                    "" 
+                }
                 <div class="py-8">
                     {
                         tableLoading ? 
@@ -392,9 +421,11 @@ const Tasks = (props) => {
                                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '14em'}}>
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
-                                                                    <p class="text-gray-900">
-                                                                        {item.title}
-                                                                    </p>
+                                                                    <Link to={`/user/tasks/${item._id.$oid}`}>
+                                                                        <p class="text-blue-700">
+                                                                            {item.title}
+                                                                        </p>
+                                                                    </Link>
                                                                 </div>
                                                             </div>
                                                         </td>

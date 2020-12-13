@@ -327,7 +327,7 @@ const SATransactions = ({t}) => {
 
   return (
     <div>
-      <div class=" px-4 sm:px-8">
+      <div class=" px-4">
         <div class="flex">
           <div class="w-1/5">
             <p class="text-3xl my-3" style={{ textAlign: "left" }}>
@@ -516,7 +516,7 @@ const SATransactions = ({t}) => {
                           </td>
                           <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             <p class="text-gray-900 whitespace-no-wrap">
-                              {item.paid_amount} / {item.currency}
+                              {item.paid_amount} {item.currency}
                             </p>
                           </td>
                           <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">

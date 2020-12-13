@@ -39,9 +39,13 @@ const ViewEmployees = ({ t }) => {
   const [activeVerfiedFilter, setActiveVerifiedFilter] = useState(false);
   const [activeUnverfiedFilter, setActiveUnverifiedFilter] = useState(false);
 
+  const [showConfirmAlert, setShowConfirmAlert] = useState(false)
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false)
+
   const dispatch = useDispatch();
   const response = useSelector((state) => state.EmployeeRemoveResponse);
   const response2 = useSelector((state) => state.EmployeeListStorageResponse);
+  const response3 = useSelector((state) => state.addEmployeeResponse);
 
   useLayoutEffect(() => {
     const config = {
@@ -51,7 +55,27 @@ const ViewEmployees = ({ t }) => {
         Authorization: "Bearer " + localStorage.getItem("access_token"),
       },
     };
-    if (response2.data.hasOwnProperty(1)) {
+    if (!_.isEmpty(response3.data)){
+      setShowConfirmAlert(true)
+      dispatch(AddEmployeeResponseReset())
+      axios(config)
+        .then((res) => {
+          setEmployees(res.data["employees"]);
+          setTableLoading(false);
+          setTotalRecords(res.data["total_records"]);
+          var page = res.data["page"];
+          dispatch(
+            EmployeesListStorageDispatcher({
+              [page]: res.data["employees"],
+              total_records: res.data["total_records"],
+            })
+          );
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
+    }
+    else if (response2.data.hasOwnProperty(1)) {
       var empList = response2.data[1];
       setEmployees(empList);
       setTableLoading(false);
@@ -301,6 +325,9 @@ const ViewEmployees = ({ t }) => {
   const handleConfirmDelete = (id) => {
     // dispatch action to delete the item with the id parameter
     dispatch(RemoveEmployeeDispatcher(id));
+    setShowConfirmAlert(false)
+    setShowDeleteAlert(true)
+    window.location.reload(true)
   };
 
   const showServerError = () => {
@@ -413,10 +440,10 @@ const ViewEmployees = ({ t }) => {
     return history.push("/sadmin/add-employee");
   };
 
+
   return (
     <div>
-      <div class=" px-4 sm:px-8">
-        {console.log("redux value ", response2.data)}
+      <div class=" px-4">
         <div class="flex">
           <div class="w-1/5">
             <p class="text-3xl my-3" style={{ textAlign: "left" }}>
@@ -472,6 +499,28 @@ const ViewEmployees = ({ t }) => {
             </div>
           </div>
         </nav>
+        {
+          showConfirmAlert ?
+          <div
+            class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-4"
+            role="alert"
+          >
+            <p class="font-bold">{t("employee_added_successfully")}</p>
+          </div>
+          :
+          "" 
+        }
+        {
+          showDeleteAlert ?
+          <div
+            class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4"
+            role="alert"
+          >
+            <p class="font-bold">{t("employee_deleted_successfully")}</p>
+          </div>
+          :
+          "" 
+        }
         <div class="py-3">
           {showServerError()}
           {confirmRemovedEmployee()}

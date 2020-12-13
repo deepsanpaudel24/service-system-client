@@ -6,6 +6,7 @@ import _ from "lodash";
 import Pagination from "../Pagination";
 import { AddCustomTaskResponseReset } from "../../actions/custom_task/AddCustomTaskAction";
 import { IntakeFormListStorageDispatcher, IntakeFormListStorageResponseReset } from "../../actions/form_generator/IntakeFormListStorage";
+import { CreateIntakeFormResponseReset } from "../../actions/form_generator/CreateIntakeFormAction";
 
 const ClientIntakeFormList = (props) => {
   const [IntakeForms, setIntakeForms] = useState([]);
@@ -22,6 +23,8 @@ const ClientIntakeFormList = (props) => {
   const [filters, setFilters] = useState([])
   const [activeHourlyFilter, setActiveHourlyFilter] = useState(false)
   const [activeFlatFeeFilter, setActiveFlatFeeFilter] = useState(false)
+
+  const [showAddedAlert, setShowAddedAlert] = useState(false)
   
   const dispatch = useDispatch();
   const response = useSelector((state) => state.CreateIntakeFormResponse);
@@ -35,7 +38,22 @@ const ClientIntakeFormList = (props) => {
             'Authorization': 'Bearer ' + localStorage.getItem('access_token')
           }
       }
-    if(response2.data.hasOwnProperty(1)){
+    if(!_.isEmpty(response.data)){
+      dispatch(CreateIntakeFormResponseReset())
+      setShowAddedAlert(true)
+      axios(config)
+      .then((res) => {
+              setIntakeForms(res.data['forms'])
+              setTableLoading(false)
+              setTotalRecords(res.data['total_records'])
+              var page = res.data['page']
+              dispatch(IntakeFormListStorageDispatcher({[page]: res.data['forms'], 'total_records': res.data['total_records']}))
+      })
+      .catch((error) => {
+          console.log(error.response)
+      })
+    }
+    else if(response2.data.hasOwnProperty(1)){
         var formList = response2.data[1]
         setIntakeForms(formList)
         setTableLoading(false)
@@ -288,12 +306,13 @@ const handleFlatFeeFilter = () => {
 
   const handleAdd = () => {
     dispatch(AddCustomTaskResponseReset());
+    dispatch(CreateIntakeFormResponseReset())
     return props.history.push("/user/create-intake-form");
   };
 
   return (
     <div>
-      <div class="px-4 sm:px-8">
+      <div class="px-4">
         <div class="flex min-w-full">
           <div class="w-2/5">
             <p class="text-3xl my-3" style={{ textAlign: "left" }}>
@@ -304,7 +323,7 @@ const handleFlatFeeFilter = () => {
           <div class="w-1/5">
             <button class="focus:outline-none" onClick={() => handleAdd()} style={{float: "right"}}>
               <div class="h-12 w-auto px-5 py-5 flex items-center justify-center bg-white text-blue-00 shadow-md hover:shadow-lg">
-                Add Client Intake-Form
+                Add Intake Form
               </div>
             </button>
           </div>
@@ -326,6 +345,17 @@ const handleFlatFeeFilter = () => {
                 </div>
             </div>
         </nav>
+        {
+          showAddedAlert ?
+          <div
+              class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4"
+              role="alert"
+          >
+              <p class="font-bold">Client intake form added sucessfully</p>
+          </div>
+          :
+          "" 
+      }
         <div class="py-4">
           {tableLoading ? (
             <div class="animate-pulse flex space-x-4">
@@ -384,7 +414,7 @@ const handleFlatFeeFilter = () => {
                           >
                             <div class="flex items-center">
                               <div class="ml-3">
-                                <p class="text-gray-900">{item.title}</p>
+                              <Link to={`/user/intake/form/${item._id.$oid}`}><p class="text-blue-700">{item.title}</p></Link>
                               </div>
                             </div>
                           </td>

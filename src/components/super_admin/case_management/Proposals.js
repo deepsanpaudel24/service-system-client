@@ -35,7 +35,7 @@ const Proposals = ({ t }) => {
 
   return (
     <div>
-      <div class="px-4 sm:px-8">
+      <div class="px-1">
         <div class="py-8">
           {tableLoading ? (
             <div class="flex h-screen">
@@ -78,7 +78,7 @@ const Proposals = ({ t }) => {
                         <tr>
                           <td
                             class="px-5 py-5 border-b border-gray-200 bg-white text-sm"
-                            style={{ maxWidth: "14em" }}
+                            style={{maxWidth: '22em', minWidth: '22em'}}
                           >
                             <div class="flex items-center">
                               <div class="ml-3">

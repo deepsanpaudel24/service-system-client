@@ -10,6 +10,13 @@ import { LoginUser } from "../actions/AccountAction";
 import { SendEmailConfirmationDispatcher } from "../actions/SendEmailConfirmationAction";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import { loadStripe } from "@stripe/stripe-js";
+
+// Make sure to call `loadStripe` outside of a component’s render to avoid
+// recreating the `Stripe` object on every render.
+const stripePromise = loadStripe(
+  "pk_test_51HrMHgE8BAcK1TWiL8xfQSyyt0GlCx5CWI5CXENgG0hLvieH2FXrhUOhoMiSJE5BmsKjCcITF3JRbNR6FyCwfOGo00p6rdZvPO"
+);
 
 const Login = ({ t }) => {
   const history = useHistory();
@@ -113,17 +120,44 @@ const Login = ({ t }) => {
     }
   };
 
+  const handleStripeCheckout = async (type) => {
+    // Get Stripe.js instance
+    const stripe = await stripePromise;
+    
+    // Call your backend to create the Checkout Session
+    const response = await axios.post(
+      "/api/v1/create-subscription-checkout-session/" + type + '/' + email
+    );
+    const stripe_session_id = response.data["id"];
+
+    // When the customer clicks on the button, redirect them to Checkout.
+    const result = await stripe.redirectToCheckout({
+      sessionId: stripe_session_id,
+    });
+
+    if (result.error) {
+      // If `redirectToCheckout` fails due to a browser or network
+      // error, display the localized error message to your customer
+      // using `result.error.message`.
+    }
+  };
+
   const showServerError = () => {
     if (!_.isEmpty(response.serverErrorMsg)) {
-      return (
-        <div
-          class="bg-red-100 border-l-4 border-orange-500 text-orange-700 p-4"
-          role="alert"
-        >
-          <p class="font-bold">{t("be_warned")}</p>
-          <p>{response.serverErrorMsg}</p>
-        </div>
-      );
+      if (response.serverErrorMsg == "Expired"){
+        handleStripeCheckout("monthly")
+      }
+      else {
+        return (
+          <div
+            class="bg-red-100 border-l-4 red-orange-500 text-red-700 p-4"
+            role="alert"
+          >
+            <p class="font-bold">{t("be_warned")}</p>
+            <p>{response.serverErrorMsg}</p>
+          </div>
+        );
+      }
     }
   };
 

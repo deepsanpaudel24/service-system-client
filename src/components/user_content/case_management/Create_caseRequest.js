@@ -147,7 +147,7 @@ const CreateCaseRequest = (props) => {
       }
 
     const handleNewCaseRequest = () => {
-        if(title == "" || desc == "" ){
+        if(title == "" || desc == "" || caseTags == "" ){
             setFormEmptyError("Please fill up all the required fields")
         }
         else {
@@ -229,6 +229,14 @@ const CreateCaseRequest = (props) => {
                 <form>
                     <p class="text-3xl my-3" >New Case Request</p>
                     <div class="border-t border-gray-200"></div>
+                    {
+                        formEmptyError == "" ? 
+                            ""
+                            :
+                            <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mb-4" role="alert">
+                                <p class="font-bold">Please fill up all the required fields</p>
+                            </div>
+                    }
                     {showServerError()}
                     {confirmNewCaseRequest()}
                     {
@@ -242,6 +250,7 @@ const CreateCaseRequest = (props) => {
                                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                             id="title" 
                                             type="text"
+                                            defaultValue={title}
                                             onChange={(e) => handleTitleChange(e)}
                                         />
                                 </div>
@@ -253,6 +262,7 @@ const CreateCaseRequest = (props) => {
                                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                         id="title" 
                                         type="text"
+                                        defaultValue={desc}
                                         style={{minHeight: "9em"}}
                                         onChange= {(e) => handleDescChange(e)}
                                     />
@@ -263,6 +273,7 @@ const CreateCaseRequest = (props) => {
                                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                         id="budget" 
                                         type="number"
+                                        defaultValue={budget}
                                         onChange={(e) => handleBudgetChange(e)}
                                     />
                                 </div>
@@ -272,6 +283,7 @@ const CreateCaseRequest = (props) => {
                                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                         id="budget" 
                                         type="date"
+                                        deadline={deadline}
                                         onChange={(e) => handleDeadline(e)}
                                     />
                                 </div>

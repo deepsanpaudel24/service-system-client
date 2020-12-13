@@ -40,7 +40,7 @@ const ViewCasesProposalClient = (props) => {
 
     return (
         <div>
-            <div class="px-4 sm:px-8">
+            <div class="px-4">
                 <div class="py-8">
                     {
                         tableLoading ? 
@@ -93,7 +93,7 @@ const ViewCasesProposalClient = (props) => {
                                             proposals.map((item, index) => {
                                                 return(
                                                     <tr>
-                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '18rem'}}>
+                                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm" style={{maxWidth: '22em', minWidth: '22em'}}>
                                                             <div class="flex items-center">
                                                                 <div class="ml-3">
                                                                     <Link to={`/user/proposal/${item._id.$oid}`}>

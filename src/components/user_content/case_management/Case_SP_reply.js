@@ -160,8 +160,7 @@ const ReplyCaseRequest = (props) => {
       }
 
     const handleReplyCaseRequest = () => {
-        if(title == "" || desc == "" || rate == "" || avgTimeTaken == "" || proposedDeadline == ""){
-            
+        if(title == "" || desc == "" || rate == "" || avgTimeTaken == "" || proposedDeadline == ""){   
           setFormEmptyError("Please fill up all the required fields")
         }
         else if (paymentType=="advance-payment" && advancePayment == "") {
@@ -255,6 +254,14 @@ const ReplyCaseRequest = (props) => {
                 <form>
                     <p class="text-3xl my-3" >Make a proposal</p>
                     <div class="border-t border-gray-200"></div>
+                    {
+                        formEmptyError == "" ? 
+                            ""
+                            :
+                            <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mb-4" role="alert">
+                                <p class="font-bold">Please fill up all the required fields</p>
+                            </div>
+                    }
                     {showServerError()}
                     {confirmNewCaseRequest()}
                     {
@@ -268,6 +275,7 @@ const ReplyCaseRequest = (props) => {
                                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                         id="title" 
                                         type="text"
+                                        defaultValue={title}
                                         onChange={(e) => handleTitleChange(e)}
                                     />
                             </div>
@@ -279,6 +287,7 @@ const ReplyCaseRequest = (props) => {
                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                     id="title" 
                                     type="text"
+                                    defaultValue={desc}
                                     style={{minHeight: "9em"}}
                                     onChange= {(e) => handleDescChange(e)}
                                 />
@@ -290,6 +299,7 @@ const ReplyCaseRequest = (props) => {
                                 <div>
                                     <select 
                                             key="rateType"
+                                            defaultValue={rateType}
                                             onChange={e => handleRateType(e)}
                                             class="shadow block appearance-none text-gray-700 w-full bg-white border px-3 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline">
                                             <option value="">choose ...</option>
@@ -309,6 +319,7 @@ const ReplyCaseRequest = (props) => {
                                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                                 id="hourly-fee" 
                                                 type="number"
+                                                defaultValue={rate}
                                                 onChange={e => handleRateChange(e)}
                                             />
                                         </div>
@@ -323,6 +334,7 @@ const ReplyCaseRequest = (props) => {
                                                 <input 
                                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                                     id="flat-fee" 
+                                                    defaultValue={rate}
                                                     type="number"
                                                     onChange={e => handleRateChange(e)}
                                                 />
@@ -354,6 +366,7 @@ const ReplyCaseRequest = (props) => {
                                             class="shadow appearance-none border w-full mr-3 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                             id="hourly-fee" 
                                             type="number"
+                                            defaultValue={avgTimeTaken}
                                             onChange={e => handleAvgTimeTaken(e)}
                                             />
                                     </div>
@@ -367,6 +380,7 @@ const ReplyCaseRequest = (props) => {
                                             class="shadow appearance-none border w-full mr-3 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                             id="hourly-fee" 
                                             type="date"
+                                            defaultValue={proposedDeadline}
                                             onChange= {e => handleProposedDeadline(e)}
                                             />
                                     </div>

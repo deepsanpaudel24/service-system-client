@@ -14,6 +14,9 @@ import { FinalPaymentTransferDispatcherResponseReset } from "../../actions/case_
 import Proposals from "./Proposals";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import CaseAssignment from "./Case_Assignment";
+import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
+import folderEmptyIcon from "../../../images/folder_empty.png";
 
 const ViewCaseDetailsSA = ({t}) => {
   const history = useHistory();
@@ -190,6 +193,10 @@ const ViewCaseDetailsSA = ({t}) => {
     setActiveTab("transactionsTab");
   };
 
+  const handleAssignmentTab = () => {
+    setActiveTab("assignment");
+  }
+
   // ******************************** tab functions ends *************************************
 
   const showButton = () => {
@@ -237,12 +244,9 @@ const ViewCaseDetailsSA = ({t}) => {
           <div>
             <div class="min-w-full lg:max-w-full lg:flex">
               {_.isEmpty(caseDetails) ? (
-                <div class="border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
-                  <div class="mb-8">
-                    <p class="text-sm text-gray-600 flex items-center">
-                      {t("no_details_to_show")}
-                    </p>
-                  </div>
+                <div>
+                  <p class="mx-3 text-gray-700 text-md">Sorry, no details found for this case.</p>
+                  <img src={folderEmptyIcon} style={{ width: "60%"}}/>
                 </div>
               ) : (
                 <div class="min-w-full border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 justify-between leading-normal">
@@ -426,7 +430,7 @@ const ViewCaseDetailsSA = ({t}) => {
                     />
                   ) : (
                     ""
-                  )}
+                  )} 
 
                   {/* Tab begins here  */}
                   <div class="pt-8 pb-5">
@@ -448,6 +452,14 @@ const ViewCaseDetailsSA = ({t}) => {
                             onClick={() => handleProposalsTab()}
                           >
                             {t("proposals")}
+                          </button>
+                        </li>
+                        <li class="mr-1">
+                          <button
+                            class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                            onClick={() => handleAssignmentTab()}
+                          >
+                            {t("assignment")}
                           </button>
                         </li>
                         <li class="mr-1">
@@ -482,6 +494,51 @@ const ViewCaseDetailsSA = ({t}) => {
                         <li class="mr-1">
                           <button
                             class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                            onClick={() => handleAssignmentTab()}
+                          >
+                            {t("assignment")}
+                          </button>
+                        </li>
+                        <li class="mr-1">
+                          <button
+                            class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                            onClick={() => handleTransactionsTab()}
+                          >
+                            {t("transactions")}
+                          </button>
+                        </li>
+                      </ul>
+                    ): activeTab == "assignment" ? (
+                      <ul class="flex border-b">
+                        <li class="mr-1">
+                          <button
+                            class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                            onClick={() => handleFowardedTab()}
+                          >
+                            {caseDetails.status == "Requested"
+                              ? "Matching Service Providers"
+                              : "Forwarded Service Providers"}
+                          </button>
+                        </li>
+                        <li class=" mr-1">
+                          <button
+                            class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                            onClick={() => handleProposalsTab()}
+                          >
+                            {t("proposals")}
+                          </button>
+                        </li>
+                        <li class="-mb-px mr-1">
+                          <button
+                            class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold focus:outline-none"
+                            onClick={() => handleAssignmentTab()}
+                          >
+                            {t("assignment")}
+                          </button>
+                        </li>
+                        <li class="mr-1">
+                          <button
+                            class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
                             onClick={() => handleTransactionsTab()}
                           >
                             {t("transactions")}
@@ -506,6 +563,14 @@ const ViewCaseDetailsSA = ({t}) => {
                             onClick={() => handleProposalsTab()}
                           >
                             {t("proposals")}
+                          </button>
+                        </li>
+                        <li class="mr-1">
+                          <button
+                            class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold focus:outline-none"
+                            onClick={() => handleAssignmentTab()}
+                          >
+                            {t("assignment")}
                           </button>
                         </li>
                         <li class="-mb-px mr-1">
@@ -578,20 +643,6 @@ const ViewCaseDetailsSA = ({t}) => {
                         </div>
                       ) : (
                         <div>
-                          {caseDetails.status == "Proposal-Forwarded" ? (
-                            <div class="flex items-center mt-8">
-                              <div class="text-sm">
-                                <a
-                                  href={`/sadmin/proposals/${caseDetails._id.$oid}`}
-                                  class=" text-gray-900 text-blue-700 leading-none mb-2"
-                                >
-                                  {t("view_proposal_for_this_case")}
-                                </a>
-                              </div>
-                            </div>
-                          ) : (
-                            ""
-                          )}
                           <div class="flex mt-3">
                             {forwardedSPIdList.map((item) => {
                               return (
@@ -601,8 +652,7 @@ const ViewCaseDetailsSA = ({t}) => {
                                       <Link to={`/sadmin/people/`}>
                                         <img
                                           class="w-full h-full rounded-full"
-                                          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                                          alt=""
+                                          src={ProfilePicAvatar}
                                         />
                                       </Link>
                                     </div>
@@ -642,6 +692,8 @@ const ViewCaseDetailsSA = ({t}) => {
                     </>
                   ) : activeTab == "proposals" ? (
                     <Proposals />
+                  ) : activeTab == "assignment" ? (
+                    <CaseAssignment />   
                   ) : (
                     <SACaseTransactions />
                   )}

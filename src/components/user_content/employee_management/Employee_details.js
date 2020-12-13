@@ -9,12 +9,15 @@ import EmployeeCases from "./Employee_cases";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import ProfilePicAvatar from "../../../images/profile_pic_avatar2.png";
+import folderEmptyIcon from "../../../images/folder_empty.png";
 
 const EmployeeDetails = (props) => {
   const { t } = props;
   const history = useHistory();
   const [employeeDetails, setEmployeeDetails] = useState([]);
   const [empDetailsLoading, setEmpDetailsLoading] = useState(true);
+
+  const [detailsNotFound, setDetailsNotFound] = useState(false)
   const dispatch = useDispatch();
   const response = useSelector((state) => state.addEmployeeResponse);
 
@@ -30,12 +33,12 @@ const EmployeeDetails = (props) => {
     };
     axios(config)
       .then((res) => {
-        console.log(res.data);
         setEmployeeDetails(res.data);
         setEmpDetailsLoading(false);
       })
       .catch((error) => {
-        console.log(error.response);
+        setEmpDetailsLoading(false);
+        setDetailsNotFound(true)
       });
   }, []);
 
@@ -71,7 +74,15 @@ const EmployeeDetails = (props) => {
               </button>
             </div>
           </div>
-        ) : (
+        )
+        :
+        detailsNotFound ? 
+        <div>
+          <p class="mx-3 text-gray-700 text-md">Sorry, no details found.</p>
+          <img src={folderEmptyIcon} style={{ width: "60%"}}/>
+        </div>
+        : 
+        (
           <div class="flex">
             <div class="w-4/5">
               <div class="flex">
@@ -127,7 +138,12 @@ const EmployeeDetails = (props) => {
           </div>
         )}
       </div>
-      <EmployeeCases />
+      {
+        detailsNotFound ? 
+        ""
+        :
+        <EmployeeCases />
+      }
     </div>
   );
 };

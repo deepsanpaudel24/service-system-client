@@ -7,49 +7,53 @@ import { AddServiceDispatcher, AddServiceResponseReset } from "../../actions/ser
 
 const AddService = (props) => {
     const [serviceTitle, setServiceTitle] = useState("")
+    const [serviceTitleError, setServiceTitleError] = useState("")
     const [rateType, setRateType]  = useState("")
+    const [rateTypeError, setRateTypeError]  = useState("")
     const [rate, setRate] = useState(0)
+    const [rateError, setRateError] = useState(0)
     const [avgTimeTaken, setAvgTimeTaken] = useState("")
+    const [avgTimeTakenError, setAvgTimeTakenError] = useState("")
+
     const dispatch = useDispatch()
     const response = useSelector(state => state.ServiceRegisterReponse)
 
     const handleServiceTitle = e => {
         setServiceTitle(e.target.value)
+        setServiceTitleError("")
     }
 
     const handleRateType = e => {
         setRateType(e.target.value)
+        setRateTypeError("")
     }
 
     const handleRateChange = e => {
         setRate(e.target.value)
-    }
-
-    const handleAvgTimeTaken = e => {
-        setAvgTimeTaken(e.target.value)
+        setRateError("")
     }
 
     const dataValidator = () => {
-        var data = {
-            title: serviceTitle,
-            rateType: rateType,
-            rate: rate,
-            averageTimeTake: avgTimeTaken
+        if (serviceTitle == ""){
+            setServiceTitleError("This is a required field")
         }
-        //dispatch the action here
-        dispatch(AddServiceDispatcher(data))
-    }
-
-    const dataValidatorNext = () => {
-        var data = {
-            title: serviceTitle,
-            rateType: rateType,
-            rate: rate,
-            averageTimeTake: avgTimeTaken
+        else if (rateType == ""){
+            setRateTypeError("This is a required field")
         }
-        var addNext = "true"
-        //dispatch the action here
-        dispatch(AddServiceDispatcher(data, addNext))
+        else if (rate == "") {
+            setRateError("This is a required field")
+        }
+        else {
+            
+            var data = {
+                title: serviceTitle,
+                rateType: rateType,
+                rate: rate,
+                averageTimeTake: 1
+            }
+            //dispatch the action here
+            dispatch(AddServiceDispatcher(data))
+        }
     }
 
     const showServerError = () => {
@@ -93,14 +97,7 @@ const AddService = (props) => {
         return (
             <div>
                 <button 
-                    class="bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-2 px-4 mr-2 rounded focus:outline-none focus:shadow-outline" 
-                    type="button" 
-                    onClick={() => dataValidatorNext()}
-                >
-                    Add and continue
-                </button>
-                <button 
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-2 rounded focus:outline-none focus:shadow-outline" 
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
                     type="button" 
                     onClick={() => dataValidator()}
                 >
@@ -123,12 +120,28 @@ const AddService = (props) => {
                             Service Title
                         </label>
                         <div>
-                            <input 
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="service_title" 
-                                type="text"
-                                onChange={e => handleServiceTitle(e)}
-                            />
+                            {
+                                serviceTitleError == "" ? 
+                                <input 
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="service_title" 
+                                    type="text"
+                                    defaultValue={serviceTitle}
+                                    onChange={e => handleServiceTitle(e)}
+                                />
+                                :
+                                <div>
+                                    <input
+                                        class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        id="service_title_error"
+                                        type="text"
+                                        defaultValue={serviceTitle}
+                                        onChange={e => handleServiceTitle(e)}
+                                    />
+                                    <p class="text-red-500 text-xs italic">{serviceTitleError}</p>
+                                </div>
+                            }
+                            
                         </div>
                     </div>
                     <div class="mt-6 mb-3" >
@@ -136,13 +149,28 @@ const AddService = (props) => {
                             Rate Type
                         </label>
                         <div>
-                            <select 
+                            {
+                                rateTypeError == "" ?
+                                <select 
                                     onChange={e => handleRateType(e)}
                                     class="shadow block appearance-none text-gray-700 w-full bg-white border px-3 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline">
                                     <option value="">choose ...</option>
                                     <option value="hourly">Hourly fee</option>
                                     <option value="flatFee">Flat fee</option>
-                            </select>
+                                </select>
+                                :
+                                <div>
+                                    <select 
+                                        onChange={e => handleRateType(e)}
+                                        class="shadow block appearance-none text-gray-700 w-full bg-white border border-red-500 px-3 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline">
+                                        <option value="">choose ...</option>
+                                        <option value="hourly">Hourly fee</option>
+                                        <option value="flatFee">Flat fee</option>
+                                    </select>
+                                    <p class="text-red-500 text-xs italic">{rateTypeError}</p>
+                                </div>
+                            }
+                            
                         </div>
                     </div>
                     {
@@ -152,12 +180,27 @@ const AddService = (props) => {
                                     Hourly Rate (USD)
                                 </label>
                                 <div>
-                                    <input 
-                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                        id="hourly-fee" 
-                                        type="number"
-                                        onChange={e => handleRateChange(e)}
-                                    />
+                                    {
+                                        rateError == ""? 
+                                        <input 
+                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                            id="hourly-fee" 
+                                            type="number"
+                                            defaultValue={rate}
+                                            onChange={e => handleRateChange(e)}
+                                        />
+                                        :
+                                        <div>
+                                            <input
+                                                class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                id="hourly-fee"
+                                                type="number"
+                                                defaultValue={rate}
+                                                onChange={e => handleRateChange(e)}
+                                            />
+                                            <p class="text-red-500 text-xs italic">{rateError}</p>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         :
@@ -167,30 +210,32 @@ const AddService = (props) => {
                                         Flat Fee (USD)
                                     </label>
                                     <div>
-                                        <input 
-                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                            id="flat-fee" 
-                                            type="number"
-                                            onChange={e => handleRateChange(e)}
-                                        />
+                                        {
+                                            rateError == ""? 
+                                            <input 
+                                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                                id="flat-fee" 
+                                                type="number"
+                                                defaultValue={rate}
+                                                onChange={e => handleRateChange(e)}
+                                            />
+                                            :
+                                            <div>
+                                                <input
+                                                    class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                    id="flat-fee"
+                                                    type="number"
+                                                    defaultValue={rate}
+                                                    onChange={e => handleRateChange(e)}
+                                                />
+                                                <p class="text-red-500 text-xs italic">{rateError}</p>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             :
                             ""
                     }
-                    <div class="mt-6 mb-3" >
-                        <label class="block text-gray-700 text-sm mb-2" for="password">
-                            Average Time Taken (Hours)
-                        </label>
-                        <div>
-                            <input 
-                                class="shadow appearance-none border w-full mr-3 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="hourly-fee" 
-                                type="number"
-                                onChange={e => handleAvgTimeTaken(e)}
-                                />
-                        </div>
-                    </div>
                     <div class="flex justify-start my-5" >
                         {showData()}
                     </div>

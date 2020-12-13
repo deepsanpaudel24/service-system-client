@@ -354,7 +354,7 @@ const ViewCasesSA = ({t}) => {
 
   return (
     <div>
-      <div class="px-4 sm:px-8">
+      <div class="px-4">
         <div class="flex">
           <div class="w-1/5">
             <p class="text-3xl my-3" style={{ textAlign: "left" }}>

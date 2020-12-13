@@ -141,11 +141,19 @@ const UploadContractPaper = (props) => {
     }
     return(
         <div class="flex mb-4">
-            {confirmContractUploaded()}
             <div class="w-3/5 ml-5">
                 <form>
                     <p class="text-3xl my-3" >Send Contract Paper</p>
                     <div class="border-t border-gray-200"></div>
+                    {
+                        formEmptyError == "" ? 
+                            ""
+                            :
+                            <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mb-4" role="alert">
+                                <p class="font-bold">{formEmptyError}</p>
+                            </div>
+                    }
+                    {confirmContractUploaded()}
                         <div>
                             <div class="mt-6 mb-5" >
                                 <label class="block text-gray-700 text-sm" for="title">
