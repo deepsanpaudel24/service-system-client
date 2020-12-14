@@ -50,7 +50,7 @@ const SAeNavbar = ({ t }) => {
       checkNotification();
       setSendFirstNotification(false);
     } else {
-      const interval = setInterval(checkNotification, 9000);
+      const interval = setInterval(checkNotification, 90000);
       return () => clearInterval(interval);
     }
   }, [sendFirstNotification]);
@@ -64,9 +64,21 @@ const SAeNavbar = ({ t }) => {
     }
   };
 
+  const checkNotificationRead = async () => {
+    try {
+      const resp = await axios(config);
+      setNotification(resp.data);
+      setNumberOfNotifications(resp.data.length);
+      return resp;
+    } catch (error) {
+      return error;
+    }
+  };
+
   const handleNotificationClick = (notification_id) => {
     setShowNotifications(false);
     dispatch(NotificationChangeStatusDispacther(notification_id));
+    setInterval(checkNotificationRead, 1500);
   };
 
   const handleLogout = () => {
@@ -252,7 +264,7 @@ const SAeNavbar = ({ t }) => {
       <div class="container max-w-full py-4">
         <div
           class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mx-4"
-          style={{ minHeight: "52rem" }}
+          style={{ minHeight: "87vh" }}
         >
           <SAeContent />
         </div>

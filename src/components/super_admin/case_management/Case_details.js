@@ -590,7 +590,7 @@ const ViewCaseDetailsSA = ({t}) => {
                     <>
                       {caseDetails.status == "Requested" ? (
                         <div>
-                          <div class="flex mt-3">
+                          <div class="flex mt-3 flex-wrap">
                             {serviceProviders.length > 0
                               ? serviceProviders.map((item, index) => {
                                   return (
@@ -643,12 +643,12 @@ const ViewCaseDetailsSA = ({t}) => {
                         </div>
                       ) : (
                         <div>
-                          <div class="flex mt-3">
+                          <div class="flex mt-3 flex-wrap">
                             {forwardedSPIdList.map((item) => {
                               return (
-                                <div class="w-3/12 mr-4" key={item._id.$oid}>
+                                <div class="w-4/15 mr-8 mb-5" key={item._id.$oid}>
                                   <div class="flex items-center">
-                                    <div class="flex-shrink-0 w-10 h-10">
+                                    <div class="w-10 h-10">
                                       <Link to={`/sadmin/people/`}>
                                         <img
                                           class="w-full h-full rounded-full"
@@ -659,11 +659,11 @@ const ViewCaseDetailsSA = ({t}) => {
                                     <div class="ml-3">
                                       <Link to={`/sadmin/people/`}>
                                         <p class="text-blue-700 text-lg whitespace-no-wrap">
-                                          {item.email}
+                                          {item.name}
                                         </p>
                                       </Link>
                                       <p class="my-2 text-gray-700 text-sm whitespace-no-wrap">
-                                        {item.name}
+                                        {item.email}
                                       </p>
                                       <p class="my-2 text-gray-700 text-sm whitespace-no-wrap">
                                         {item.address}

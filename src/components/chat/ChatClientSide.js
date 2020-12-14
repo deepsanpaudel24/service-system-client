@@ -6,7 +6,6 @@ import "./chat.css";
 import _ from "lodash";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import { VscClose } from "react-icons/vsc";
-import { HiChatAlt2 } from "react-icons/hi";
 
 const ChatClientSide = (props) => {
   //functionality related variables
@@ -150,7 +149,7 @@ const ChatClientSide = (props) => {
 
     // for sending file to the database
     if (allfilesMessage.length === 0) {
-      console.log("No files are selected");
+      console.log("");
     } else {
       for (let file of allfilesMessage) {
         if (validateFile(file)) {

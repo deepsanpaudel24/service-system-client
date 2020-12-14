@@ -96,8 +96,8 @@ const ProfileSetupDetailed = ({ t }, props) => {
   };
 
   const options = [
-    { label: "React", value: "react" },
-    { label: "Angular", value: "angular" },
+    { label: "Law", value: "law" },
+    { label: "Account", value: "account" },
   ];
 
   return (

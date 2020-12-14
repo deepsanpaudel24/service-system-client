@@ -48,7 +48,7 @@ const SPCAeNavbar = () => {
             setSendFirstNotification(false)
         }
         else {
-            const interval = setInterval(checkNotification, 9000);
+            const interval = setInterval(checkNotification, 90000);
             return () => clearInterval(interval);
         }
       }, [sendFirstNotification]);
@@ -63,10 +63,22 @@ const SPCAeNavbar = () => {
         }
     }
 
-    const handleNotificationClick = (notification_id) => {
-        setShowNotifications(false)
-        dispatch(NotificationChangeStatusDispacther(notification_id))
-    }    
+    const checkNotificationRead = async () => {
+        try {
+          const resp = await axios(config);
+          setNotification(resp.data);
+          setNumberOfNotifications(resp.data.length);
+          return resp;
+        } catch (error) {
+          return error;
+        }
+      };
+    
+      const handleNotificationClick = (notification_id) => {
+        setShowNotifications(false);
+        dispatch(NotificationChangeStatusDispacther(notification_id));
+        setInterval(checkNotificationRead, 1500);
+      };   
 
     const handleLogout = () => {
         dispatch(LogoutUser())
@@ -191,7 +203,7 @@ const SPCAeNavbar = () => {
                 </div>
             </nav>
             <div class="container max-w-full py-4">
-                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mx-6" style={{minHeight: "53rem"}}>
+                <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mx-6" style={{minHeight: "87vh"}}>
                     <SPCAeContent />
                 </div>
             </div>

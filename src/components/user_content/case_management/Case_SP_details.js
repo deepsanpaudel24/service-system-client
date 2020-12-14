@@ -12,6 +12,7 @@ import {
 import pdfLogo from "../../../images/pdf-Icon.png";
 import docxLogo from "../../../images/docx-Icon.png";
 import dataFileLogo from "../../../images/dataFile-Icon.png";
+import otherFilesLogo from "../../../images/other_files_icon.png";
 import imageLogo from "../../../images/image-Icon.png";
 import folderEmptyIcon from "../../../images/folder_empty.png";
 import { TimerDispatcher } from "../../actions/Timer_management/TimerAction";
@@ -1868,6 +1869,76 @@ const ViewCaseDetailsSP = (props) => {
                                   </div>
                                 );
                               }
+                              else {
+                                return (
+                                  <div class="bg-gray-100  shadow rounded-lg">
+                                    {owner == "sp" ? (
+                                      <div class="flex justify-end mr-2 mt-1 mb-2">
+                                        <button
+                                          class="focus:outline-none"
+                                          onClick={() => DeletePopUp(item)}
+                                        >
+                                          <p class="text-red-400 ml-3">
+                                            <RiDeleteBin5Line />
+                                          </p>
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      ""
+                                    )}
+                                    <div
+                                      class={`flex flex-col items-center justify-center bg-gray-100 ${
+                                        owner == "sp" ? "" : "pt-8"
+                                      } px-4 pb-4`}
+                                      style={{
+                                        maxWidth: "15rem",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                        handleFileOpen(
+                                          item.split("/").slice(-1)[0]
+                                        )
+                                      }
+                                    >
+                                      <div
+                                        class="inline-flex overflow-hidden"
+                                        style={{
+                                          height: "10rem",
+                                          width: "10rem",
+                                        }}
+                                      >
+                                        <img
+                                          src={otherFilesLogo}
+                                          alt=""
+                                          class="h-full w-full"
+                                          style={{ opacity: "0.5" }}
+                                        />
+                                      </div>
+                                      <div class="flex mt-4">
+                                        <div class="w-5/6">
+                                          <button
+                                            onClick={() =>
+                                              handleFileOpen(
+                                                item.split("/").slice(-1)[0]
+                                              )
+                                            }
+                                          >
+                                            {" "}
+                                            {display_name}{" "}
+                                          </button>
+                                        </div>
+                                        <div class="w-1/6">
+                                          <button class="focus:outline-none">
+                                            <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                              <MdFileDownload />
+                                            </div>
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              }
                             }
                           })
                           }
@@ -2192,6 +2263,78 @@ const ViewCaseDetailsSP = (props) => {
                                   </div>
                                 );
                               }
+                              else {
+                                {
+                                  return (
+                                    <div class="bg-gray-100  shadow rounded-lg">
+                                      {owner == "sp" ? (
+                                        <div class="flex justify-end mr-2 mt-1 mb-2">
+                                          <button
+                                            class="focus:outline-none"
+                                            onClick={() => DeletePopUp(item)}
+                                          >
+                                            <p class="text-red-400 ml-3">
+                                              <RiDeleteBin5Line />
+                                            </p>
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        ""
+                                      )}
+                                      <div
+                                        class={`flex flex-col items-center justify-center bg-gray-100 ${
+                                          owner == "sp" ? "" : "pt-8"
+                                        } px-4 pb-4`}
+                                        style={{
+                                          maxWidth: "15rem",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() =>
+                                          handleFileOpen(
+                                            item.split("/").slice(-1)[0]
+                                          )
+                                        }
+                                      >
+                                        <div
+                                          class="inline-flex overflow-hidden"
+                                          style={{
+                                            height: "10rem",
+                                            width: "10rem",
+                                          }}
+                                        >
+                                          <img
+                                            src={otherFilesLogo}
+                                            alt=""
+                                            class="h-full w-full"
+                                            style={{ opacity: "0.5" }}
+                                          />
+                                        </div>
+                                        <div class="flex mt-4">
+                                          <div class="w-5/6">
+                                            <button
+                                              onClick={() =>
+                                                handleFileOpen(
+                                                  item.split("/").slice(-1)[0]
+                                                )
+                                              }
+                                            >
+                                              {" "}
+                                              {display_name}{" "}
+                                            </button>
+                                          </div>
+                                          <div class="w-1/6">
+                                            <button class="focus:outline-none">
+                                              <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                <MdFileDownload />
+                                              </div>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                              }
                             }
                           })
                           }
@@ -2500,6 +2643,53 @@ const ViewCaseDetailsSP = (props) => {
                                   >
                                     <img
                                       src={dataFileLogo}
+                                      alt=""
+                                      class="h-full w-full"
+                                      style={{ opacity: "0.5" }}
+                                    />
+                                  </div>
+                                  <div class="flex mt-4">
+                                    <div class="w-5/6">
+                                      <button
+                                        onClick={() =>
+                                          handleFileOpen(
+                                            item.split("/").slice(-1)[0]
+                                          )
+                                        }
+                                      >
+                                        {" "}
+                                        {display_name}{" "}
+                                      </button>
+                                    </div>
+                                    <div class="w-1/6">
+                                      <button class="focus:outline-none">
+                                        <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                          <MdFileDownload />
+                                        </div>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            else {
+                              return (
+                                <div
+                                  class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
+                                  style={{
+                                    maxWidth: "15rem",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    handleFileOpen(item.split("/").slice(-1)[0])
+                                  }
+                                >
+                                  <div
+                                    class="inline-flex overflow-hidden"
+                                    style={{ height: "10rem", width: "10rem" }}
+                                  >
+                                    <img
+                                      src={otherFilesLogo}
                                       alt=""
                                       class="h-full w-full"
                                       style={{ opacity: "0.5" }}

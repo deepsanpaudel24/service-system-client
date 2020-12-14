@@ -9,6 +9,7 @@ import pdfLogo from "../../../images/pdf-Icon.png";
 import docxLogo from "../../../images/docx-Icon.png";
 import dataFileLogo from "../../../images/dataFile-Icon.png";
 import imageLogo from "../../../images/image-Icon.png";
+import otherFilesLogo from "../../../images/other_files_icon.png";
 import { MdFileDownload } from "react-icons/md";
 import folderEmptyIcon from "../../../images/folder_empty.png";
 import { ConfirmContractDispatcher } from "../../actions/case_management/ConfirmContractAction";
@@ -307,6 +308,38 @@ const ContractDetails = (props) => {
                                                 </div>
                                             )
                                             }
+                                            else {
+                                                return(
+                                                    <div
+                                                    class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
+                                                    style={{ maxWidth: "15rem" }}
+                                                    >
+                                                    <div
+                                                        class="inline-flex overflow-hidden"
+                                                        style={{ height: "10rem", width: "10rem" }}
+                                                    >
+                                                        <img
+                                                        src={otherFilesLogo}
+                                                        alt=""
+                                                        class="h-full w-full"
+                                                        style={{ opacity: "0.5" }}
+                                                        />
+                                                    </div>
+                                                    <div class="flex mt-4">
+                                                        <div class="w-5/6">
+                                                        <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
+                                                        </div>
+                                                        <div class="w-1/6">
+                                                        <button class="focus:outline-none">
+                                                            <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                            <MdFileDownload />
+                                                            </div>
+                                                        </button>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                ) 
+                                            }
                                         })
                                         }
                                         </div>
@@ -484,6 +517,38 @@ const ContractDetails = (props) => {
                                                         </div>
                                                         </div>
                                                     )
+                                                    }
+                                                    else {
+                                                        return(
+                                                            <div
+                                                            class="flex flex-col items-center justify-center bg-gray-100 p-4 shadow rounded-lg"
+                                                            style={{ maxWidth: "15rem" }}
+                                                            >
+                                                            <div
+                                                                class="inline-flex overflow-hidden"
+                                                                style={{ height: "10rem", width: "10rem" }}
+                                                            >
+                                                                <img
+                                                                src={otherFilesLogo}
+                                                                alt=""
+                                                                class="h-full w-full"
+                                                                style={{ opacity: "0.5" }}
+                                                                />
+                                                            </div>
+                                                            <div class="flex mt-4">
+                                                                <div class="w-5/6">
+                                                                <a href={ServerDomain + item} target="blank"><p class="text-md font-medium mt-2">{display_name} </p></a>
+                                                                </div>
+                                                                <div class="w-1/6">
+                                                                <button class="focus:outline-none">
+                                                                    <div class="bg-gray-100 rounded-full h-10 w-10 flex items-center justify-center bg-white text-gray-700 text-xl hover:bg-gray-200 hover:text-gray-600">
+                                                                    <MdFileDownload />
+                                                                    </div>
+                                                                </button>
+                                                                </div>
+                                                            </div>
+                                                            </div>
+                                                        )
                                                     }
                                                 })
                                                 }

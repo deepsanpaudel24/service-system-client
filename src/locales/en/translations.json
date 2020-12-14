@@ -334,5 +334,6 @@
    "people_added_successfully": "People added sucessfully",
    "contract_paper_confirmed_successfully": "Contract confirmed sucessfully",
    "request_completion": "Request Completion",
-   "google_revoked_sucessfully": "Google account revoked sucessfully"
+   "google_revoked_sucessfully": "Google account revoked sucessfully",
+   "forward": "Forward"
 }

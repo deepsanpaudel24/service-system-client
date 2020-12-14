@@ -13,9 +13,11 @@ import {
 import { MdFileUpload } from "react-icons/md";
 import { withTranslation } from "react-i18next";
 import { useHistory } from "react-router";
+import { VscClose } from "react-icons/vsc";
 
 const ProfileSetupPreferences = ({ t }) => {
   const history = useHistory();
+  const [fileNameToShow, setFileNameToShow] = useState([]);
   const [currencyPreferences, setCurrencyPreferences] = useState("ymd");
   const [datePreferences, setDatePreferences] = useState("usd");
   const [fileToSend, setFileToSend] = useState([]);
@@ -85,6 +87,31 @@ const ProfileSetupPreferences = ({ t }) => {
       }
     }
     setFileToSend(validateFilesList);
+    // loop through files
+    var files = e.target.files;
+    var filesNameList = [];
+    for (var i = 0; i < files.length; i++) {
+      // get item
+      var file = files.item(i);
+      filesNameList.push(file.name);
+    }
+    setFileNameToShow(filesNameList);
+  };
+
+  const handleRemoveChatFile = (name, index) => {
+    var filteredFileList = [];
+    var fileList = fileToSend;
+    var NewFileNameList = fileNameToShow;
+
+    for (var i = 0; i < fileList.length; i++) {
+      var file = fileList[i];
+      if (file.name !== name) {
+        filteredFileList.push(file);
+      }
+    }
+    NewFileNameList.splice(index, 1);
+    setFileToSend(filteredFileList);
+    setFileNameToShow(NewFileNameList);
   };
 
   const handleTextIntroType = () => {
@@ -293,12 +320,33 @@ const ProfileSetupPreferences = ({ t }) => {
                       />
                       <button
                         class="text-sm text-blue-500 mx-4 focus:outline-none"
-                        style={{ marginBottom: "4rem" }}
+                        style={{ marginBottom: "2rem" }}
                         onClick={() => handleTextIntroType()}
                       >
                         {" "}
                         {t("write_a_text")}{" "}
                       </button>
+                      {!_.isEmpty(fileNameToShow)
+                          ? fileNameToShow.map((item, index) => {
+                              return (
+                                <div class="flex mx-3" style={{ marginBottom: "1rem" }}>
+                                  <div class="w-4/5">
+                                    <p>{item}</p>
+                                  </div>
+                                  <div class="w-1/5">
+                                    <p
+                                      class="text-red-400 mx-3 text-lg"
+                                      onClick={() =>
+                                        handleRemoveChatFile(item, index)
+                                      }
+                                    >
+                                      <VscClose />
+                                    </p>
+                                  </div>
+                                </div>
+                              );
+                            })
+                          : ""}
                     </div>
                   ) : (
                     <div>
@@ -311,7 +359,7 @@ const ProfileSetupPreferences = ({ t }) => {
                       />
                     </div>
                   )}
-                  <div class="flex justify-end" style={{ marginRight: "20%" }}>
+                  <div class="flex justify-end" style={{ marginRight: "25%" }}>
                     {showData()}
                   </div>
                 </div>

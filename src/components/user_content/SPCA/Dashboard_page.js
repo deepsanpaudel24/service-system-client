@@ -50,7 +50,6 @@ const Dashboard = ({ t }) => {
     };
     axios(config2)
       .then((res) => {
-        console.log(res.data);
         if (res.data.hasOwnProperty("showOnboard")) {
           setShowOnBoard(res.data["showOnboard"]);
           setStripeDetailsSubmited(false);
@@ -58,7 +57,6 @@ const Dashboard = ({ t }) => {
           if (!res.data["details_submitted"]) {
             setStripeOnboardUrlForIncomplete(res.data["url"]);
             setStripeDetailsSubmited(res.data["details_submitted"]);
-            console.log(res.data["url"]);
           }
         }
       })
