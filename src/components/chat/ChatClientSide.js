@@ -88,7 +88,7 @@ const ChatClientSide = (props) => {
 
   // establish socket connection
   useEffect(() => {
-    setSocket(io.connect("http://127.0.0.1:5000"));
+    setSocket(io.connect("/"));
   }, []);
 
   useEffect(() => {
