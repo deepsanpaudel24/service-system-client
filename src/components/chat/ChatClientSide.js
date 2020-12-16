@@ -88,13 +88,24 @@ const ChatClientSide = (props) => {
 
   // establish socket connection
   useEffect(() => {
-    setSocket(io.connect("/"));
+    const socketIOConnOpt = {
+      'force new connection': true,
+      reconnection: true,
+      reconnectionDelay: 10000,
+      reconnectionDelayMax: 60000,
+      reconnectionAttempts: 'Infinity',
+      timeout: 10000,
+      transports: ['websocket'],
+      resource: '/',
+    };
+    setSocket(io.connect("http://127.0.0.1:5000"));
   }, []);
 
   useEffect(() => {
     if (!socket) return;
     // Connection event
     socket.on("connect", () => {
+      console.log("I am connected")
       console.log(socket.connected, username, room);
       clientConnect();
     });
@@ -117,6 +128,10 @@ const ChatClientSide = (props) => {
     socket.on("receive_file", (fileData, chatClientData) => {
       clientReceiveFile(fileData, chatClientData);
     });
+
+    return () => {
+      socket.close()
+    }
   }, [socket]);
 
   /* ALL FUNCTIOINs THAT ARE CALLED IN USEEFFECT*/

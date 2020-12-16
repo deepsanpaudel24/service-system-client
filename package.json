@@ -33,7 +33,7 @@
     "react-switch": "^5.0.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "socket.io-client": "^2.3.0",
+    "socket.io-client": "^3.0.4",
     "validator": "^13.1.17",
     "video-react": "^0.14.1"
   },
