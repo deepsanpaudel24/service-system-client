@@ -7,33 +7,28 @@ import { createStore, applyMiddleware } from "redux";
 import { Provider, useDispatch } from "react-redux";
 import thunk from "redux-thunk";
 import rootReducer from "./reducers/RootReducer"
-
-//imports of all the components
-import Landing from './landingPage/Landing';
-import Register from './account/Register';
-import Login from "./account/Login";
-import ForgotPassword from "./account/Forgot_password";
-import ResetPassword from "./account/Reset_password";
-import SetupUserType from "./account/User_type_setup";
-import ProfileSetupBasic from "./account/Profile_setup_basic";
-import ProfileSetupDetailed from "./account/Profile_setup_detailed";
-import HomePage from "./user_content/Home";
-import SAHomePage from './super_admin/Home';
-import EmployeePasswordSetup from './account/Employee_password_setup';
-
 import axios from 'axios';
-import ClientPasswordSetup from './account/Client_password_setup';
-import ProfileSetupPreferences from './account/Profile_setup_preferences';
-import SocketTest from './SocketTest';
-import PeoplePasswordSetup from './account/People_password_setup';
-import ConfirmRegistration from './account/Confirm_registration';
+
+const Landing = React.lazy(() => import('./landingPage/Landing'));
+const Register = React.lazy(() => import('./account/Register'));
+const Login = React.lazy(() => import('./account/Login'));
+const ForgotPassword = React.lazy(() => import('./account/Forgot_password'));
+const ResetPassword = React.lazy(() => import('./account/Reset_password'));
+const SetupUserType = React.lazy(() => import('./account/User_type_setup'));
+const ProfileSetupBasic = React.lazy(() => import('./account/Profile_setup_basic'));
+const ProfileSetupDetailed = React.lazy(() => import('./account/Profile_setup_detailed'));
+const HomePage = React.lazy(() => import('./user_content/Home'));
+const SAHomePage = React.lazy(() => import('./super_admin/Home'));
+const EmployeePasswordSetup = React.lazy(() => import('./account/Employee_password_setup'));
+const ClientPasswordSetup = React.lazy(() => import('./account/Client_password_setup'));
+const ProfileSetupPreferences = React.lazy(() => import('./account/Profile_setup_preferences'));
+const SocketTest = React.lazy(() => import('./SocketTest'));
+const PeoplePasswordSetup = React.lazy(() => import('./account/People_password_setup'));
+const ConfirmRegistration = React.lazy(() => import('./account/Confirm_registration'));
+
 
 //Making a global redux store for the application
 const store = createStore(rootReducer, applyMiddleware(thunk))
-
-//axios.defaults.baseURL = "https://service-system-backend.herokuapp.com/";
-//axios.defaults.baseURL = "http://127.0.0.1:5000";
-//axios.defaults.withCredentials = true;
 
 function App() {
   return (

@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import axios from "axios";
 import {PulseLoader} from "react-spinners";
-import './styles/App.scss';
-import SPCALayout from "./SPCA/Layout_SPCA";
-import CCALayout from "./CCA/Layout_CCA";
-import SPCAeLayout from "./SPCAe/Layout_SPCAe";
-import CCAeLayout from "./CCAe/Layout_CCAe";
 import { useHistory } from "react-router";
+import './styles/App.scss';
+
+const SPCALayout = React.lazy(() => import('./SPCA/Layout_SPCA'));
+const CCALayout = React.lazy(() => import('./CCA/Layout_CCA'));
+const SPCAeLayout = React.lazy(() => import('./SPCAe/Layout_SPCAe'));
+const CCAeLayout = React.lazy(() => import('./CCAe/Layout_CCAe'));
+
 
 const HomePage = () => {
     const history = useHistory();

@@ -145,7 +145,7 @@ const TaskDetails = (props) => {
         setStoppingTime(new Date().toLocaleTimeString());
         setInitialTimerValue(0)
         var data = {
-        stop: true,
+            stop: true,
         };
         dispatch(TimerDispatcher(data));
     };

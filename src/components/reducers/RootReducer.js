@@ -1,5 +1,6 @@
+import React from "react";
 import { combineReducers } from 'redux';
-import AccountRegisterReducer from './Account_registerReducer'
+import AccountRegisterReducer from './Account_registerReducer';
 import AccountLoginReducer from './Account_loginReducer'
 import UpdateUserTypeReducer from './Account_userTypeReducer'
 import UpdateBasicProfileReducer from './Account_basicProfileReducer'
@@ -45,7 +46,6 @@ import IntakeFormListStorageReducer from './IntakeFormListStorageReducer';
 import ConfirmContractReducer from './ConfirmContractReducer';
 import CreateClientCaseReducer from './Create_client_case_reducer';
 import SetPeoplePasswordReducer from './SetPeoplePasswordReducer';
-import PeoplesListStorageReducer from './PeopleListStorageReducer';
 import SACaseListStorageReducer from './SuperAdminCaseListStorageReducer';
 import SAPeopleCaseListStorageReducer from './SuperAdminPeopleCaseListStorageReducer';
 import EmployeeCaseListReducer from './EmployeeCaseListReducer';
@@ -56,6 +56,9 @@ import FinalPaymentTransferReducer from './FinalPaymentTransferReducer';
 import CaseListStorageReducer from './CaseTImersListStorageReducer';
 import TransactionsCaseListReducer from './TransactionsListStorageReducer';
 import CaseTimersListStorageReducer from './CaseTImersListStorageReducer';
+import PeoplesListStorageReducer from './PeopleListStorageReducer';
+
+//const PeoplesListStorageReducer = React.lazy(() => import('./PeopleListStorageReducer'));
 
 const rootReducer =  combineReducers({
     // list of all the reducers

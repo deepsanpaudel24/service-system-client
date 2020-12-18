@@ -98,7 +98,7 @@ const ChatClientSide = (props) => {
       transports: ['websocket'],
       resource: '/',
     };
-    setSocket(io.connect("http://127.0.0.1:5000"));
+    setSocket(io.connect("https://46.101.155.40"));
   }, []);
 
   useEffect(() => {

@@ -16,7 +16,7 @@ import "../../../../node_modules/video-react/dist/video-react.css";
 const VideoPlayer = (props) => {
   const { source } = props
   return (
-    <Player src={`http://127.0.0.1:5000/${source}`}>
+    <Player src={`https://46.101.155.40/${source}`}>
       <BigPlayButton position="center" />
       <LoadingSpinner />
       <ControlBar>

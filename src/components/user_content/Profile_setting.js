@@ -44,6 +44,7 @@ const ProfileSetting = (props) => {
   const [personalNumber, setPersonalNumber] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [showRevokeAlert, setShowRevokeAlert] = useState(false);
+  const [showClearIncompleteAlert , setShowClearIncompleteAlert] = useState(false)
   const [serviceCategories, setServiceCategories] = useState([]);
   const [
     serviceCategoriesDefaultValue,
@@ -62,9 +63,12 @@ const ProfileSetting = (props) => {
   const [haveGoogleCredentials, setHaveGoogleCredentials] = useState(false);
   const [profileDetails, setProfileDetails] = useState([]);
   const [activeTab, setActiveTab] = useState("basic_info");
+  const [googleOnboardIncomplete, setGoogleOnboardIncomplete] = useState(false)
 
   const [showVideoForm, setShowVideoForm] = useState(true);
   const [showIntroForm, setShowIntroForm] = useState(true);
+  const [introUploading, setIntroUploading] = useState(false);
+  const [fileSizeError, setFileSizeError] = useState(false)
 
   const dispatch = useDispatch();
   const response = useSelector((state) => state.ProfileDetailsResponse);
@@ -150,10 +154,16 @@ const ProfileSetting = (props) => {
     };
     axios(config2)
       .then((res) => {
+        //console.log("from response", res.data)
         setHaveGoogleCredentials(true);
       })
       .catch((error) => {
-        setHaveGoogleCredentials(false);
+        if(error.response['data']['message'] == "incomplete"){
+          setGoogleOnboardIncomplete(true)
+        }
+        else{
+          setHaveGoogleCredentials(false);
+        }
       });
   }, []);
 
@@ -221,6 +231,40 @@ const ProfileSetting = (props) => {
       // show the revoke failed alert
     })
   };
+
+  // To clear incomplete google account
+  const handleClearGoogleAccount = () => {
+    //send revoke request
+    const config = {
+      method: "delete",
+      url: "/api/v1/revoke-google"
+    }
+    axios(config)
+    .then((res) => {
+      // show the confirmation alert
+      setShowClearIncompleteAlert(true)
+      setGoogleOnboardIncomplete(false)
+      // To check if the user has linked google account
+      var config2 = {
+        method: "get",
+        url: "/api/v1/google-credentials-details",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config2)
+        .then((res) => {
+          setHaveGoogleCredentials(true);
+        })
+        .catch((error) => {
+          setHaveGoogleCredentials(false);
+        });
+    })
+    .catch((error) => {
+      // show the revoke failed alert
+    })
+  };
+
   const activeBasicInfoTab = () => {
     setActiveTab("basic_info");
   };
@@ -463,6 +507,10 @@ const ProfileSetting = (props) => {
     setCurrencyPreferences(currencyPreferencesToSend);
   };
 
+  const clearCurrencyPreferences = () => {
+    setCurrencyPreferences(profileDetails.currency_preferences)
+  }
+
   const submitLanguagePreferences = () => {
     var data = {
       language: languagePreferencesToSend,
@@ -472,6 +520,10 @@ const ProfileSetting = (props) => {
     setLanguage(languagePreferencesToSend);
     localStorage.setItem("lang", languagePreferencesToSend)
     window.location.reload(true)
+  };
+
+  const clearLanguagePreferences = () => {
+      setLanguage(profileDetails['language'])
   };
 
   const OpenVideoUploader = () => {
@@ -561,7 +613,10 @@ const ProfileSetting = (props) => {
               </div>
               <div class="flex justify-end mx-3">
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    clearCurrencyPreferences();
+                    onClose();
+                  }}
                   class="focus:outline-none inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-gray-600 hover:text-black hover:bg-gray-200 mt-4 lg:mt-0"
                 >
                   {t("cancel")}
@@ -612,7 +667,10 @@ const ProfileSetting = (props) => {
               </div>
               <div class="flex justify-end mx-3">
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    clearLanguagePreferences();
+                    onClose();
+                  }}
                   class="focus:outline-none inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-gray-600 hover:text-black hover:bg-gray-200 mt-4 lg:mt-0"
                 >
                   {t("cancel")}
@@ -650,7 +708,13 @@ const ProfileSetting = (props) => {
 
   //Validate files
   const validateFile = (file) => {
-    return fileTypes.includes(file.type);
+    if (file.size > 100000000){
+      setFileSizeError(true)
+    }
+    else {
+      setFileSizeError(false)
+      return fileTypes.includes(file.type);
+    }
   };
 
   const handleFileUpload = (e) => {
@@ -680,49 +744,63 @@ const ProfileSetting = (props) => {
   };
 
   const SubmitIntroduction = () => {
+    setIntroUploading(true)
     // submit the dispatch action here
     var formData = new FormData();
     for (let file of fileToSend) {
       formData.append(file.name, file);
     }
     formData.append("intro_text", IntroText);
-    dispatch(UpdateProfileIntroduction(formData));
-    setShowAlert(true);
+    
     const config = {
-      method: "get",
-      url: "/api/v1/user/profile-details",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("access_token"),
-      },
-    };
+      method: 'put',
+      url: '/api/v1/user/profile-introduction',
+      data: formData
+    }
     axios(config)
-      .then((res) => {
-        var data = res.data;
-        dispatch(ProfileSettingDispatcher(data));
-        setProfileDetails(res.data);
-        setName(res.data["name"]);
-        setAddress(res.data["address"]);
-        setContact(res.data["phone_number"]);
-        setRegistrationNumber(res.data["registration_number"]);
-        setPersonalNumber(res.data["personal_number"]);
-        setServiceCategories(res.data["service_categories"]);
-        var array = [];
-        res.data["service_categories"].map((item) =>
-          array.push({ label: item, value: item })
-        );
-        setServiceCategoriesDefaultValue(array);
-        setCurrencyPreferences(res.data["currency_preferences"]);
-        setDatePreferences(res.data["date_preferences"]);
-        setProfileDetailsLoading(false);
-        if (res.data.hasOwnProperty("intro_video")) {
-          setShowVideoForm(false);
-        }
-        if (res.data.hasOwnProperty("intro_text")) {
-          setShowIntroForm(false);
-        }
-      })
-      .catch((error) => {});
+    .then((res) => {
+      setIntroUploading(false)
+      setShowAlert(true)
+      const config6 = {
+        method: "get",
+        url: "/api/v1/user/profile-details",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+        },
+      };
+      axios(config6)
+        .then((res) => {
+          var data = res.data;
+          dispatch(ProfileSettingDispatcher(data));
+          setProfileDetails(res.data);
+          setName(res.data["name"]);
+          setAddress(res.data["address"]);
+          setContact(res.data["phone_number"]);
+          setRegistrationNumber(res.data["registration_number"]);
+          setPersonalNumber(res.data["personal_number"]);
+          setServiceCategories(res.data["service_categories"]);
+          var array = [];
+          res.data["service_categories"].map((item) =>
+            array.push({ label: item, value: item })
+          );
+          setServiceCategoriesDefaultValue(array);
+          setCurrencyPreferences(res.data["currency_preferences"]);
+          setDatePreferences(res.data["date_preferences"]);
+          setProfileDetailsLoading(false);
+          if (res.data.hasOwnProperty("intro_video")) {
+            setShowVideoForm(false);
+          }
+          if (res.data.hasOwnProperty("intro_text")) {
+            setShowIntroForm(false);
+          }
+        })
+        .catch((error) => {});
+    })
+    .catch((error) => {
+      setIntroUploading(false)
+    })
+    
   };
 
   const showData = () => {
@@ -730,6 +808,18 @@ const ProfileSetting = (props) => {
       return (
         <div class="">
           <PulseLoader size={10} color={"#6DADE3"} loading={true} />
+        </div>
+      );
+    }
+    if(fileSizeError){
+      return (
+        <div>
+          <button
+            class="cursor-not-allowed bg-blue-500 opacity-50 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-2 rounded focus:outline-none focus:shadow-outline disabled"
+            type="button"
+          >
+            {t("submit")}
+          </button>
         </div>
       );
     }
@@ -759,12 +849,33 @@ const ProfileSetting = (props) => {
         ) : (
           ""
         )}
+        {
+          fileSizeError ?
+          <div
+            class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4"
+            role="alert"
+          >
+            <p class="font-bold">{t("file_size_big_info")}</p>
+          </div>
+          :
+          ""
+        }
         {showRevokeAlert ? (
           <div
             class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4"
             role="alert"
           >
             <p class="font-bold">{t("google_revoked_sucessfully")}</p>
+          </div>
+        ) : (
+          ""
+        )}
+        {showClearIncompleteAlert ? (
+          <div
+            class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4"
+            role="alert"
+          >
+            <p class="font-bold">{t("google_cleared_sucessfully")}</p>
           </div>
         ) : (
           ""
@@ -1237,7 +1348,19 @@ const ProfileSetting = (props) => {
                         </button>
                       </div>
                     </div>
-                  ) : (
+                  ) 
+                  :
+                  googleOnboardIncomplete ?
+                  <div class="flex">
+                    <p class="text-base text-red-600">
+                      {t("google_onboard_incomplete")}
+                    </p>
+                    <p class="font-bold text-base text-red-600 cursor-pointer border-b border-dashed" onClick={() => handleClearGoogleAccount()}>
+                      &nbsp;{t("clear_credentials_info")}
+                    </p>
+                  </div> 
+                  : 
+                  (
                     <div class="flex items-center">
                       <div class="w-2/6">
                         <p class="text-base text-gray-600">
@@ -1276,7 +1399,13 @@ const ProfileSetting = (props) => {
               </div>
             ) : (
               <div class="flex mb-4">
-                <div class="w-3/5 ml-5">
+                {
+                  introUploading ? 
+                  <div class="">
+                    <PulseLoader size={10} color={"#6DADE3"} loading={true} />
+                  </div>
+                  :
+                  <div class="w-3/5 ml-5">
                   <div class="mt-2 mb-3">
                     {!showVideoForm ? (
                       <span>
@@ -1398,6 +1527,7 @@ const ProfileSetting = (props) => {
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="title"
                             type="text"
+                            defaultValue={profileDetails['intro_text']}
                             style={{ minHeight: "12em" }}
                             onChange={(e) => handleIntroTextChange(e)}
                           />
@@ -1411,7 +1541,8 @@ const ProfileSetting = (props) => {
                     ""
                   )}
                 </div>
-              </div>
+                }
+            </div>
             )}
           </div>
         </div>

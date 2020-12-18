@@ -75,7 +75,7 @@ useEffect(() => {
             <MenuItem
               icon={<FaTachometerAlt />}
             >
-              Dashboard
+              <Link to="/user/home">Dashboard</Link>
             </MenuItem>
             <MenuItem icon={<FaGem />}><Link to="/user/cases">Cases</Link></MenuItem>
           </Menu>

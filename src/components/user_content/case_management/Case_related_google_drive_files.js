@@ -7,6 +7,7 @@ import slidesIcon from "../../../images/google_slides_icon.png";
 import spreadsheetIcon from "../../../images/google_sheets_icon.png";
 import folderEmptyIcon from "../../../images/folder_empty.png";
 import {PulseLoader} from "react-spinners";
+import {Link} from "react-router-dom";
 
 const GoogleDriveRelatedFiles = (props) => {
     const [googleFileCreateLoading, setGoogleFileCreateLoading] = useState(false)
@@ -316,9 +317,11 @@ const GoogleDriveRelatedFiles = (props) => {
                     </div>
                 </div>
                 :
-                <div>
-                    <button class="focus:outline-none" onClick={() => handleLinkGoogleAccount()}><h1 class="text-blue-400 underline">Link with your google account</h1></button>
-                </div>
+                <Link to="/user/profile-setting">
+                    <div class="flex">
+                        <p class="text-gray-600 border-b border-dashed">Click here ! To link with your google account from the profile setting page.</p>
+                    </div>
+                </Link>
             }
         </div>
     )

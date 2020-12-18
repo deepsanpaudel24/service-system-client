@@ -335,5 +335,10 @@
    "contract_paper_confirmed_successfully": "Contract confirmed sucessfully",
    "request_completion": "Request Completion",
    "google_revoked_sucessfully": "Google account revoked sucessfully",
-   "forward": "Forward"
+   "forward": "Forward",
+   "current_password": "Current Password",
+   "file_size_big_info": "File size in too large to upload",
+   "google_onboard_incomplete": "Google onboard with your account is incomplete.",
+   "clear_credentials_info": "Click here to try again !",
+   "google_cleared_sucessfully": "You can Link your google account now"
 }

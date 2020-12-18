@@ -51,7 +51,7 @@ const ViewCasesSP = (props) => {
         Authorization: "Bearer " + localStorage.getItem("access_token"),
       },
     };
-    if (!_.isEmpty(response4)) {
+    if (!_.isEmpty(response4.data)) {
       dispatch(ReplyCaseRequestResponseReset());
       axios(config)
         .then((res) => {
@@ -70,7 +70,7 @@ const ViewCasesSP = (props) => {
           console.log(error.response);
         });
     }
-    else if (!_.isEmpty(response3)) {
+    else if (!_.isEmpty(response3.data)) {
       dispatch(RequestCompletionDispatcherResponseReset());
       // setShowRequestCompletionAlert(true)
       setShowRequestCompletionAlert(true)

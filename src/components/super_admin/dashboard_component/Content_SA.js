@@ -18,6 +18,7 @@ import ViewEmployees from "../employee_management/View_employees";
 import PeopleDetails from "../people_mangement/People_details";
 import Proposals from "../case_management/Proposals";
 import SATransactions from "../payments/Transactions";
+import Dashboard from "./Dashboard";
 
 const SAContent = () => {
   return (
@@ -28,6 +29,7 @@ const SAContent = () => {
           path="/sadmin/change-password"
           component={ChangePassword}
         />
+        <Route exact path="/sadmin/home" component={Dashboard} />
         <Route exact path="/sadmin/employees" component={ViewEmployees} />
         <Route exact path="/sadmin/add-employee" component={AddEmployee} />
         <Route exact path="/sadmin/employee/:id" component={EmployeeDetails} />

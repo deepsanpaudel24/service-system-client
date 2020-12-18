@@ -1,5 +1,6 @@
 import React from "react";
 import {Redirect, Route, Link, BrowserRouter as Router, Switch} from 'react-router-dom';
+
 import ViewCasesemp from "../case_management/Cases_employees";
 import ViewCaseDetailsSP from "../case_management/Case_SP_details";
 import ReplyCaseRequest from "../case_management/Case_SP_reply";
@@ -9,6 +10,7 @@ import ClientIntakeFormList from "../client_intake_form/ClientIntakeFormList";
 import ClientIntakeForm from "../client_intake_form/CreateIntakeForm";
 import NewCreateIntakeForm from "../client_intake_form/NewCreateIntakeForm";
 import SendIntakeForm from "../client_intake_form/SendClientIntakeForm";
+
 import AddClients from "../client_management/Add_Clients";
 import Clients from "../client_management/Clients";
 import ClientDetails from "../client_management/Client_details";
@@ -21,6 +23,8 @@ import ProfileSetting from "../Profile_setting";
 import AddService from "../service_management/Add_Service";
 import EditService from "../service_management/Edit_service";
 import Services from "../service_management/Services";
+
+
 const SPCAeContent = () => {
     return(
         <div>
