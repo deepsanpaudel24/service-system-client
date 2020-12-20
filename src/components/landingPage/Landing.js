@@ -29,15 +29,6 @@ const Landing = ({t}) => {
                         <div class="text-sm lg:flex-grow">
                         </div>
                         <div class="flex">
-                            {/* <select
-                                class="form-select bg-orange-100 text-sm mx-2 py-1 px-3 text-black border-black focus:outline-none"
-                                style={{marginRight: "3rem"}}
-                                defaultValue={localStorage.getItem("lang")}
-                                onChange={e => handleLanguageChange(e)}
-                            >
-                                <option value="en">English</option>
-                                <option value="de">German</option>
-                            </select> */}
                             <Link to="/user/register">
                                 <p class="inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-black hover:border-transparent hover:text-white hover:bg-black mt-4 lg:mt-0">{t("Sign up")}</p>
                             </Link>
@@ -49,19 +40,21 @@ const Landing = ({t}) => {
                 </nav>
             </div>
             <div class="flex items-center bg-white">
-                <img src={LandingIcon} alt="Landing page photo" />
+                <img src={LandingIcon} alt="Landing page photo" style={{ width: "60%"}}/>
             </div>
-            {/* <div class="my-5 flex w-full flex-row-reverse"> */}
-            <div class="fixed bottom-2 right-0 flex flex-col items-end">
-                <select
-                    class="form-select bg-orange-100 text-sm mx-2 py-1 px-3 text-black border-black focus:outline-none"
-                    style={{marginRight: "3rem"}}
-                    defaultValue={localStorage.getItem("lang")}
-                    onChange={e => handleLanguageChange(e)}
-                >
-                    <option value="en">English</option>
-                    <option value="de">German</option>
-                </select>
+
+            <div class="fixed bottom-0 right-0 flex flex-col items-end ml-6">
+                <div class="flex flex-col mb-3 sm:w-1/3 md:w-1/4 lg:w-1/5" style={{minWidth: "10rem"}}>
+                    <select
+                        class="form-select bg-orange-100 text-sm mx-2 py-1 px-3 text-black border-black focus:outline-none"
+                        style={{marginRight: "3rem"}}
+                        defaultValue={localStorage.getItem("lang")}
+                        onChange={e => handleLanguageChange(e)}
+                    >
+                        <option value="en">English</option>
+                        <option value="de">German</option>
+                    </select>
+                </div>
             </div>
         </div>
     )

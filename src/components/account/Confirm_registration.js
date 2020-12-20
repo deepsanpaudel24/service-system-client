@@ -18,7 +18,7 @@ const ConfirmRegistration = (props) => {
         var urlvalues = string.toString().split("/");
         const config = {
             method: "get",
-            url: "/user/email/confirm/" + urlvalues[2]
+            url: "/api/user/email/confirm/" + urlvalues[2]
         }
         axios(config)
         .then((res) => {

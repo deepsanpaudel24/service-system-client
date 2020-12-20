@@ -7,8 +7,10 @@ import { AddTimerDispatcher, AddTimerResponseReset } from "../../actions/TimerAc
 import { TimerDispatcher } from "../../actions/Timer_management/TimerAction";
 import Timer from "react-compound-timer";
 import folderEmptyIcon from "../../../images/folder_empty.png";
+import { useHistory } from "react-router";
 
 const TaskDetails = (props) => {
+    const history = useHistory();
     const [taskDetails, settaskDetails] = useState([])
     const [pageLoading, setPageLoaoding] = useState(true)
     const [totalTimeWorked, setTotalTimeWorked] = useState()
@@ -122,6 +124,7 @@ const TaskDetails = (props) => {
         };
         setShowTimer(true)
         dispatch(TimerDispatcher(data));
+      
     };
 
     const handleNonBillable = () => {
@@ -142,9 +145,13 @@ const TaskDetails = (props) => {
     };
 
     const handleStopTimer = () => {
+        window.removeEventListener('beforeunload', (event) => {
+            event.returnValue = 'You have unfinished changes!';
+        })
         setStoppingTime(new Date().toLocaleTimeString());
         setInitialTimerValue(0)
         var data = {
+            start:false,
             stop: true,
         };
         dispatch(TimerDispatcher(data));

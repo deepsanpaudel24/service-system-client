@@ -466,6 +466,7 @@ const ProfileSetting = (props) => {
           </div>
         );
       },
+      closeOnClickOutside: false,
       title: "Confirm to submit",
     });
   };
@@ -498,6 +499,11 @@ const ProfileSetting = (props) => {
     setDatePreferences(datePreferencesToSend);
   };
 
+  const clearDatePreferences = () => {
+    setDatePreferences(profileDetails.date_preferences)
+    datePreferencesToSend = profileDetails.date_preferences;
+  }
+
   const submitCurrencyPreferences = () => {
     var data = {
       currency_preferences: currencyPreferencesToSend,
@@ -509,6 +515,7 @@ const ProfileSetting = (props) => {
 
   const clearCurrencyPreferences = () => {
     setCurrencyPreferences(profileDetails.currency_preferences)
+    currencyPreferencesToSend = profileDetails.currency_preferences;
   }
 
   const submitLanguagePreferences = () => {
@@ -523,7 +530,8 @@ const ProfileSetting = (props) => {
   };
 
   const clearLanguagePreferences = () => {
-      setLanguage(profileDetails['language'])
+    setLanguage(profileDetails.language)
+    languagePreferencesToSend = profileDetails.language;
   };
 
   const OpenVideoUploader = () => {
@@ -561,7 +569,10 @@ const ProfileSetting = (props) => {
               </div>
               <div class="flex justify-end mx-3">
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    clearDatePreferences();
+                    onClose();
+                  }}
                   class="focus:outline-none inline-block text-sm mx-2 px-4 py-2 leading-none border rounded text-black border-gray-600 hover:text-black hover:bg-gray-200 mt-4 lg:mt-0"
                 >
                   {t("cancel")}
@@ -581,6 +592,7 @@ const ProfileSetting = (props) => {
         );
       },
       title: "Confirm to submit",
+      closeOnClickOutside: false,
     });
   };
 
@@ -636,6 +648,7 @@ const ProfileSetting = (props) => {
         );
       },
       title: "Confirm to submit",
+      closeOnClickOutside: false,
     });
   };
 
@@ -690,6 +703,7 @@ const ProfileSetting = (props) => {
         );
       },
       title: "Confirm to submit",
+      closeOnClickOutside: false,
     });
   };
 

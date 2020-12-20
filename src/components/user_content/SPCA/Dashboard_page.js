@@ -187,7 +187,7 @@ const Dashboard = ({ t }) => {
       )}
 
       {/* alert box to show for the subsription of the service system if the expiry date is less than a week */}
-      {remainingDays < 7 ? (
+      {remainingDays < 8 ? (
         <div
           class="bg-orange-100 border-l-4 border-orange-500 text-orange-600 p-4 my-3"
           role="alert"

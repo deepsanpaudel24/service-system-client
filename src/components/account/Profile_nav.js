@@ -99,28 +99,6 @@ const ProfileNav = ({t}) => {
                         aria-orientation="vertical"
                         aria-labelledby="options-menu"
                       >
-                        <a
-                          href="#"
-                          class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-                          role="menuitem"
-                        >
-                          {t("profile")}
-                        </a>
-                        <a
-                          href="#"
-                          class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-                          role="menuitem"
-                        >
-                         {t("change_password")}
-                        </a>
-                        <a
-                          href="#"
-                          class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-                          role="menuitem"
-                        >
-                         {t("account_settings")}
-                        </a>
-                        <div class="border-t border-gray-200"></div>
                         <button
                           type="submit"
                           onClick={() => handleLogout()}

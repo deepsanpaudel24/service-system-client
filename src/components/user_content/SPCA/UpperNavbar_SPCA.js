@@ -61,26 +61,6 @@ const SPCANavbar = ({ t }) => {
     
   }, [sendFirstNotification]);
 
-//   useEffect(() => {
-//     let reduxTimer = timerResponse
-//     let formChanged = true;
-//     window.addEventListener('beforeunload', (event) => {
-//       if (formChanged) {
-//         console.log(reduxTimer.data)
-//         event.returnValue = 'You have unfinished changes!';
-//       }
-//     });
-// }, [])
-
-  // const onCloseAlert = () => {
-  //   window.addEventListener('beforeunload', (event) => {
-  //     if (timerResponse.data['start']) {
-  //       console.log(timerResponse.data)
-  //       event.returnValue = 'You have unfinished changes!';
-  //     }
-  //   });
-  // }
-
 
   const handleShowNotifications = () => {
     if (showNotifications) {
@@ -130,22 +110,23 @@ const SPCANavbar = ({ t }) => {
     } else {
       setShowOptions(true);
     }
-  };
+  }; 
 
   
   return (
     <div>
       {LogoutUserResponse()}
       {
-        window.addEventListener('beforeunload', (event) => {
-          if (timerResponse.data['start']) {
+        window.onbeforeunload = function() {
+          if(timerResponse.data['start']){
             timerResponse.data['caseId'] ?
               history.push(`/user/case/${timerResponse.data['caseId']}`)
             :
               history.push(`/user/tasks/${timerResponse.data['taskId']}`)
-            event.returnValue = 'You have unfinished changes!';
+            return "Please save the timer before you leave"
           }
-        })
+          return null;
+        }
       }
       <nav style={{ backgroundColor: "#273238" }}>
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -170,9 +151,10 @@ const SPCANavbar = ({ t }) => {
                     </p>
                   </Link>
                 )
-              ) : (
-                ""
-              )}
+              ) 
+              :
+              ""
+               }
               <div class="ml-3 relative">
                 {numberOfNotifications == 0 ? (
                   <button

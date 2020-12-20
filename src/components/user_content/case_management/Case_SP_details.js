@@ -292,6 +292,7 @@ const ViewCaseDetailsSP = (props) => {
     setStoppingTime(new Date().toLocaleTimeString());
     setInitialTimerValue(0)
     var data = {
+      start:false,
       stop: true,
     };
     dispatch(TimerDispatcher(data));

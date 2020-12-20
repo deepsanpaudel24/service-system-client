@@ -20,7 +20,8 @@ const SPCAeNavbar = () => {
     const [numberOfNotifications, setNumberOfNotifications] = useState(0);
     const dispatch = useDispatch()
     const logoutResponse = useSelector(state => state.logoutUserResponse)
-
+    const timerResponse = useSelector((state) => state.TimerActionResponse);
+    
     const config = {
         method: "get",
         url: "/api/v1/notifications",
@@ -103,6 +104,18 @@ const SPCAeNavbar = () => {
     return(
         <div>
             {LogoutUserResponse()}
+            {
+                window.onbeforeunload = function() {
+                if(timerResponse.data['start']){
+                    timerResponse.data['caseId'] ?
+                    history.push(`/user/case/${timerResponse.data['caseId']}`)
+                    :
+                    history.push(`/user/tasks/${timerResponse.data['taskId']}`)
+                    return "Please save the timer before you leave"
+                }
+                return null;
+                }
+            }
             <nav style={{backgroundColor: "#273238"}}>
                 <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8" style={{paddingTop: "0.4rem"}}>
                     <div class="relative flex items-center justify-between h-16">
