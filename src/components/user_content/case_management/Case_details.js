@@ -38,7 +38,7 @@ const ViewCaseDetailsClient = (props) => {
 
   var spFilesCount = 0;
   var clientFilesCount = 0;
-
+ 
   useLayoutEffect(() => {
     var string = document.location.pathname;
     var urlvalues = string.toString().split("/");

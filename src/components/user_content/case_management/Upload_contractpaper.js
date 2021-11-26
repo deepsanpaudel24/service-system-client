@@ -196,7 +196,8 @@ const UploadContractPaper = (props) => {
                                         style={{ display: "none" }}
                                         onChange={e => handleFileUpload(e)}
                                         multiple
-                                        accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,.csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                accept="image/png, image/jpeg,.pdf,.doc,.docx,.xml,.txt,
+                                        .csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                     />
                                 {
                                     !_.isEmpty(fileNameToShow) ? 
